@@ -306,14 +306,6 @@ export default function HomePage() {
 
             {/* Steps with full-width dashed connector */}
             <div className="relative">
-              {/* Full-width dashed gradient connector — behind the cards */}
-              <div
-                className="hidden lg:block absolute top-8 left-0 right-0 h-px z-0 pointer-events-none"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(90deg, rgba(0,168,255,0.55) 0px, rgba(123,63,228,0.55) 10px, transparent 10px, transparent 20px)",
-                }}
-              />
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {steps.map((step, i) => (
                   <motion.div
