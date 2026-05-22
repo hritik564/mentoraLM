@@ -11,7 +11,7 @@ export function Footer() {
                 src="/logo.png"
                 alt="MentoraLM"
                 className="w-auto"
-                style={{ maxHeight: 56 }}
+                style={{ maxHeight: 64 }}
               />
             </Link>
             <p className="text-muted-foreground max-w-sm">

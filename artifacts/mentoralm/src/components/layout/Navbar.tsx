@@ -76,6 +76,19 @@ export function Navbar() {
             className="hidden md:block"
             style={{ height: 48, width: "auto", marginRight: -4 }}
           />
+          <img
+            src="/logo.png"
+            alt="MentoraLM"
+            className="md:hidden"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              objectFit: "cover",
+              objectPosition: "center top",
+              marginRight: 8,
+            }}
+          />
           <span className="tracking-tight font-bold text-[18px] md:text-[26px]">
             <span className="text-white">Mentora</span>
             <span className="text-gradient">LM</span>
