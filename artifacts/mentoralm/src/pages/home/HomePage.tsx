@@ -292,7 +292,7 @@ export default function HomePage() {
                   className="relative"
                 >
                   {i < steps.length - 1 && (
-                    <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-primary/40 to-transparent z-0" />
+                    <div className="hidden lg:block absolute top-8 left-full w-8 h-px bg-gradient-to-r from-primary/40 to-transparent z-0" />
                   )}
                   <div className="relative z-10">
                     <div className="text-5xl font-extrabold text-gradient mb-4 opacity-40">{step.step}</div>
