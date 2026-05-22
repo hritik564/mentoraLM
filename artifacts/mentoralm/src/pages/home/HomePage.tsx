@@ -1,12 +1,50 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { usePageMeta } from "@/lib/usePageMeta";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useListServices } from "@workspace/api-client-react";
 import { Brain, MessageSquare, Compass, Calendar, Star, ChevronRight, Users, Award, CheckCircle, Clock, Plus } from "lucide-react";
+
+const CYCLE_WORDS = ["Engineering", "Medicine", "Commerce", "Law", "Design", "Business"];
+
+function CyclingWord() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % CYCLE_WORDS.length);
+    }, 2500);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span
+      className="relative inline-block align-baseline overflow-hidden"
+      style={{ minWidth: "6.5ch", height: "1.1em", verticalAlign: "bottom" }}
+    >
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={CYCLE_WORDS[index]}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="absolute left-0 top-0 whitespace-nowrap"
+          style={{
+            background: "linear-gradient(135deg, #00A8FF, #7B3FE4)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        >
+          {CYCLE_WORDS[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -155,9 +193,10 @@ export default function HomePage() {
                 </motion.div>
 
                 <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
-                  Your AI Career Counsellor,{" "}
+                  Your AI Career Counsellor for{" "}
                   <br className="hidden md:block" />
-                  <span className="text-gradient">Available 24/7</span>
+                  <CyclingWord />
+                  {" "}Students
                 </motion.h1>
 
                 <motion.p variants={fadeUp} className="text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed">
