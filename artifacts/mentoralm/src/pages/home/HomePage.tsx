@@ -432,7 +432,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-24 px-6 bg-white/2 border-y border-white/5">
+        <section className="py-12 md:py-24 px-6 bg-white/2 border-y border-white/5">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
@@ -458,11 +458,18 @@ export default function HomePage() {
                   </div>
                   <p className="text-white/80 text-sm leading-relaxed mb-6 italic">"{t.quote}"</p>
                   <div className="flex items-center gap-3">
-                    <img
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(t.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9&backgroundType=circle`}
-                      alt={t.name}
-                      className="w-10 h-10 rounded-full ring-2 ring-primary/20 bg-primary/10"
-                    />
+                    <div
+                      className="flex items-center justify-center rounded-full text-white font-bold flex-shrink-0"
+                      style={{
+                        width: 48,
+                        height: 48,
+                        fontSize: 18,
+                        background: "linear-gradient(135deg, #00A8FF, #7B3FE4)",
+                      }}
+                      aria-label={t.name}
+                    >
+                      {t.name.charAt(0).toUpperCase()}
+                    </div>
                     <div>
                       <p className="text-white font-semibold text-sm">{t.name}</p>
                       <p className="text-muted-foreground text-xs">{t.stream}</p>
@@ -475,7 +482,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA Banner */}
-        <section className="py-24 px-6">
+        <section className="py-10 md:py-24 px-6">
           <div className="container mx-auto max-w-4xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -511,10 +518,10 @@ export default function HomePage() {
                       </Button>
                     </Link>
                   </div>
-                  <div className="flex items-center justify-center gap-6 mt-8 text-sm text-white/50">
-                    <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400" />Free AI counselling</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400" />Personalised roadmap</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400" />No commitment</div>
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 mt-8 text-sm text-white/50">
+                    <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />Free AI counselling</div>
+                    <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />Personalised roadmap</div>
+                    <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />No commitment</div>
                   </div>
                 </div>
               </div>
