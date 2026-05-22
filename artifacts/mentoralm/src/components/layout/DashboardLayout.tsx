@@ -31,8 +31,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-[#0F1628] border-r border-[#1E2A45]">
       <div className="p-6 border-b border-[#1E2A45]">
-        <Link href="/dashboard">
-          <img src="/logo.png" alt="MentoraLM" className="h-20 w-auto" />
+        <Link href="/dashboard" className="flex flex-row items-center">
+          <img src="/logo.png" alt="MentoraLM" style={{ height: 48, width: "auto", marginRight: -4 }} />
+          <span style={{ fontSize: 26, fontWeight: 700 }} className="tracking-tight">
+            <span className="text-white">Mentora</span>
+            <span className="text-gradient">LM</span>
+          </span>
         </Link>
       </div>
       <div className="flex-1 py-6 px-4 space-y-2">
@@ -85,8 +89,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Sidebar & Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0F1628] border-b border-[#1E2A45] z-50 flex items-center justify-between px-4">
-        <Link href="/dashboard">
-          <img src="/logo.png" alt="MentoraLM" className="h-16 w-auto" />
+        <Link href="/dashboard" className="flex flex-row items-center">
+          <img src="/logo.png" alt="MentoraLM" style={{ height: 40, width: "auto", marginRight: -4 }} />
+          <span style={{ fontSize: 22, fontWeight: 700 }} className="tracking-tight">
+            <span className="text-white">Mentora</span>
+            <span className="text-gradient">LM</span>
+          </span>
         </Link>
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
