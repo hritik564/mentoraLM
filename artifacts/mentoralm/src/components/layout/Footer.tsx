@@ -11,16 +11,16 @@ export function Footer() {
                 src="/logo.png"
                 alt="MentoraLM"
                 style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 10,
+                  width: 72,
+                  height: 72,
+                  borderRadius: 12,
                   objectFit: "contain",
-                  transform: "scale(1.25)",
+                  transform: "scale(1.3)",
                   transformOrigin: "center",
-                  marginRight: 6,
+                  marginRight: 8,
                 }}
               />
-              <span className="tracking-tight font-bold" style={{ fontSize: 24 }}>
+              <span className="tracking-tight font-bold" style={{ fontSize: 30 }}>
                 <span className="text-white">Mentora</span>
                 <span className="text-gradient">LM</span>
               </span>
