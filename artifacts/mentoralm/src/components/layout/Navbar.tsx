@@ -48,9 +48,9 @@ export function Navbar() {
       <div className="container mx-auto px-6 h-full flex items-center justify-between">
         <Link
           href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"}
-          className="flex flex-row items-center gap-1"
+          className="flex flex-row items-center"
         >
-          <img src="/logo.png" alt="MentoraLM" style={{ height: 48, width: "auto" }} />
+          <img src="/logo.png" alt="MentoraLM" style={{ height: 48, width: "auto", marginRight: -4 }} />
           <span style={{ fontSize: 26, fontWeight: 700 }} className="tracking-tight">
             <span className="text-white">Mentora</span>
             <span className="text-gradient">LM</span>
