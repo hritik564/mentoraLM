@@ -28,36 +28,33 @@ function loadRazorpay(): Promise<boolean> {
   });
 }
 
+function parseSlots(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw as string[];
+  if (typeof raw === "string") {
+    try { const p = JSON.parse(raw); return Array.isArray(p) ? p : []; } catch { return []; }
+  }
+  return [];
+}
+
 function SlotModal({
   service,
   onClose,
   onConfirm,
   isPending,
 }: {
-  service: { title: string; price: number; duration: number | string };
+  service: { title: string; price: number; duration: number | string; slots?: unknown };
   onClose: () => void;
   onConfirm: (slot: string) => void;
   isPending: boolean;
 }) {
-  const today = new Date();
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  });
-  const [selectedTime, setSelectedTime] = useState("10:00");
-
-  const timeSlots = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
-
-  const minDate = (() => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  })();
+  const availableSlots = parseSlots(service.slots).filter(
+    (s) => new Date(s) > new Date()
+  );
+  const [selectedSlot, setSelectedSlot] = useState(availableSlots[0] ?? "");
 
   const handleConfirm = () => {
-    const slotDateTime = `${selectedDate}T${selectedTime}:00`;
-    onConfirm(slotDateTime);
+    if (!selectedSlot) return;
+    onConfirm(selectedSlot);
   };
 
   return (
@@ -77,38 +74,50 @@ function SlotModal({
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
-          <div>
-            <label className="text-sm font-medium text-white mb-2 block">Select date</label>
-            <input
-              type="date"
-              value={selectedDate}
-              min={minDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full rounded-lg border border-[#1E2A45] bg-[#080C1A] px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50"
-              data-testid="slot-date-picker"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-white mb-3 block">Select time</label>
-            <div className="grid grid-cols-3 gap-2">
-              {timeSlots.map((time) => (
-                <button
-                  key={time}
-                  onClick={() => setSelectedTime(time)}
-                  className={`rounded-lg py-2.5 text-sm font-medium transition-all ${
-                    selectedTime === time
-                      ? "bg-gradient-primary text-white"
-                      : "bg-[#080C1A] border border-[#1E2A45] text-muted-foreground hover:text-white hover:border-primary/30"
-                  }`}
-                  data-testid={`slot-time-${time.replace(":", "")}`}
-                >
-                  {time}
-                </button>
-              ))}
+        <div className="p-6 space-y-4">
+          {availableSlots.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
+              <Calendar className="w-10 h-10 text-muted-foreground opacity-30" />
+              <p className="text-muted-foreground text-sm">No slots available yet.</p>
+              <p className="text-xs text-muted-foreground/60">Check back soon — the counsellor will add available times.</p>
             </div>
-          </div>
+          ) : (
+            <div>
+              <label className="text-sm font-medium text-white mb-3 block">Select an available slot</label>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {availableSlots.map((slot) => {
+                  const dt = new Date(slot);
+                  const isSelected = selectedSlot === slot;
+                  return (
+                    <button
+                      key={slot}
+                      onClick={() => setSelectedSlot(slot)}
+                      data-testid={`slot-option-${slot}`}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
+                        isSelected
+                          ? "border-[#00A8FF]/50 bg-[#00A8FF]/10"
+                          : "border-[#1E2A45] bg-[#080C1A] hover:border-[#1E2A45]/80 hover:bg-[#080C1A]/60"
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                        isSelected ? "border-[#00A8FF] bg-[#00A8FF]" : "border-[#1E2A45]"
+                      }`}>
+                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-medium">
+                          {dt.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {dt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="bg-[#080C1A] rounded-xl p-4 border border-[#1E2A45]">
             <div className="flex justify-between text-sm">
@@ -128,7 +137,7 @@ function SlotModal({
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={isPending || !selectedDate}
+            disabled={isPending || !selectedSlot || availableSlots.length === 0}
             className="flex-1 bg-gradient-primary border-0"
             data-testid="confirm-slot-btn"
           >

@@ -12,7 +12,7 @@ import {
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, X, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Save, CalendarPlus } from "lucide-react";
 import type { Service } from "@workspace/api-client-react";
 
 const emptyForm = {
@@ -27,10 +27,26 @@ const emptyForm = {
   counsellorBio: "",
   thumbnailUrl: "",
   status: "published",
-  slots: "10",
+  slotsArr: [] as string[],
 };
 
 type FormData = typeof emptyForm;
+
+function parseSlots(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw as string[];
+  if (typeof raw === "string") {
+    try { const p = JSON.parse(raw); return Array.isArray(p) ? p : []; } catch { return []; }
+  }
+  return [];
+}
+
+function formatSlotChip(iso: string) {
+  try {
+    return new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+  } catch {
+    return iso;
+  }
+}
 
 export default function AdminServices() {
   const queryClient = useQueryClient();
@@ -43,7 +59,18 @@ export default function AdminServices() {
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
 
-  const openCreate = () => { setEditingService(null); setForm(emptyForm); setIsModalOpen(true); };
+  // Slot picker state (local to modal)
+  const [slotDate, setSlotDate] = useState("");
+  const [slotTime, setSlotTime] = useState("10:00");
+
+  const openCreate = () => {
+    setEditingService(null);
+    setForm(emptyForm);
+    setSlotDate("");
+    setSlotTime("10:00");
+    setIsModalOpen(true);
+  };
+
   const openEdit = (s: Service) => {
     setEditingService(s);
     setForm({
@@ -60,9 +87,24 @@ export default function AdminServices() {
       counsellorBio: s.counsellorBio || "",
       thumbnailUrl: s.thumbnailUrl || "",
       status: s.status,
-      slots: String(s.slots),
+      slotsArr: parseSlots(s.slots),
     });
+    setSlotDate("");
+    setSlotTime("10:00");
     setIsModalOpen(true);
+  };
+
+  const addSlot = () => {
+    if (!slotDate) { toast.error("Please select a date"); return; }
+    const iso = `${slotDate}T${slotTime}:00`;
+    if (form.slotsArr.includes(iso)) { toast.error("Slot already added"); return; }
+    setForm((p) => ({ ...p, slotsArr: [...p.slotsArr, iso].sort() }));
+    setSlotDate("");
+    setSlotTime("10:00");
+  };
+
+  const removeSlot = (iso: string) => {
+    setForm((p) => ({ ...p, slotsArr: p.slotsArr.filter((s) => s !== iso) }));
   };
 
   const handleSave = () => {
@@ -82,7 +124,7 @@ export default function AdminServices() {
       counsellorBio: form.counsellorBio,
       thumbnailUrl: form.thumbnailUrl || undefined,
       status: form.status,
-      slots: form.slots,
+      slots: form.slotsArr,
     };
     if (editingService) {
       updateMutation.mutate({ id: editingService.id, data }, {
@@ -106,6 +148,7 @@ export default function AdminServices() {
   };
 
   const inputCls = "bg-[#080C1A] border-[#1E2A45] text-white text-sm";
+  const minDate = new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
   return (
     <AdminLayout>
@@ -133,40 +176,45 @@ export default function AdminServices() {
                   <th className="px-5 py-3">Service</th>
                   <th className="px-5 py-3">Category</th>
                   <th className="px-5 py-3">Price</th>
+                  <th className="px-5 py-3">Slots</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {(services || []).map((service) => (
-                  <tr key={service.id} className="hover:bg-white/2 transition-colors" data-testid={`service-row-${service.id}`}>
-                    <td className="px-5 py-4">
-                      <p className="text-white font-medium text-sm">{service.title}</p>
-                      <p className="text-muted-foreground text-xs mt-0.5 line-clamp-1">{service.shortDesc}</p>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="text-xs text-primary bg-primary/10 px-2.5 py-1 rounded-full">{service.category}</span>
-                    </td>
-                    <td className="px-5 py-4 text-white text-sm font-semibold">₹{service.price.toLocaleString("en-IN")}</td>
-                    <td className="px-5 py-4">
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${service.status === "published" ? "text-emerald-400 bg-emerald-400/10" : "text-amber-400 bg-amber-400/10"}`}>
-                        {service.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => openEdit(service)} className="p-1.5 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-white transition-colors" data-testid={`edit-service-${service.id}`}>
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDelete(service.id)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" data-testid={`delete-service-${service.id}`}>
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {(services || []).map((service) => {
+                  const slots = parseSlots(service.slots);
+                  return (
+                    <tr key={service.id} className="hover:bg-white/2 transition-colors" data-testid={`service-row-${service.id}`}>
+                      <td className="px-5 py-4">
+                        <p className="text-white font-medium text-sm">{service.title}</p>
+                        <p className="text-muted-foreground text-xs mt-0.5 line-clamp-1">{service.shortDesc}</p>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="text-xs text-primary bg-primary/10 px-2.5 py-1 rounded-full">{service.category}</span>
+                      </td>
+                      <td className="px-5 py-4 text-white text-sm font-semibold">₹{service.price.toLocaleString("en-IN")}</td>
+                      <td className="px-5 py-4 text-muted-foreground text-xs">{slots.length} slot{slots.length !== 1 ? "s" : ""}</td>
+                      <td className="px-5 py-4">
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${service.status === "published" ? "text-emerald-400 bg-emerald-400/10" : "text-amber-400 bg-amber-400/10"}`}>
+                          {service.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => openEdit(service)} className="p-1.5 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-white transition-colors" data-testid={`edit-service-${service.id}`}>
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete(service.id)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" data-testid={`delete-service-${service.id}`}>
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {(!services || services.length === 0) && (
-                  <tr><td colSpan={5} className="px-5 py-10 text-center text-muted-foreground">No services yet.</td></tr>
+                  <tr><td colSpan={6} className="px-5 py-10 text-center text-muted-foreground">No services yet.</td></tr>
                 )}
               </tbody>
             </table>
@@ -205,7 +253,7 @@ export default function AdminServices() {
                   />
                   <p className="text-xs text-muted-foreground mt-1.5">This name will be shown to students.</p>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-sm font-medium text-white mb-1.5 block">Price (₹)</label>
                     <Input type="number" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: Number(e.target.value) }))} className={inputCls} />
@@ -214,11 +262,60 @@ export default function AdminServices() {
                     <label className="text-sm font-medium text-white mb-1.5 block">Duration (min)</label>
                     <Input value={form.duration} onChange={(e) => setForm((p) => ({ ...p, duration: e.target.value }))} className={inputCls} />
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Slots</label>
-                    <Input value={form.slots} onChange={(e) => setForm((p) => ({ ...p, slots: e.target.value }))} className={inputCls} />
-                  </div>
                 </div>
+
+                {/* Time Slots */}
+                <div>
+                  <label className="text-sm font-medium text-white mb-2 block">Time Slots</label>
+                  {/* Picker row */}
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="date"
+                      value={slotDate}
+                      min={minDate}
+                      onChange={(e) => setSlotDate(e.target.value)}
+                      className="flex-1 rounded-md border border-[#1E2A45] bg-[#080C1A] px-3 py-2 text-white text-sm focus:outline-none focus:border-primary/50"
+                    />
+                    <input
+                      type="time"
+                      value={slotTime}
+                      onChange={(e) => setSlotTime(e.target.value)}
+                      className="w-28 rounded-md border border-[#1E2A45] bg-[#080C1A] px-3 py-2 text-white text-sm focus:outline-none focus:border-primary/50"
+                    />
+                    <Button
+                      type="button"
+                      onClick={addSlot}
+                      size="sm"
+                      className="bg-gradient-primary border-0 flex-shrink-0"
+                    >
+                      <CalendarPlus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                  {/* Chips */}
+                  {form.slotsArr.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {form.slotsArr.map((iso) => (
+                        <span
+                          key={iso}
+                          className="inline-flex items-center gap-1.5 bg-[#00A8FF]/10 border border-[#00A8FF]/20 text-[#00A8FF] text-xs rounded-full px-2.5 py-1"
+                        >
+                          {formatSlotChip(iso)}
+                          <button
+                            type="button"
+                            onClick={() => removeSlot(iso)}
+                            className="text-[#00A8FF]/60 hover:text-[#00A8FF] transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No slots added yet. Add date + time above.</p>
+                  )}
+                </div>
+
                 <div>
                   <label className="text-sm font-medium text-white mb-1.5 block">Status</label>
                   <select value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))} className={`w-full rounded-md border px-3 py-2 ${inputCls}`}>

@@ -83,8 +83,8 @@ export default function AdminBookings() {
                         <p className="text-white text-sm font-medium">{booking.studentName}</p>
                         <p className="text-muted-foreground text-xs">{booking.studentEmail}</p>
                       </td>
-                      <td className="px-5 py-4">
-                        <p className="text-white text-sm truncate max-w-[160px]">{booking.serviceTitle}</p>
+                      <td className="px-5 py-4 min-w-[220px]">
+                        <p className="text-white text-sm">{booking.serviceTitle}</p>
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1.5 text-muted-foreground text-xs">

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db } from "@workspace/db";
+import { db, pool } from "@workspace/db";
 import {
   usersTable,
   studentProfilesTable,
@@ -7,7 +7,7 @@ import {
   bookingsTable,
   contactMessagesTable,
 } from "@workspace/db";
-import { eq, and, gte, count, sum } from "drizzle-orm";
+import { eq, and, gte, count, sum, or } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/auth.js";
 
 const router = Router();
@@ -35,7 +35,7 @@ router.get("/stats", async (_req, res) => {
     const [revenueResult] = await db
       .select({ total: sum(bookingsTable.amount) })
       .from(bookingsTable)
-      .where(eq(bookingsTable.paymentStatus, "PAID"));
+      .where(or(eq(bookingsTable.status, "COMPLETED"), eq(bookingsTable.paymentStatus, "PAID")));
 
     const [bookingCount] = await db
       .select({ count: count() })
@@ -274,11 +274,59 @@ router.delete("/services/:id", async (req, res) => {
 // GET /admin/contacts
 router.get("/contacts", async (_req, res) => {
   try {
+    await pool.query(`ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT FALSE`);
     const messages = await db
       .select()
       .from(contactMessagesTable)
       .orderBy(contactMessagesTable.createdAt);
     res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PATCH /admin/contacts/:id
+router.patch("/contacts/:id", async (req, res) => {
+  try {
+    await pool.query(`ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT FALSE`);
+    const id = parseInt(req.params.id);
+    const { isRead } = req.body;
+    const [msg] = await db
+      .update(contactMessagesTable)
+      .set({ isRead: Boolean(isRead) })
+      .where(eq(contactMessagesTable.id, id))
+      .returning();
+    if (!msg) {
+      res.status(404).json({ error: "Message not found" });
+      return;
+    }
+    res.json(msg);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /admin/students/:id/chat
+router.get("/students/:id/chat", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        role TEXT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+    const result = await pool.query(
+      `SELECT id, role, content, created_at as "createdAt"
+       FROM chat_messages WHERE user_id = $1 ORDER BY created_at ASC LIMIT 20`,
+      [id]
+    );
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

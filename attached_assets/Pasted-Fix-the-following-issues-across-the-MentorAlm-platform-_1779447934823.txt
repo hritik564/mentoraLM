@@ -1,0 +1,113 @@
+Fix the following issues across the MentorAlm platform:
+
+
+
+## 1. SLOTS FIELD — PROPER UI
+
+Replace the raw JSON [] input in the Edit/Add Service form with a proper UI:
+
+- Add an "Add Time Slot" button that opens a date picker + time picker
+
+- Each added slot shows as a removable chip/tag (e.g. "23 May, 11:00 AM ×")
+
+- Slots stored as array of ISO datetime strings in the database
+
+- Students see these as selectable radio options when booking a service
+
+- If no slots are added, show a message "No slots available yet" on the 
+
+  student booking screen instead of an empty dropdown
+
+
+
+## 2. REVENUE CALCULATION
+
+Fix the Total Revenue stat on the admin dashboard:
+
+- Count revenue from ALL bookings where status = 'COMPLETED' 
+
+  OR payment_status = 'paid'
+
+- Currently only counting payment_status = 'paid' which is always 0 
+
+  in mock/Razorpay test mode
+
+- Manually completed sessions must be reflected in the revenue total
+
+
+
+## 3. DUPLICATE BOOKING PREVENTION
+
+Before creating a new booking on the backend:
+
+- Check if the same userId already has a booking for the same serviceId 
+
+  with status UPCOMING, PENDING, or CONFIRMED
+
+- If duplicate found, return a 400 error with message: 
+
+  "You already have an active booking for this session."
+
+- Show this message as a toast notification on the student's screen
+
+
+
+## 4. CONTACT MESSAGES — REPLY + READ STATUS
+
+On each contact message card in the admin panel:
+
+- Add a "Reply via Email" button that triggers: 
+
+  mailto:[sender_email]?subject=Re: Your MentorAlm Enquiry
+
+- Add a "Mark as Read" toggle button
+
+- Unread messages show a blue dot indicator
+
+- Read messages appear slightly dimmed (opacity 0.7)
+
+- Store read/unread status in the database
+
+
+
+## 5. BOOKINGS TABLE — COLUMN WIDTH
+
+Increase the Service column width in the admin bookings table so the 
+
+full service name is visible without truncation ("1-on-1 Interview 
+
+Mastery Session" not "1-on-1 Interview Maste...")
+
+
+
+## 6. AI CHAT HISTORY IN STUDENT PANEL
+
+In the admin Students panel, inside the student detail drawer:
+
+- Add a "View Chat History" button below the profile completion bar
+
+- Clicking it opens a scrollable modal showing the last 20 messages 
+
+  between that student and the AI counsellor
+
+- Student messages on the right (blue), AI messages on the left (dark)
+
+- Show message timestamps
+
+- If no chat history exists, show "No conversations yet"
+
+
+
+## 7. AUTH PAGES — BACKGROUND ATMOSPHERE
+
+The signup and signin pages have a plain dark background with no visual 
+
+interest. Add the same gradient orb atmosphere as the homepage:
+
+- Large blurred circle: #00A8FF at 8% opacity, positioned top-left
+
+- Large blurred circle: #7B3FE4 at 8% opacity, positioned bottom-right
+
+- Both animate with slow pulse (4s infinite alternate)
+
+- This makes auth pages feel like part of the same product

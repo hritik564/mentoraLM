@@ -3,7 +3,7 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 import { db } from "@workspace/db";
 import { bookingsTable, servicesTable, usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth.js";
 import { sendBookingConfirmationEmail } from "../lib/email.js";
 
@@ -33,6 +33,21 @@ router.post("/", requireAuth, async (req, res) => {
       .where(eq(servicesTable.id, parseInt(serviceId)));
     if (!service) {
       res.status(404).json({ error: "Service not found" });
+      return;
+    }
+
+    const existingBookings = await db
+      .select()
+      .from(bookingsTable)
+      .where(
+        and(
+          eq(bookingsTable.userId, req.user!.userId),
+          eq(bookingsTable.serviceId, service.id),
+          eq(bookingsTable.status, "UPCOMING")
+        )
+      );
+    if (existingBookings.length > 0) {
+      res.status(400).json({ error: "You already have an active booking for this session." });
       return;
     }
 
