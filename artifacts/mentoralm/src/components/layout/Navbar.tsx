@@ -81,11 +81,11 @@ export function Navbar() {
             alt="MentoraLM"
             className="md:hidden"
             style={{
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               borderRadius: 8,
               objectFit: "contain",
-              transform: "scale(1.4)",
+              transform: "scale(1.25)",
               transformOrigin: "center",
               marginRight: 4,
             }}
