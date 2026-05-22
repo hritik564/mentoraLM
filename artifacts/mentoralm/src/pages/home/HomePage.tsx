@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useListServices } from "@workspace/api-client-react";
-import { Brain, MessageSquare, Compass, Calendar, Star, ChevronRight, Users, TrendingUp, Award, CheckCircle } from "lucide-react";
+import { Brain, MessageSquare, Compass, Calendar, Star, ChevronRight, Users, Award, CheckCircle, Clock, Plus } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -50,6 +50,20 @@ const floatingCards = [
   { icon: "⚖", label: "Law", color: "#FF8C00", angle: 216 },
   { icon: "📊", label: "Business", color: "#10B981", angle: 288 },
 ];
+
+const categoryColors: Record<string, string> = {
+  engineering: "#00A8FF",
+  medicine: "#7B3FE4",
+  design: "#FF4D6D",
+  law: "#FF8C00",
+  business: "#10B981",
+  career: "#6366F1",
+  counselling: "#6366F1",
+};
+
+function getCategoryColor(category: string): string {
+  return categoryColors[category?.toLowerCase()] ?? "#6366F1";
+}
 
 const steps = [
   { icon: Users, title: "Complete your profile", desc: "Tell us about your background, interests, and goals in 6 quick steps.", step: "01" },
@@ -108,6 +122,8 @@ export default function HomePage() {
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true });
 
+  const displayedServices = services ? services.slice(0, 2) : [];
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden">
       <Navbar />
@@ -120,7 +136,7 @@ export default function HomePage() {
 
       <main className="flex-1 relative z-10">
         {/* Hero */}
-        <section className="pt-36 pb-24 px-6">
+        <section className="pt-36 pb-6 px-6">
           <div className="container mx-auto max-w-7xl">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
@@ -163,35 +179,40 @@ export default function HomePage() {
                 </motion.div>
               </motion.div>
 
-              {/* Floating orbit cards */}
-              <div className="hidden lg:flex items-center justify-center relative h-96">
-                <div className="relative w-72 h-72">
+              {/* Floating orbit cards — larger, proper fill */}
+              <div className="hidden lg:flex items-center justify-center relative h-[520px]">
+                <div className="relative w-[420px] h-[420px]">
+                  {/* Outer decorative ring */}
+                  <div className="absolute inset-0 rounded-full border border-white/5" />
+                  <div className="absolute inset-8 rounded-full border border-white/3" />
                   {/* Central brain */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center shadow-[0_0_60px_rgba(0,168,255,0.4)]">
-                      <Brain className="w-12 h-12 text-white" />
+                    <div className="w-28 h-28 rounded-full bg-gradient-primary flex items-center justify-center shadow-[0_0_80px_rgba(0,168,255,0.5)]">
+                      <Brain className="w-14 h-14 text-white" />
                     </div>
                   </div>
-                  {/* Orbit ring */}
-                  <div className="absolute inset-0 rounded-full border border-white/5" />
                   {floatingCards.map((card, i) => {
                     const rad = (card.angle * Math.PI) / 180;
-                    const x = 50 + 42 * Math.cos(rad);
-                    const y = 50 + 42 * Math.sin(rad);
+                    const x = 50 + 43 * Math.cos(rad);
+                    const y = 50 + 43 * Math.sin(rad);
                     return (
                       <motion.div
                         key={i}
                         className="absolute -translate-x-1/2 -translate-y-1/2"
                         style={{ left: `${x}%`, top: `${y}%` }}
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
                       >
                         <div
-                          className="w-14 h-14 rounded-2xl flex flex-col items-center justify-center text-white text-lg font-bold shadow-lg border border-white/10"
-                          style={{ backgroundColor: card.color + "33", borderColor: card.color + "55" }}
+                          className="w-[88px] h-[88px] rounded-2xl flex flex-col items-center justify-center text-white font-bold shadow-xl border"
+                          style={{
+                            backgroundColor: card.color + "28",
+                            borderColor: card.color + "60",
+                            boxShadow: `0 8px 32px ${card.color}30`,
+                          }}
                         >
-                          <span className="text-xl">{card.icon}</span>
-                          <span className="text-[9px] font-medium mt-0.5 text-white/80">{card.label}</span>
+                          <span className="text-2xl mb-1">{card.icon}</span>
+                          <span className="text-[10px] font-semibold text-white/80 tracking-wide">{card.label}</span>
                         </div>
                       </motion.div>
                     );
@@ -202,8 +223,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Social Proof */}
-        <section ref={statsRef} className="py-16 border-y border-white/5 bg-white/2">
+        {/* Social Proof — tight gap from hero */}
+        <section ref={statsRef} className="py-10 border-y border-white/5 bg-white/2">
           <div className="container mx-auto px-6 max-w-4xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {statsInView && (
@@ -216,10 +237,12 @@ export default function HomePage() {
               )}
               {!statsInView && (
                 <>
-                  {["500+ Students Guided", "95% Satisfaction Rate", "4.9★ Average Rating", "2 Expert Counsellors"].map((s, i) => (
+                  {["500+", "95%", "4.9★", "2"].map((v, i) => (
                     <div key={i} className="text-center">
-                      <div className="text-4xl font-extrabold text-white mb-1">—</div>
-                      <p className="text-muted-foreground text-sm font-medium">{s}</p>
+                      <div className="text-4xl font-extrabold text-white mb-1">{v}</div>
+                      <p className="text-muted-foreground text-sm font-medium">
+                        {["Students Guided", "Satisfaction Rate", "Average Rating", "Expert Counsellors"][i]}
+                      </p>
                     </div>
                   ))}
                 </>
@@ -281,51 +304,59 @@ export default function HomePage() {
               <p className="text-muted-foreground max-w-xl mx-auto">From sign-up to clarity in four steps.</p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {steps.map((step, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="relative"
-                >
-                  {i < steps.length - 1 && (
-                    <div className="hidden lg:block absolute top-8 left-full w-8 h-px bg-gradient-to-r from-primary/40 to-transparent z-0" />
-                  )}
-                  <div className="relative z-10">
+            {/* Steps with full-width dashed connector */}
+            <div className="relative">
+              {/* Full-width dashed gradient connector — behind the cards */}
+              <div
+                className="hidden lg:block absolute top-8 left-0 right-0 h-px z-0 pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, rgba(0,168,255,0.55) 0px, rgba(123,63,228,0.55) 10px, transparent 10px, transparent 20px)",
+                }}
+              />
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {steps.map((step, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="relative z-10"
+                  >
                     <div className="text-5xl font-extrabold text-gradient mb-4 opacity-40">{step.step}</div>
                     <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
                       <step.icon className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-base font-bold text-white mb-2">{step.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Services Preview */}
-        {services && services.length > 0 && (
-          <section className="py-24 px-6">
-            <div className="container mx-auto max-w-6xl">
-              <div className="flex items-center justify-between mb-12">
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2">Our Services</h2>
-                  <p className="text-muted-foreground">Expert-led sessions tailored to your stage.</p>
-                </div>
-                <Link href="/services">
-                  <Button variant="outline" className="border-white/10 hover:border-white/20 hidden md:flex">
-                    View all services
-                    <ChevronRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </Link>
+        {/* Services Preview — always shown, with "Coming Soon" 3rd card */}
+        <section className="py-24 px-6">
+          <div className="container mx-auto max-w-6xl">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2">Our Services</h2>
+                <p className="text-muted-foreground">Expert-led sessions tailored to your stage.</p>
               </div>
-              <div className="grid md:grid-cols-3 gap-6">
-                {services.slice(0, 3).map((service, i) => (
+              <Link href="/services">
+                <Button variant="outline" className="border-white/10 hover:border-white/20 hidden md:flex">
+                  View all services
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {displayedServices.map((service, i) => {
+                const color = getCategoryColor(service.category);
+                const svc = service as typeof service & { duration?: string; thumbnailUrl?: string };
+                return (
                   <motion.div
                     key={service.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -335,11 +366,57 @@ export default function HomePage() {
                     whileHover={{ y: -4, scale: 1.02 }}
                     className="bg-card border border-border rounded-2xl overflow-hidden group"
                   >
-                    <div className="h-32 bg-gradient-primary opacity-80 flex items-center justify-center">
-                      <Briefcase className="w-12 h-12 text-white opacity-60" />
+                    {/* Image area with gradient background */}
+                    <div
+                      className="h-36 relative flex items-center justify-center overflow-hidden"
+                      style={{
+                        background: svc.thumbnailUrl
+                          ? undefined
+                          : `linear-gradient(135deg, ${color}33 0%, ${color}11 100%)`,
+                        borderBottom: `1px solid ${color}22`,
+                      }}
+                    >
+                      {svc.thumbnailUrl ? (
+                        <img
+                          src={svc.thumbnailUrl}
+                          alt={service.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <>
+                          <div
+                            className="absolute inset-0 opacity-40"
+                            style={{
+                              background: `radial-gradient(circle at 30% 50%, ${color}55 0%, transparent 70%)`,
+                            }}
+                          />
+                          <div
+                            className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                            style={{ backgroundColor: color + "22", border: `1px solid ${color}44` }}
+                          >
+                            <span className="text-3xl">
+                              {service.category?.toLowerCase().includes("engineer") ? "⚙" :
+                               service.category?.toLowerCase().includes("medic") ? "⚕" :
+                               service.category?.toLowerCase().includes("design") ? "✏" :
+                               service.category?.toLowerCase().includes("law") ? "⚖" :
+                               service.category?.toLowerCase().includes("business") ? "📊" : "🎓"}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      {/* Duration badge */}
+                      {svc.duration && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1">
+                          <Clock className="w-3 h-3 text-white/70" />
+                          <span className="text-white text-xs font-medium">{svc.duration} min</span>
+                        </div>
+                      )}
                     </div>
                     <div className="p-6">
-                      <div className="inline-block text-xs font-semibold text-primary bg-primary/10 rounded-full px-3 py-1 mb-3">
+                      <div
+                        className="inline-block text-xs font-semibold rounded-full px-3 py-1 mb-3"
+                        style={{ backgroundColor: color + "18", color }}
+                      >
                         {service.category}
                       </div>
                       <h3 className="text-white font-bold text-lg mb-2">{service.title}</h3>
@@ -356,11 +433,33 @@ export default function HomePage() {
                       </div>
                     </div>
                   </motion.div>
-                ))}
-              </div>
+                );
+              })}
+
+              {/* "More Services Coming Soon" card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: displayedServices.length * 0.1 }}
+                className="bg-card border border-dashed border-white/15 rounded-2xl overflow-hidden flex flex-col items-center justify-center min-h-[280px] p-8 text-center group"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5 group-hover:border-primary/30 transition-colors">
+                  <Plus className="w-8 h-8 text-white/30 group-hover:text-primary/60 transition-colors" />
+                </div>
+                <h3 className="text-white/60 font-bold text-lg mb-2">More Services Coming Soon</h3>
+                <p className="text-muted-foreground text-sm max-w-[200px]">
+                  New expert-led sessions are being added regularly.
+                </p>
+                <Link href="/services" className="mt-5">
+                  <Button variant="outline" size="sm" className="border-white/10 hover:border-primary/30 text-white/50 hover:text-white/80">
+                    Browse all services
+                  </Button>
+                </Link>
+              </motion.div>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* Testimonials */}
         <section className="py-24 px-6 bg-white/2 border-y border-white/5">
@@ -389,9 +488,11 @@ export default function HomePage() {
                   </div>
                   <p className="text-white/80 text-sm leading-relaxed mb-6 italic">"{t.quote}"</p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                      {t.name.charAt(0)}
-                    </div>
+                    <img
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(t.name)}&backgroundColor=b6e3f4,c0aede,d1d4f9&backgroundType=circle`}
+                      alt={t.name}
+                      className="w-10 h-10 rounded-full ring-2 ring-primary/20 bg-primary/10"
+                    />
                     <div>
                       <p className="text-white font-semibold text-sm">{t.name}</p>
                       <p className="text-muted-foreground text-xs">{t.stream}</p>
@@ -431,7 +532,8 @@ export default function HomePage() {
                     <Link href="/auth/signup">
                       <Button
                         size="lg"
-                        className="bg-white text-[#080C1A] hover:bg-white/90 font-bold px-10 h-14 rounded-xl"
+                        className="border-0 hover:opacity-90 text-white font-bold px-10 h-14 rounded-xl"
+                        style={{ background: "linear-gradient(135deg, #00A8FF, #7B3FE4)" }}
                         data-testid="cta-banner-signup"
                       >
                         Start Free — No Card Needed
@@ -453,14 +555,5 @@ export default function HomePage() {
 
       <Footer />
     </div>
-  );
-}
-
-function Briefcase({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-    </svg>
   );
 }

@@ -17,6 +17,8 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import HowItWorksPage from "@/pages/public/HowItWorksPage";
 import AboutPage from "@/pages/public/AboutPage";
 import ContactPage from "@/pages/public/ContactPage";
+import PrivacyPolicyPage from "@/pages/public/PrivacyPolicyPage";
+import TermsOfServicePage from "@/pages/public/TermsOfServicePage";
 
 // Student Pages
 import DashboardHome from "@/pages/dashboard/DashboardHome";
@@ -47,6 +49,8 @@ function Router() {
       <Route path="/how-it-works" component={HowItWorksPage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+      <Route path="/terms-of-service" component={TermsOfServicePage} />
       <Route path="/auth/signin" component={SignInPage} />
       <Route path="/auth/signup" component={SignUpPage} />
       <Route path="/auth/forgot-password" component={ForgotPasswordPage} />
