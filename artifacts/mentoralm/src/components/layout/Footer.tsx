@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="inline-block mb-4">
-              <img src="/logo.png" alt="MentoraLM" className="h-10 w-auto" />
+              <img src="/logo.png" alt="MentoraLM" className="h-16 w-auto" />
             </Link>
             <p className="text-muted-foreground max-w-sm">
               Your personal AI career counsellor. Navigate your future with personalized, data-driven advice.

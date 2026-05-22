@@ -62,7 +62,7 @@ export default function SignInPage() {
       
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <Link href="/" className="flex justify-center mb-6">
-          <img src="/logo.png" alt="MentoraLM" className="h-16 w-auto" />
+          <img src="/logo.png" alt="MentoraLM" className="h-24 w-auto" />
         </Link>
         <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-white">
           Sign in to your account
