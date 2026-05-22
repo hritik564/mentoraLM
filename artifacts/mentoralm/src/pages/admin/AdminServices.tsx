@@ -21,12 +21,12 @@ const emptyForm = {
   fullDesc: "",
   included: "",
   category: "",
-  duration: 60,
+  duration: "60",
   price: 0,
   counsellorName: "",
   counsellorBio: "",
   status: "published",
-  slots: 10,
+  slots: "10",
 };
 
 type FormData = typeof emptyForm;
@@ -49,20 +49,34 @@ export default function AdminServices() {
       title: s.title,
       shortDesc: s.shortDesc,
       fullDesc: s.fullDesc || "",
-      included: Array.isArray(s.included) ? (s.included as string[]).join("\n") : (s.included as string) || "",
+      included: Array.isArray(s.included)
+        ? (s.included as string[]).join("\n")
+        : typeof s.included === "string" ? s.included : "",
       category: s.category,
-      duration: s.duration,
+      duration: String(s.duration),
       price: s.price,
       counsellorName: s.counsellorName,
       counsellorBio: s.counsellorBio || "",
       status: s.status,
-      slots: s.slots,
+      slots: String(s.slots),
     });
     setIsModalOpen(true);
   };
 
   const handleSave = () => {
-    const data = { ...form, included: form.included.split("\n").filter(Boolean) };
+    const data = {
+      title: form.title,
+      shortDesc: form.shortDesc,
+      fullDesc: form.fullDesc,
+      included: form.included,
+      category: form.category,
+      duration: form.duration,
+      price: Number(form.price),
+      counsellorName: form.counsellorName,
+      counsellorBio: form.counsellorBio,
+      status: form.status,
+      slots: form.slots,
+    };
     if (editingService) {
       updateMutation.mutate({ id: editingService.id, data }, {
         onSuccess: () => { toast.success("Service updated"); queryClient.invalidateQueries({ queryKey: getListServicesQueryKey() }); setIsModalOpen(false); },
@@ -178,11 +192,11 @@ export default function AdminServices() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-white mb-1.5 block">Duration (min)</label>
-                    <Input type="number" value={form.duration} onChange={(e) => setForm((p) => ({ ...p, duration: Number(e.target.value) }))} className={inputCls} />
+                    <Input value={form.duration} onChange={(e) => setForm((p) => ({ ...p, duration: e.target.value }))} className={inputCls} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-white mb-1.5 block">Slots</label>
-                    <Input type="number" value={form.slots} onChange={(e) => setForm((p) => ({ ...p, slots: Number(e.target.value) }))} className={inputCls} />
+                    <Input value={form.slots} onChange={(e) => setForm((p) => ({ ...p, slots: e.target.value }))} className={inputCls} />
                   </div>
                 </div>
                 <div>
@@ -199,6 +213,10 @@ export default function AdminServices() {
                 <div>
                   <label className="text-sm font-medium text-white mb-1.5 block">What's Included (one per line)</label>
                   <textarea value={form.included} onChange={(e) => setForm((p) => ({ ...p, included: e.target.value }))} rows={3} className={`w-full rounded-md border px-3 py-2 resize-none ${inputCls}`} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-white mb-1.5 block">Counsellor Bio</label>
+                  <textarea value={form.counsellorBio} onChange={(e) => setForm((p) => ({ ...p, counsellorBio: e.target.value }))} rows={2} className={`w-full rounded-md border px-3 py-2 resize-none ${inputCls}`} />
                 </div>
               </div>
               <div className="p-6 border-t border-[#1E2A45] flex justify-end gap-3">

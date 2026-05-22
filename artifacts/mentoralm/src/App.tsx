@@ -14,6 +14,9 @@ import ServiceDetailPage from "@/pages/services/ServiceDetailPage";
 import SignInPage from "@/pages/auth/SignInPage";
 import SignUpPage from "@/pages/auth/SignUpPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
+import HowItWorksPage from "@/pages/public/HowItWorksPage";
+import AboutPage from "@/pages/public/AboutPage";
+import ContactPage from "@/pages/public/ContactPage";
 
 // Student Pages
 import DashboardHome from "@/pages/dashboard/DashboardHome";
@@ -40,6 +43,9 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/services" component={ServicesPage} />
       <Route path="/services/:id" component={ServiceDetailPage} />
+      <Route path="/how-it-works" component={HowItWorksPage} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/contact" component={ContactPage} />
       <Route path="/auth/signin" component={SignInPage} />
       <Route path="/auth/signup" component={SignUpPage} />
       <Route path="/auth/forgot-password" component={ForgotPasswordPage} />

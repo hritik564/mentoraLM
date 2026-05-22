@@ -22,7 +22,7 @@ export default function AdminLogin() {
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "admin@mentoralm.com", password: "Admin@123" },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = (values: z.infer<typeof schema>) => {
@@ -65,12 +65,6 @@ export default function AdminLogin() {
             </div>
           </div>
 
-          {/* Demo credentials banner */}
-          <div className="bg-[#080C1A] border border-[#1E2A45] rounded-lg p-3 mb-6">
-            <p className="text-xs text-muted-foreground mb-1 font-medium">Demo credentials (pre-filled):</p>
-            <p className="text-xs font-mono text-white/70">admin@mentoralm.com / Admin@123</p>
-          </div>
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
@@ -80,7 +74,7 @@ export default function AdminLogin() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
+                      <Input type="email" autoComplete="username" {...field} className="bg-[#080C1A] border-[#1E2A45]" data-testid="admin-email-input" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -93,7 +87,7 @@ export default function AdminLogin() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
+                      <Input type="password" autoComplete="current-password" {...field} className="bg-[#080C1A] border-[#1E2A45]" data-testid="admin-password-input" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,7 +99,7 @@ export default function AdminLogin() {
                 disabled={signinMutation.isPending}
                 data-testid="admin-login-btn"
               >
-                {signinMutation.isPending ? "Signing in..." : "Sign In as Admin"}
+                {signinMutation.isPending ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </Form>

@@ -46,8 +46,8 @@ export default function SignInPage() {
           setLocation("/dashboard");
         }
       },
-      onError: (err) => {
-        toast.error(err.error || "Failed to sign in");
+      onError: () => {
+        toast.error("Invalid email or password");
       }
     });
   };

@@ -50,8 +50,8 @@ export default function SignUpPage() {
         toast.success("Account created successfully!");
         setLocation("/dashboard");
       },
-      onError: (err) => {
-        toast.error(err.error || "Failed to create account");
+      onError: () => {
+        toast.error("Failed to create account. Email may already be in use.");
       }
     });
   };

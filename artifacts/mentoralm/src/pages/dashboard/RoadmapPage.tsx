@@ -1,10 +1,16 @@
 import { motion } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { useGetRoadmap, useGenerateRoadmap, useGetProfile, getGetRoadmapQueryKey } from "@workspace/api-client-react";
+import {
+  useGetRoadmap,
+  useGenerateRoadmap,
+  useGetProfile,
+  useListAnthropicConversations,
+  getGetRoadmapQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Lock, Compass, ChevronRight, CheckCircle, Sparkles } from "lucide-react";
+import { Lock, Compass, ChevronRight, CheckCircle, Sparkles, MessageSquare } from "lucide-react";
 import { Link } from "wouter";
 
 interface RoadmapPhase {
@@ -19,14 +25,22 @@ interface RoadmapData {
 
 const phaseColors = ["#00A8FF", "#7B3FE4", "#FF8C00", "#10B981"];
 
+const MIN_CHATS = 3;
+const MIN_PROFILE_PCT = 50;
+
 export default function RoadmapPage() {
   const queryClient = useQueryClient();
   const { data: profile } = useGetProfile();
-  const { data: roadmap, isLoading, error } = useGetRoadmap();
+  const { data: roadmap, isLoading } = useGetRoadmap();
+  const { data: conversations } = useListAnthropicConversations();
   const generateMutation = useGenerateRoadmap();
 
   const completionPercent = profile?.completionPercent ?? 0;
-  const isEligible = completionPercent >= 50;
+  const chatCount = conversations?.length ?? 0;
+
+  const profileEligible = completionPercent >= MIN_PROFILE_PCT;
+  const chatEligible = chatCount >= MIN_CHATS;
+  const isEligible = profileEligible && chatEligible;
   const hasRoadmap = !!roadmap;
 
   const handleGenerate = () => {
@@ -56,25 +70,76 @@ export default function RoadmapPage() {
           <p className="text-muted-foreground">Your personalised, phase-by-phase career plan.</p>
         </div>
 
-        {/* Locked state */}
+        {/* Locked state — show most restrictive unmet requirement first */}
         {!isEligible && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
-            <div className="w-20 h-20 rounded-full bg-card border border-border flex items-center justify-center mx-auto mb-6">
-              <Lock className="w-10 h-10 text-muted-foreground" />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            {/* Requirements checklist */}
+            <div className="bg-card border border-border rounded-2xl p-8 mb-6">
+              <div className="w-16 h-16 rounded-full bg-card border border-border flex items-center justify-center mx-auto mb-5">
+                <Lock className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2 text-center">Roadmap locked</h2>
+              <p className="text-muted-foreground text-center mb-8 max-w-sm mx-auto">
+                Complete both requirements below to unlock your personalised career roadmap.
+              </p>
+
+              <div className="space-y-4 max-w-sm mx-auto">
+                {/* Profile requirement */}
+                <div className={`rounded-xl p-4 border flex items-center gap-4 ${profileEligible ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-[#080C1A]"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${profileEligible ? "bg-emerald-500/20" : "bg-muted/20"}`}>
+                    {profileEligible
+                      ? <CheckCircle className="w-5 h-5 text-emerald-400" />
+                      : <span className="text-xs font-bold text-muted-foreground">{completionPercent}%</span>
+                    }
+                  </div>
+                  <div>
+                    <p className={`font-semibold text-sm ${profileEligible ? "text-emerald-400" : "text-white"}`}>
+                      {profileEligible ? "Profile complete ✓" : `Complete 50% of your profile`}
+                    </p>
+                    {!profileEligible && (
+                      <p className="text-muted-foreground text-xs mt-0.5">Currently at {completionPercent}%</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Chat requirement */}
+                <div className={`rounded-xl p-4 border flex items-center gap-4 ${chatEligible ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-[#080C1A]"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${chatEligible ? "bg-emerald-500/20" : "bg-muted/20"}`}>
+                    {chatEligible
+                      ? <CheckCircle className="w-5 h-5 text-emerald-400" />
+                      : <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                    }
+                  </div>
+                  <div>
+                    <p className={`font-semibold text-sm ${chatEligible ? "text-emerald-400" : "text-white"}`}>
+                      {chatEligible ? `${chatCount} chats completed ✓` : `Have at least ${MIN_CHATS} AI chat sessions`}
+                    </p>
+                    {!chatEligible && (
+                      <p className="text-muted-foreground text-xs mt-0.5">{chatCount} of {MIN_CHATS} sessions done</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Roadmap locked</h2>
-            <p className="text-muted-foreground max-w-sm mx-auto mb-2">
-              Complete at least 50% of your profile to unlock your personalised career roadmap.
-            </p>
-            <p className="text-sm text-muted-foreground mb-8">
-              Your profile is currently <span className="text-white font-semibold">{completionPercent}%</span> complete.
-            </p>
-            <Link href="/dashboard/profile">
-              <Button className="bg-gradient-primary border-0" data-testid="complete-profile-btn">
-                Complete Profile
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {!profileEligible && (
+                <Link href="/dashboard/profile">
+                  <Button className="bg-gradient-primary border-0" data-testid="complete-profile-btn">
+                    Complete Profile
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              )}
+              {!chatEligible && (
+                <Link href="/dashboard/chat">
+                  <Button variant={profileEligible ? "default" : "outline"} className={profileEligible ? "bg-gradient-primary border-0" : "border-border"} data-testid="go-to-chat-btn">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Chat with AI Counsellor
+                  </Button>
+                </Link>
+              )}
+            </div>
           </motion.div>
         )}
 
@@ -86,7 +151,7 @@ export default function RoadmapPage() {
             </div>
             <h2 className="text-2xl font-bold text-white mb-3">Ready to generate your roadmap</h2>
             <p className="text-muted-foreground max-w-sm mx-auto mb-8">
-              Your AI counsellor will create a personalised, 4-phase career plan based on your profile.
+              Your AI counsellor will create a personalised, 4-phase career plan based on your profile and conversations.
             </p>
             <Button
               onClick={handleGenerate}
@@ -135,9 +200,7 @@ export default function RoadmapPage() {
             </div>
 
             <div className="relative">
-              {/* Vertical line */}
               <div className="absolute left-6 top-8 bottom-8 w-px bg-border hidden sm:block" />
-
               <div className="space-y-6">
                 {roadmapData.phases.map((phase, i) => (
                   <motion.div
@@ -148,14 +211,12 @@ export default function RoadmapPage() {
                     className="relative sm:pl-16"
                     data-testid={`roadmap-phase-${i}`}
                   >
-                    {/* Phase dot */}
                     <div
                       className="hidden sm:flex absolute left-0 top-5 w-12 h-12 rounded-full items-center justify-center text-white font-bold text-sm border-4 border-[#080C1A]"
                       style={{ background: `linear-gradient(135deg, ${phaseColors[i]}, ${phaseColors[(i + 1) % phaseColors.length]})` }}
                     >
                       {i + 1}
                     </div>
-
                     <div className="bg-card border border-border rounded-2xl p-6" style={{ borderLeftColor: phaseColors[i], borderLeftWidth: 3 }}>
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -182,7 +243,6 @@ export default function RoadmapPage() {
               </div>
             </div>
 
-            {/* CTA */}
             <div className="mt-10 bg-card border border-border rounded-2xl p-8 text-center">
               <h3 className="text-white font-bold text-lg mb-2">Want to dive deeper?</h3>
               <p className="text-muted-foreground text-sm mb-6">

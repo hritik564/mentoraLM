@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
   };
 
   const onResetSubmit = (values: z.infer<typeof resetSchema>) => {
-    resetMutation.mutate({ data: { email, otp: values.otp, password: values.password } }, {
+    resetMutation.mutate({ data: { email, otp: values.otp, newPassword: values.password } }, {
       onSuccess: () => setStep("done"),
       onError: () => toast.error("Invalid OTP or expired. Please try again."),
     });
