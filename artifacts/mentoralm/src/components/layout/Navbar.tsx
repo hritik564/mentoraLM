@@ -43,14 +43,14 @@ export function Navbar() {
           ? "bg-[#080C1A]/80 backdrop-blur-md border-b border-white/5"
           : "bg-transparent"
       }`}
-      style={{ height: 64 }}
+      style={{ height: 72 }}
     >
       <div className="container mx-auto px-6 h-full flex items-center justify-between">
         <Link
           href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"}
-          className="flex flex-row items-center gap-2"
+          className="flex flex-row items-center gap-1"
         >
-          <img src="/logo.png" alt="MentoraLM" style={{ height: 36, width: "auto" }} />
+          <img src="/logo.png" alt="MentoraLM" style={{ height: 48, width: "auto" }} />
           <span style={{ fontSize: 20, fontWeight: 700 }} className="tracking-tight">
             <span className="text-white">Mentora</span>
             <span className="text-gradient">LM</span>
