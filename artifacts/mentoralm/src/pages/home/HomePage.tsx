@@ -9,39 +9,68 @@ import { useListServices } from "@workspace/api-client-react";
 import { Brain, MessageSquare, Compass, Calendar, Star, ChevronRight, Users, Award, CheckCircle, Clock, Plus } from "lucide-react";
 
 const CYCLE_WORDS = ["Engineering", "Medicine", "Commerce", "Law", "Design", "Business"];
+const LONGEST_WORD = CYCLE_WORDS.reduce((a, b) => (a.length >= b.length ? a : b), "");
+const TYPE_SPEED = 60;
+const ERASE_SPEED = 40;
+const PAUSE_AFTER_TYPE = 1600;
+const PAUSE_AFTER_ERASE = 200;
 
 function CyclingWord() {
-  const [index, setIndex] = useState(0);
+  const [wordIdx, setWordIdx] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState<"typing" | "pausing" | "erasing" | "switching">("typing");
+
   useEffect(() => {
-    const id = setInterval(() => {
-      setIndex((i) => (i + 1) % CYCLE_WORDS.length);
-    }, 2500);
-    return () => clearInterval(id);
-  }, []);
+    const word = CYCLE_WORDS[wordIdx];
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (phase === "typing") {
+      if (displayed.length < word.length) {
+        timeout = setTimeout(() => setDisplayed(word.slice(0, displayed.length + 1)), TYPE_SPEED);
+      } else {
+        timeout = setTimeout(() => setPhase("pausing"), PAUSE_AFTER_TYPE);
+      }
+    } else if (phase === "pausing") {
+      setPhase("erasing");
+    } else if (phase === "erasing") {
+      if (displayed.length > 0) {
+        timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), ERASE_SPEED);
+      } else {
+        timeout = setTimeout(() => setPhase("switching"), PAUSE_AFTER_ERASE);
+      }
+    } else if (phase === "switching") {
+      setWordIdx((i) => (i + 1) % CYCLE_WORDS.length);
+      setPhase("typing");
+    }
+
+    return () => clearTimeout(timeout);
+  }, [phase, displayed, wordIdx]);
+
   return (
     <span
-      className="relative inline-block align-baseline overflow-hidden"
-      style={{ minWidth: "6.5ch", height: "1.1em", verticalAlign: "bottom" }}
+      className="relative inline-block"
+      style={{ minWidth: `${LONGEST_WORD.length * 0.6}em` }}
     >
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={CYCLE_WORDS[index]}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="absolute left-0 top-0 whitespace-nowrap"
-          style={{
-            background: "linear-gradient(135deg, #00A8FF, #7B3FE4)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
-          {CYCLE_WORDS[index]}
-        </motion.span>
-      </AnimatePresence>
+      <span
+        style={{
+          background: "linear-gradient(135deg, #00A8FF, #7B3FE4)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          color: "transparent",
+        }}
+      >
+        {displayed}
+      </span>
+      <span
+        className="animate-pulse"
+        style={{
+          WebkitTextFillColor: "#00A8FF",
+          color: "#00A8FF",
+        }}
+      >
+        |
+      </span>
     </span>
   );
 }
