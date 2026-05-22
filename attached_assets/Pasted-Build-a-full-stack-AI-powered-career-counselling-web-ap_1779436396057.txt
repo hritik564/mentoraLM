@@ -1,0 +1,411 @@
+Build a full-stack AI-powered career counselling web application called "MentorAlm" 
+(domain: mentoralm.com). This is a production-quality MVP.
+
+---
+
+## TECH STACK
+
+Frontend: React + Vite + TailwindCSS + Framer Motion
+Backend: Node.js + Express
+Database: PostgreSQL (use Prisma ORM)
+Auth: JWT-based (access + refresh tokens), bcrypt for passwords
+AI: Anthropic Claude API (claude-sonnet-4-20250514) — treat this as the AI counsellor
+Payments: Razorpay integration (Indian payment gateway)
+File uploads: Multer (for profile photos)
+Email: Nodemailer (for booking confirmations)
+
+---
+
+## DESIGN SYSTEM
+
+Closely inspired by gradright.com:
+- Fonts: "Plus Jakarta Sans" (headings) + "Inter" (body) — import from Google Fonts
+- Color palette:
+  Primary: #1A1AFF (electric blue)
+  Secondary: #FF5C00 (orange accent)
+  Dark bg: #0A0A0F
+  Card bg: #13131A
+  Light text: #FFFFFF
+  Muted text: #8888AA
+  Border: #22223A
+- Design style: Dark-themed, premium, glassmorphism cards, gradient hero sections, 
+  smooth scroll animations, floating elements, micro-interactions on hover
+- Buttons: Rounded pill-shaped, gradient fill, glow shadow on hover
+- Cards: Dark glass cards with subtle blue border glow on hover
+- Animations: Page load fade-ins, scroll-triggered reveals, smooth transitions using 
+  Framer Motion. Hero section must have animated floating shapes/blobs.
+
+---
+
+## SITE STRUCTURE
+
+### PUBLIC MARKETING WEBSITE (unauthenticated)
+
+**Page 1: Home (Landing Page)**
+
+Hero Section:
+- Headline: "Your AI Career Counsellor, Available 24/7"
+- Subheadline: "Personalised career guidance powered by AI — and real expert sessions 
+  when you need them most."
+- Two CTAs: "Try AI Counsellor Free" (primary) + "Explore Services" (secondary)
+- Animated hero graphic: floating cards showing career paths (Engineering, Medicine, 
+  Design, Law, Business) orbiting a central AI brain icon
+- Trust bar below hero: "Trusted by 500+ students" + logos/icons
+
+Features Section (3 cards):
+1. "AI That Knows You" — counselling based on your detailed profile, not generic advice
+2. "Expert Sessions On-Demand" — 1-on-1 sessions with India's top career counsellors
+3. "Your Career Roadmap" — personalised step-by-step roadmap after assessment
+
+How It Works (Step-by-step):
+Step 1: Complete your detailed profile
+Step 2: Chat with your AI counsellor
+Step 3: Get personalised career roadmap
+Step 4: Book expert session if needed
+
+Services Teaser (3 cards from marketplace):
+- Preview of top 3 services, each with title, price, and "View Details" CTA
+
+Testimonials Section: 3 student testimonials (placeholder)
+
+Footer: Logo, nav links, social icons, "© 2025 MentorAlm"
+
+**Page 2: About**
+- CEO intro section with photo placeholder, credentials, vision statement
+- Mission: "Making world-class career guidance accessible to every Indian student"
+- Team section (placeholder cards)
+
+**Page 3: Services (Public)**
+- Grid of all published services from the marketplace
+- Each card: title, description, price, duration, "Book Now" CTA
+- Filter by category: Career Counselling, Interview Prep, College Admissions, Resume Review
+
+**Page 4: How It Works**
+- Detailed walkthrough of the platform with visuals
+
+**Page 5: Contact**
+- Contact form (name, email, message)
+- WhatsApp link, email address
+
+---
+
+### AUTH SYSTEM
+
+**Sign Up:**
+Fields: Full name, email, phone number, password, confirm password
+- After signup, redirect to Profile Completion onboarding
+- Send welcome email via Nodemailer
+
+**Sign In:**
+Fields: Email, password
+- JWT stored in httpOnly cookie
+- "Forgot Password" flow (email OTP)
+
+---
+
+### STUDENT DASHBOARD (authenticated)
+
+After login, students land on their personal dashboard.
+
+**Dashboard Layout:**
+- Left sidebar: Navigation icons (Dashboard, AI Counsellor, My Services, Profile, 
+  Roadmap, Settings)
+- Top bar: "Hello, [Name]" + notification bell + profile avatar
+- Main content area
+
+**Dashboard Home:**
+- Profile completion progress bar (percentage) — prominent, with "Complete Profile" CTA
+- Quick action cards: "Chat with AI", "Browse Services", "View Roadmap", "Book Session"
+- "Your AI Summary" card — short AI-generated summary of the student's profile 
+  (generated from their profile data, shown once profile is >50% complete)
+- Recently viewed services
+- Upcoming sessions (if any booked)
+
+**Profile Completion (Multi-step onboarding — this is CRITICAL):**
+
+This is NOT a regular form. It's a beautiful multi-step wizard with progress indicator.
+Each step is one screen. Smooth transition between steps. 
+Show completion percentage. Allow saving and returning.
+
+Step 1 — Personal Info:
+- Full name, date of birth, gender, city, state, profile photo upload
+
+Step 2 — Academic Background:
+- Current education level: [Class 10, Class 11, Class 12, Undergraduate, Gap Year]
+- Board: [CBSE, ICSE, IB, State Board, Other]
+- School/College name
+- Current grade/percentage (or expected)
+- Subjects/Stream: Science (PCM/PCB), Commerce, Arts, or specific UG subjects
+
+Step 3 — Interests & Strengths:
+- Top 3 interest areas (multi-select chips):
+  Technology, Medicine, Design, Law, Business, Teaching, Arts, Sports, Science, 
+  Finance, Government/Civil Services, Media, Psychology, Architecture, Other
+- Subjects you're strongest in (multi-select)
+- Activities/hobbies (free text)
+- What energizes you? (free text, 2-3 sentences)
+
+Step 4 — Career Aspirations:
+- Dream career/field (free text)
+- Colleges you're targeting (multi-select or free text)
+- Are you open to studying abroad? [Yes / No / Maybe]
+- What's your biggest career concern right now? (free text)
+
+Step 5 — Family & Financial Context:
+- Annual family income bracket: [<3L, 3-6L, 6-12L, 12-25L, 25L+, Prefer not to say]
+- Parents' education background (brief)
+- Any family pressure on career choice? [Yes/No + explain if yes]
+- Budget for higher education: [<5L, 5-15L, 15-30L, 30L+, Need scholarship]
+
+Step 6 — Goals & Timeline:
+- What do you want to achieve in 5 years? (free text)
+- What have you already tried? (coaching classes, exams appeared, etc.)
+- What's stopping you from your goal right now? (free text)
+- How did you hear about MentorAlm? [Social Media, Friend, Search, Ad, Other]
+
+After completing all steps: Show a congratulations screen + "Start Chatting with Your 
+AI Counsellor" CTA.
+
+**AI Counsellor Chat Page:**
+
+This is the core feature. Full-screen chat interface (like a premium ChatGPT UI).
+
+UI Requirements:
+- Dark chat interface
+- Student messages on right (blue bubbles), AI on left (dark card with MentorAlm logo)
+- Typing indicator animation
+- Each AI response can include: text + optionally a "Recommended Service" card at the 
+  bottom of the response (shown when AI detects the student needs expert help)
+- Message history persisted in database
+- New chat button
+- "Based on your profile" badge on first message to show it's personalized
+
+AI Behaviour (System Prompt to Claude):
+Construct the system prompt dynamically by injecting the student's full profile data.
+
+System prompt structure:
+"""
+You are MentorAlm, an expert AI career counsellor for Indian students. You have deep 
+knowledge of Indian education systems (CBSE, ICSE, IB, state boards), entrance exams 
+(JEE, NEET, CLAT, CUET, CAT, UPSC, NDA, NID, CEED, etc.), top Indian colleges (IITs, 
+NITs, AIIMS, NLUs, IIMs, NIFT, etc.), and career paths.
+
+You are warm, encouraging, specific, and practical. You never give generic advice.
+You always reference the student's actual profile in your responses.
+
+Student Profile:
+Name: [name]
+Age/Class: [level]
+Board: [board]
+Stream: [stream]  
+Grades: [grades]
+City: [city]
+Interests: [interests]
+Strengths: [strengths]
+Dream career: [dream_career]
+Target colleges: [target_colleges]
+Biggest concern: [concern]
+Family budget: [budget]
+5-year goal: [goal]
+What's stopping them: [blockers]
+
+Rules:
+1. Always address the student by name
+2. Reference their specific profile details in answers
+3. Be specific — name actual exams, colleges, timelines relevant to them
+4. When a question requires deep personalised mentoring or emotional support, 
+   acknowledge it and say: "For this, a 1-on-1 session with our expert counsellor 
+   would give you a much more in-depth answer. [Book a Session]"
+5. Keep responses concise and scannable (use bullet points when listing steps)
+6. Never make up statistics. If unsure, say so.
+7. Maintain context within the conversation.
+"""
+
+Each conversation message is stored in DB: [userId, role, content, timestamp]
+Load last 20 messages as context in each API call.
+
+**My Services (Marketplace for student):**
+
+Shows two tabs:
+1. "Browse Services" — all published services (grid cards)
+2. "My Purchases" — services the student has paid for (with status, access button)
+
+Service Card (Browse):
+- Title, short description, category tag, duration, price in INR, "Book Now" button
+- If already purchased: show "Purchased" badge
+
+Service Detail Page:
+- Full description, what's included (bullet list), who it's for, counsellor bio, 
+  duration, price, "Book This Session" CTA
+- Reviews section (placeholder)
+
+Booking Flow:
+1. Click "Book Now" → Modal: select date/time slot (admin sets available slots)
+2. Confirm details → Payment via Razorpay
+3. On payment success: create booking record, send confirmation email, show in 
+   "My Purchases"
+
+**Roadmap Page:**
+
+After profile is complete and at least 3 AI conversations have happened, show a 
+generated career roadmap. 
+
+Call Claude API to generate a structured roadmap based on the student's profile.
+Display it as a visual timeline (vertical, card-based steps):
+- Phase 1: Immediate (Next 3 months)
+- Phase 2: Short-term (3-12 months)  
+- Phase 3: Medium-term (1-3 years)
+- Phase 4: Long-term (3-5 years)
+
+Each phase: specific action items, exams to target, resources to use.
+Store generated roadmap in DB. Allow "Regenerate" after profile update.
+
+---
+
+### ADMIN PANEL (separate login, /admin route)
+
+Admin credentials hardcoded in env variables for MVP.
+
+**Admin Dashboard:**
+- Stats: Total students, Active this week, Total revenue, Bookings this month
+- Recent signups table
+- Recent bookings table
+
+**Services Management:**
+- Table of all services with: Title, Category, Price, Status (Published/Draft), Actions
+- "Add New Service" button → Form:
+  - Title
+  - Short description (for card)
+  - Full description (rich text / textarea)
+  - What's included (add multiple bullet points)
+  - Category: [Career Counselling, Interview Prep, College Admissions, Resume Review, 
+    Other]
+  - Duration (e.g., "60 minutes")
+  - Price (INR)
+  - Counsellor name + bio
+  - Available time slots (add date + time slots)
+  - Thumbnail image upload
+  - Status: Draft / Published
+- Edit and delete services
+- Only "Published" services appear on student-facing marketplace
+
+**Student Management:**
+- Table: Name, Email, Phone, Profile Completion %, Joined Date, Actions
+- Click student → View full profile (read-only)
+
+**Bookings Management:**
+- Table: Student name, Service, Date/Time, Payment Status, Amount, Actions
+- Filter by service, date, status
+- Mark session as Completed
+
+**Messages/Contact:**
+- View all contact form submissions
+
+---
+
+## DATABASE SCHEMA (Prisma)
+
+Tables needed:
+- User (id, name, email, phone, passwordHash, role[STUDENT/ADMIN], createdAt)
+- StudentProfile (id, userId, all profile fields from steps 1-6, completionPercent)
+- Service (id, title, shortDesc, fullDesc, included[], category, duration, price, 
+  counsellorName, counsellorBio, thumbnailUrl, status[DRAFT/PUBLISHED], slots[], 
+  createdAt)
+- Booking (id, userId, serviceId, slotDateTime, paymentStatus, razorpayOrderId, 
+  amount, status[UPCOMING/COMPLETED/CANCELLED], createdAt)
+- ChatMessage (id, userId, role[USER/ASSISTANT], content, createdAt)
+- Roadmap (id, userId, content, generatedAt)
+- ContactMessage (id, name, email, message, createdAt)
+
+---
+
+## ENVIRONMENT VARIABLES NEEDED
+
+ANTHROPIC_API_KEY=
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+JWT_SECRET=
+DATABASE_URL=
+SMTP_HOST=
+SMTP_USER=
+SMTP_PASS=
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+
+---
+
+## ADDITIONAL REQUIREMENTS
+
+1. All API routes protected by JWT middleware except public routes
+2. Rate limiting on AI chat endpoint (max 20 messages per day for free users)
+3. Mobile responsive — the entire app must work on mobile
+4. Loading skeletons for all async data fetches
+5. Toast notifications for all actions (success/error)
+6. 404 and error pages styled to match the design system
+7. SEO meta tags on all public pages
+8. Smooth page transitions using Framer Motion
+9. The AI chat must stream responses (use Anthropic streaming API) for better UX
+
+---
+
+## CONTENT FOR HOMEPAGE (use this exactly)
+
+Hero headline: "Your AI Career Counsellor, Available 24/7"
+Hero subheadline: "Most career advice is generic. Ours isn't. MentorAlm's AI learns 
+your background, strengths, and goals — then guides you like a counsellor who's known 
+you for years."
+
+Feature 1 title: "Counselling That Knows You"
+Feature 1 desc: "Share your academic background, interests, and goals once. Our AI 
+remembers everything and gives you advice that's specific to your situation — not 
+copy-pasted from a website."
+
+Feature 2 title: "Real Experts, When You Need Them"
+Feature 2 desc: "Some questions need a human. Our certified counsellors are available 
+for 1-on-1 sessions — for interviews, college applications, and major career decisions."
+
+Feature 3 title: "Your Personalised Roadmap"
+Feature 3 desc: "Get a step-by-step career roadmap built around your goals and 
+timeline. Know exactly what to do next — this month, this year, and beyond."
+
+Services section headline: "What MentorAlm Offers"
+Services section subheadline: "Premium career services, built for serious students."
+
+Default service 1 (create in DB as seed): 
+Title: "1-on-1 Interview Mastery Session"
+Category: Interview Prep
+Duration: 60 minutes
+Price: ₹1,999
+Short desc: "Learn exactly how to present yourself and answer any interview question — 
+for college admissions, scholarships, or your first job."
+Included: ["Mock interview with real-time feedback", "Personalised answer frameworks", 
+"Body language and confidence coaching", "Follow-up resource guide", 
+"WhatsApp support for 7 days post-session"]
+Status: Published
+
+Default service 2:
+Title: "Premium Career Counselling Package"
+Category: Career Counselling
+Duration: 90 minutes
+Price: ₹2,999
+Short desc: "A comprehensive 1-on-1 session to map out your ideal career path — 
+covering stream selection, college choices, entrance exams, and a 5-year plan."
+Included: ["Deep-dive profile analysis", "Stream and subject recommendations", 
+"Top college shortlist for your profile", "Entrance exam strategy", 
+"Personalised 5-year roadmap document", "1 follow-up call (30 min)"]
+Status: Published
+
+---
+
+Start by setting up the project structure, installing all dependencies, then build 
+in this order:
+1. Database schema + seed
+2. Backend API routes
+3. Auth system
+4. Public marketing website
+5. Student dashboard + profile wizard
+6. AI counsellor chat
+7. Marketplace + payments
+8. Roadmap page
+9. Admin panel
+10. Final polish (animations, responsiveness, error handling)
