@@ -6,13 +6,24 @@ export function Footer() {
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="inline-block mb-4">
+            <Link href="/" className="inline-flex flex-row items-center mb-4">
               <img
                 src="/logo.png"
                 alt="MentoraLM"
-                className="w-auto"
-                style={{ maxHeight: 64 }}
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 10,
+                  objectFit: "contain",
+                  transform: "scale(1.25)",
+                  transformOrigin: "center",
+                  marginRight: 6,
+                }}
               />
+              <span className="tracking-tight font-bold" style={{ fontSize: 24 }}>
+                <span className="text-white">Mentora</span>
+                <span className="text-gradient">LM</span>
+              </span>
             </Link>
             <p className="text-muted-foreground max-w-sm">
               Your personal AI career counsellor. Navigate your future with personalized, data-driven advice.
