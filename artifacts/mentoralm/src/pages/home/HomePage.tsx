@@ -495,9 +495,9 @@ export default function HomePage() {
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-[#00A8FF]/10 blur-[80px]" />
                 </div>
                 <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
-                    <Award className="w-4 h-4 text-primary" />
-                    <span className="text-primary text-sm font-medium">Join 500+ students already guided</span>
+                  <div className="inline-flex items-center bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6" style={{ gap: 8 }}>
+                    <Award className="w-4 h-4 text-primary flex-shrink-0" style={{ display: "block" }} />
+                    <span className="text-primary text-sm font-medium leading-none">Join 500+ students already guided</span>
                   </div>
                   <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
                     Your career clarity starts today
@@ -505,16 +505,16 @@ export default function HomePage() {
                   <p className="text-white/60 max-w-lg mx-auto mb-8">
                     Sign up free, complete your profile, and talk to your AI counsellor in minutes. No credit card needed.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/auth/signup">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
+                    <Link href="/auth/signup" className="block w-full sm:w-auto">
                       <Button
                         size="lg"
-                        className="border-0 hover:opacity-90 text-white font-bold px-10 h-14 rounded-xl"
-                        style={{ background: "linear-gradient(135deg, #00A8FF, #7B3FE4)" }}
+                        className="border-0 hover:opacity-90 text-white font-bold h-14 rounded-xl w-full sm:w-auto sm:px-10 px-4 text-sm sm:text-base whitespace-normal"
+                        style={{ background: "linear-gradient(135deg, #00A8FF, #7B3FE4)", boxSizing: "border-box", maxWidth: "100%" }}
                         data-testid="cta-banner-signup"
                       >
                         Start Free — No Card Needed
-                        <ChevronRight className="w-5 h-5 ml-1" />
+                        <ChevronRight className="w-5 h-5 ml-1 flex-shrink-0" />
                       </Button>
                     </Link>
                   </div>
