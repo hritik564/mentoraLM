@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { usePageMeta } from "@/lib/usePageMeta";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +20,7 @@ const schema = z.object({
 });
 
 export default function ContactPage() {
+  usePageMeta("Contact Us", "Get in touch with the MentorAlm team for support, partnerships, or any questions about our counselling services.");
   const [sent, setSent] = useState(false);
   const submitMutation = useSubmitContact();
 

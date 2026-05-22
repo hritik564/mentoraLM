@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Target, Heart, Zap } from "lucide-react";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 const values = [
   {
@@ -42,6 +43,7 @@ const team = [
 ];
 
 export default function AboutPage() {
+  usePageMeta("About Us", "Learn about MentorAlm's mission to democratise career counselling for every Indian student.");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link } from "wouter";
 import { motion, useInView } from "framer-motion";
+import { usePageMeta } from "@/lib/usePageMeta";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -100,6 +101,7 @@ const testimonials = [
 ];
 
 export default function HomePage() {
+  usePageMeta(undefined, "MentorAlm helps Indian students discover the right career path using AI-powered counselling, personalised roadmaps, and expert sessions.");
   const { data: services } = useListServices();
   const featuresRef = useRef<HTMLDivElement>(null);
   const featuresInView = useInView(featuresRef, { once: true });

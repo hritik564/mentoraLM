@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Users, MessageSquare, Compass, Calendar, ChevronRight, CheckCircle } from "lucide-react";
+import { usePageMeta } from "@/lib/usePageMeta";
 
 const steps = [
   {
@@ -69,6 +70,7 @@ const faqs = [
 ];
 
 export default function HowItWorksPage() {
+  usePageMeta("How It Works", "See how MentorAlm uses AI and expert counsellors to guide Indian students step-by-step toward their dream career.");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />

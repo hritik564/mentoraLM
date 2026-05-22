@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -9,7 +9,7 @@ import type { StudentProfile } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, ChevronLeft, CheckCircle } from "lucide-react";
+import { ChevronRight, ChevronLeft, CheckCircle, Camera, Upload } from "lucide-react";
 
 const steps = [
   { title: "Personal Info", desc: "Tell us about yourself" },
@@ -85,7 +85,7 @@ function buildForm(profile: StudentProfile | undefined, userPhone?: string | nul
 }
 
 export default function ProfileWizard() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const queryClient = useQueryClient();
   const { data: profile } = useGetProfile();
   const updateMutation = useUpdateProfile();
@@ -94,6 +94,11 @@ export default function ProfileWizard() {
   const [isSaving, setIsSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const tokenRef = useRef(token);
+  useEffect(() => { tokenRef.current = token; }, [token]);
 
   const [form, setForm] = useState(() => buildForm(undefined, user?.phone));
 
@@ -107,6 +112,33 @@ export default function ProfileWizard() {
 
   const set = (key: keyof typeof form) => (val: string | string[]) =>
     setForm((prev) => ({ ...prev, [key]: val }));
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be under 5 MB"); return; }
+    const objectUrl = URL.createObjectURL(file);
+    setPhotoPreview(objectUrl);
+    setIsUploadingPhoto(true);
+    try {
+      const formData = new FormData();
+      formData.append("photo", file);
+      const currentToken = tokenRef.current;
+      const res = await fetch("/api/profile/photo", {
+        method: "POST",
+        headers: currentToken ? { Authorization: `Bearer ${currentToken}` } : {},
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      toast.success("Photo uploaded successfully");
+      queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() });
+    } catch {
+      toast.error("Failed to upload photo. Please try again.");
+      setPhotoPreview(null);
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
 
   const saveStep = async () => {
     setIsSaving(true);
@@ -206,6 +238,50 @@ export default function ProfileWizard() {
               {/* Step 1: Personal */}
               {currentStep === 0 && (
                 <>
+                  {/* Photo upload */}
+                  <div className="flex items-center gap-5 pb-2">
+                    <div
+                      className="relative w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center cursor-pointer overflow-hidden bg-[#080C1A] flex-shrink-0 hover:border-primary/50 transition-colors"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {photoPreview || profile?.photoUrl ? (
+                        <img
+                          src={photoPreview ?? String(profile?.photoUrl)}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Camera className="w-7 h-7 text-muted-foreground" />
+                      )}
+                      {isUploadingPhoto && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-medium mb-1">Profile photo</p>
+                      <p className="text-muted-foreground text-xs mb-2">JPG, PNG or WebP · max 5 MB</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="border-border text-muted-foreground hover:text-white text-xs h-8"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingPhoto}
+                      >
+                        <Upload className="w-3.5 h-3.5 mr-1.5" />
+                        {isUploadingPhoto ? "Uploading…" : "Upload photo"}
+                      </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={handlePhotoChange}
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label className="text-sm font-medium text-white mb-1.5 block">Full Name</label>
                     <Input value={user?.name || ""} disabled className={`${inputCls} opacity-60`} />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
@@ -152,6 +152,19 @@ export default function ServiceDetailPage() {
   const { data: service, isLoading, error } = useGetService(id, {
     query: { enabled: !!id, queryKey: getGetServiceQueryKey(id) },
   });
+
+  // Track recently viewed services in localStorage
+  useEffect(() => {
+    if (!service) return;
+    try {
+      const key = "mentoralm_recent_services";
+      const existing: number[] = JSON.parse(localStorage.getItem(key) ?? "[]");
+      const updated = [service.id, ...existing.filter((i) => i !== service.id)].slice(0, 5);
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch {
+      // ignore storage errors
+    }
+  }, [service]);
 
   const createBookingMutation = useCreateBooking();
   const verifyBookingMutation = useVerifyBooking();

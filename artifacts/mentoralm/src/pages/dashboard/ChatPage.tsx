@@ -2,10 +2,12 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { useGetChatMessages, useNewChat, useGetProfile } from "@workspace/api-client-react";
+import { useGetChatMessages, useNewChat, useGetProfile, useListServices } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import { Send, RotateCcw, Bot, User, Sparkles } from "lucide-react";
+import { Send, RotateCcw, Bot, User, Sparkles, ChevronRight } from "lucide-react";
+import { Link } from "wouter";
+import type { Service } from "@workspace/api-client-react";
 
 interface Message {
   id?: number;
@@ -13,12 +15,57 @@ interface Message {
   content: string;
   streaming?: boolean;
   isFirst?: boolean;
+  recommendedService?: Service;
+}
+
+function detectRecommendedService(text: string, services: Service[]): Service | undefined {
+  if (!services.length) return undefined;
+  const lower = text.toLowerCase();
+  if (!lower.includes("recommend") && !lower.includes("suggest") && !lower.includes("book") && !lower.includes("session")) {
+    return undefined;
+  }
+  for (const service of services) {
+    if (lower.includes(service.title.toLowerCase())) {
+      return service;
+    }
+  }
+  // Fall back: if text mentions "session" and counselling context, suggest first published service
+  if ((lower.includes("1-on-1") || lower.includes("one-on-one") || lower.includes("expert")) && lower.includes("session")) {
+    return services.find((s) => s.status === "published") ?? undefined;
+  }
+  return undefined;
+}
+
+function RecommendedServiceCard({ service }: { service: Service }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex items-center justify-between gap-3"
+    >
+      <div className="min-w-0">
+        <p className="text-[11px] text-primary font-semibold uppercase tracking-wider mb-1">Recommended session</p>
+        <p className="text-white text-sm font-semibold truncate">{service.title}</p>
+        <p className="text-muted-foreground text-xs mt-0.5">₹{service.price.toLocaleString("en-IN")} · {service.duration} min</p>
+      </div>
+      <Link href={`/services/${service.id}`}>
+        <Button size="sm" className="bg-gradient-primary border-0 flex-shrink-0 text-xs h-8">
+          View
+          <ChevronRight className="w-3 h-3 ml-1" />
+        </Button>
+      </Link>
+    </motion.div>
+  );
 }
 
 export default function ChatPage() {
   const { token } = useAuth();
+  const tokenRef = useRef(token);
+  useEffect(() => { tokenRef.current = token; }, [token]);
+
   const { data: history, refetch } = useGetChatMessages();
   const { data: profile } = useGetProfile();
+  const { data: services } = useListServices();
   const newChatMutation = useNewChat();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -58,11 +105,13 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, assistantMsg]);
 
     try {
+      // Always use the freshest token from the ref (avoids stale closure issues)
+      const currentToken = tokenRef.current;
       const res = await fetch("/api/chat/stream", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
         },
         body: JSON.stringify({ content: userMsg.content }),
       });
@@ -80,9 +129,8 @@ export default function ChatPage() {
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
 
-        // Process all complete SSE frames (delimited by \n\n)
+        // Process complete SSE frames (delimited by \n\n)
         const frames = buffer.split("\n\n");
-        // Keep the last (potentially incomplete) frame in buffer
         buffer = frames.pop() ?? "";
 
         for (const frame of frames) {
@@ -97,11 +145,7 @@ export default function ChatPage() {
                 setMessages((prev) => {
                   const updated = [...prev];
                   const last = updated[updated.length - 1];
-                  updated[updated.length - 1] = {
-                    ...last,
-                    content: accumulated,
-                    streaming: true,
-                  };
+                  updated[updated.length - 1] = { ...last, content: accumulated, streaming: true };
                   return updated;
                 });
               }
@@ -112,10 +156,18 @@ export default function ChatPage() {
         }
       }
 
+      // Detect recommended service in the completed response
+      const recommendedService = detectRecommendedService(accumulated, services ?? []);
+
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
-        updated[updated.length - 1] = { ...last, content: accumulated, streaming: false };
+        updated[updated.length - 1] = {
+          ...last,
+          content: accumulated,
+          streaming: false,
+          recommendedService,
+        };
         return updated;
       });
     } catch {
@@ -124,7 +176,7 @@ export default function ChatPage() {
     } finally {
       setIsStreaming(false);
     }
-  }, [input, isStreaming, token, messages.length, hasProfile]);
+  }, [input, isStreaming, hasProfile, services]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -242,6 +294,10 @@ export default function ChatPage() {
                       </span>
                     )}
                   </div>
+                  {/* Recommended service card */}
+                  {msg.role === "assistant" && !msg.streaming && msg.recommendedService && (
+                    <RecommendedServiceCard service={msg.recommendedService} />
+                  )}
                 </div>
               </motion.div>
             ))}
