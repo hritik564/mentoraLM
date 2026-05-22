@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { useListServices, useGetMyBookings } from "@workspace/api-client-react";
 import { Clock, User, Calendar, CheckCircle, ChevronRight } from "lucide-react";
+import { getCategoryVisual } from "@/pages/home/HomePage";
 
 export default function MarketplacePage() {
   const [tab, setTab] = useState<"browse" | "purchases">("browse");
@@ -77,7 +78,9 @@ export default function MarketplacePage() {
               <div className="text-center py-20 text-muted-foreground">No services in this category yet.</div>
             ) : (
               <div className="grid md:grid-cols-2 gap-5">
-                {filtered.map((service, i) => (
+                {filtered.map((service, i) => {
+                  const { gradient, emoji } = getCategoryVisual(service.category);
+                  return (
                   <motion.div
                     key={service.id}
                     initial={{ opacity: 0, y: 16 }}
@@ -87,15 +90,12 @@ export default function MarketplacePage() {
                     className="bg-card border border-border rounded-2xl overflow-hidden"
                     data-testid={`marketplace-service-${service.id}`}
                   >
-                    {service.thumbnailUrl ? (
-                      <img
-                        src={service.thumbnailUrl}
-                        alt={service.title}
-                        className="w-full h-28 object-cover"
-                      />
-                    ) : (
-                      <div className="h-20 bg-gradient-primary opacity-60" />
-                    )}
+                    <div
+                      className="h-28 relative flex items-center justify-center overflow-hidden"
+                      style={{ background: gradient }}
+                    >
+                      <span className="text-5xl drop-shadow-lg">{emoji}</span>
+                    </div>
                     <div className="p-5">
                       <div className="inline-block text-xs font-semibold text-primary bg-primary/10 rounded-full px-2.5 py-0.5 mb-2">
                         {service.category}
@@ -117,7 +117,8 @@ export default function MarketplacePage() {
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>

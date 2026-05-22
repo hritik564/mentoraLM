@@ -285,7 +285,6 @@ export default function ProfileWizard() {
                   <div>
                     <label className="text-sm font-medium text-white mb-1.5 block">Full Name</label>
                     <Input value={user?.name || ""} disabled className={`${inputCls} opacity-60`} />
-                    <p className="text-xs text-muted-foreground mt-1">Name from your account</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>

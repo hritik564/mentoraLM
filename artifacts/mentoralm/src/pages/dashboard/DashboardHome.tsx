@@ -107,10 +107,8 @@ export default function DashboardHome() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white font-semibold mb-1">Profile {completionPercent}% complete</p>
-                <p className="text-muted-foreground text-sm">
-                  {completionPercent < 50
-                    ? "Add more info to unlock your career roadmap and personalised AI."
-                    : "Almost there — fill in remaining details for the best guidance."}
+                <p className="text-muted-foreground text-[13px] md:text-sm">
+                  Fill in remaining details for the best AI guidance.
                 </p>
               </div>
               <Link href="/dashboard/profile">

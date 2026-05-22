@@ -132,12 +132,24 @@ export default function RoadmapPage() {
                 </Link>
               )}
               {!chatEligible && (
-                <Link href="/dashboard/chat">
-                  <Button variant={profileEligible ? "default" : "outline"} className={profileEligible ? "bg-gradient-primary border-0" : "border-border"} data-testid="go-to-chat-btn">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Chat with AI Counsellor
-                  </Button>
-                </Link>
+                <>
+                  <Link href="/dashboard/chat">
+                    <Button variant={profileEligible ? "default" : "outline"} className={profileEligible ? "bg-gradient-primary border-0" : "border-border"} data-testid="go-to-chat-btn">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Chat with AI Counsellor
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/chat">
+                    <Button
+                      className="border-0 text-white font-semibold"
+                      style={{ background: "linear-gradient(135deg, #00A8FF, #7B3FE4)" }}
+                      data-testid="start-chatting-btn"
+                    >
+                      Start Chatting
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </Link>
+                </>
               )}
             </div>
           </motion.div>
