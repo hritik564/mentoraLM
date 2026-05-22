@@ -339,7 +339,7 @@ export default function HomePage() {
         </section>
 
         {/* Services Preview — always shown, with "Coming Soon" 3rd card */}
-        <section className="py-24 px-6">
+        <section className="pt-24 pb-3 md:py-24 px-6">
           <div className="container mx-auto max-w-6xl">
             <div className="flex items-center justify-between mb-12">
               <div>
@@ -432,7 +432,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-12 md:py-24 px-6 bg-white/2 border-y border-white/5">
+        <section className="pt-3 pb-12 md:py-24 px-6 bg-white/2 border-y border-white/5">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
