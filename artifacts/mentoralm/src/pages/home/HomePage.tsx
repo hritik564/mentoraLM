@@ -65,6 +65,17 @@ function getCategoryColor(category: string): string {
   return categoryColors[category?.toLowerCase()] ?? "#6366F1";
 }
 
+export function getCategoryVisual(category: string): { gradient: string; emoji: string } {
+  const c = (category || "").toLowerCase();
+  if (c.includes("interview")) {
+    return { gradient: "linear-gradient(135deg, #1a1a4e, #00A8FF)", emoji: "🎯" };
+  }
+  if (c.includes("counsel")) {
+    return { gradient: "linear-gradient(135deg, #2d1a4e, #7B3FE4)", emoji: "🧭" };
+  }
+  return { gradient: "linear-gradient(135deg, #1a1a4e, #7B3FE4)", emoji: "🎓" };
+}
+
 const steps = [
   { icon: Users, title: "Complete your profile", desc: "Tell us about your background, interests, and goals in 6 quick steps.", step: "01" },
   { icon: MessageSquare, title: "Chat with AI counsellor", desc: "Your personal AI that's read your profile and knows your story.", step: "02" },
@@ -345,6 +356,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-6">
               {displayedServices.map((service, i) => {
                 const color = getCategoryColor(service.category);
+                const { gradient, emoji } = getCategoryVisual(service.category);
                 const svc = service as typeof service & { duration?: string; thumbnailUrl?: string };
                 return (
                   <motion.div
@@ -356,44 +368,12 @@ export default function HomePage() {
                     whileHover={{ y: -4, scale: 1.02 }}
                     className="bg-card border border-border rounded-2xl overflow-hidden group"
                   >
-                    {/* Image area with gradient background */}
+                    {/* Image area with category gradient + emoji */}
                     <div
                       className="h-36 relative flex items-center justify-center overflow-hidden"
-                      style={{
-                        background: svc.thumbnailUrl
-                          ? undefined
-                          : `linear-gradient(135deg, ${color}33 0%, ${color}11 100%)`,
-                        borderBottom: `1px solid ${color}22`,
-                      }}
+                      style={{ background: gradient, borderBottom: `1px solid ${color}33` }}
                     >
-                      {svc.thumbnailUrl ? (
-                        <img
-                          src={svc.thumbnailUrl}
-                          alt={service.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <>
-                          <div
-                            className="absolute inset-0 opacity-40"
-                            style={{
-                              background: `radial-gradient(circle at 30% 50%, ${color}55 0%, transparent 70%)`,
-                            }}
-                          />
-                          <div
-                            className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                            style={{ backgroundColor: color + "22", border: `1px solid ${color}44` }}
-                          >
-                            <span className="text-3xl">
-                              {service.category?.toLowerCase().includes("engineer") ? "⚙" :
-                               service.category?.toLowerCase().includes("medic") ? "⚕" :
-                               service.category?.toLowerCase().includes("design") ? "✏" :
-                               service.category?.toLowerCase().includes("law") ? "⚖" :
-                               service.category?.toLowerCase().includes("business") ? "📊" : "🎓"}
-                            </span>
-                          </div>
-                        </>
-                      )}
+                      <span className="text-6xl drop-shadow-lg">{emoji}</span>
                       {/* Duration badge */}
                       {svc.duration && (
                         <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1">

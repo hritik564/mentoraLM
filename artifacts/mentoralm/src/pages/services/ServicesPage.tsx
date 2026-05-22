@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useListServices } from "@workspace/api-client-react";
 import { Clock, Users, ChevronRight } from "lucide-react";
 import { usePageMeta } from "@/lib/usePageMeta";
+import { getCategoryVisual } from "@/pages/home/HomePage";
 
 export default function ServicesPage() {
   usePageMeta("Counselling Services", "Browse MentoraLM's expert career counselling sessions — stream selection, college choice, JEE/NEET prep and more.");
@@ -70,13 +71,28 @@ export default function ServicesPage() {
                   className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col"
                   data-testid={`service-card-${service.id}`}
                 >
-                  <div className="h-28 bg-gradient-primary opacity-70 relative">
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-black/40 text-white text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
-                        {service.category}
-                      </span>
-                    </div>
-                  </div>
+                  {(() => {
+                    const { gradient, emoji } = getCategoryVisual(service.category);
+                    return (
+                      <div
+                        className="h-36 relative flex items-center justify-center overflow-hidden"
+                        style={{ background: gradient }}
+                      >
+                        <span className="text-6xl drop-shadow-lg">{emoji}</span>
+                        <div className="absolute top-3 left-3">
+                          <span className="bg-black/40 text-white text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
+                            {service.category}
+                          </span>
+                        </div>
+                        {service.duration && (
+                          <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1">
+                            <Clock className="w-3 h-3 text-white/70" />
+                            <span className="text-white text-xs font-medium">{service.duration} min</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-white font-bold text-xl mb-2">{service.title}</h3>
                     <p className="text-muted-foreground text-sm mb-4 flex-1 leading-relaxed">{service.shortDesc}</p>

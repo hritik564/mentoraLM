@@ -40,13 +40,21 @@ export function Navbar() {
         isVisible ? "translate-y-0" : "-translate-y-full"
       } ${
         isScrolled
-          ? "bg-[#080C1A]/80 backdrop-blur-md border-b border-white/5 py-4"
-          : "bg-transparent py-6"
+          ? "bg-[#080C1A]/80 backdrop-blur-md border-b border-white/5"
+          : "bg-transparent"
       }`}
+      style={{ height: 64 }}
     >
-      <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"}>
-          <img src="/logo.png" alt="MentoraLM" className="h-28 w-auto" />
+      <div className="container mx-auto px-6 h-full flex items-center justify-between">
+        <Link
+          href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"}
+          className="flex flex-row items-center gap-2"
+        >
+          <img src="/logo.png" alt="MentoraLM" style={{ height: 36, width: "auto" }} />
+          <span style={{ fontSize: 20, fontWeight: 700 }} className="tracking-tight">
+            <span className="text-white">Mentora</span>
+            <span className="text-gradient">LM</span>
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
