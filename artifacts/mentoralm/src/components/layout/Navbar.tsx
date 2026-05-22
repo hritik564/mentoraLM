@@ -51,7 +51,7 @@ export function Navbar() {
           className="flex flex-row items-center gap-1"
         >
           <img src="/logo.png" alt="MentoraLM" style={{ height: 48, width: "auto" }} />
-          <span style={{ fontSize: 20, fontWeight: 700 }} className="tracking-tight">
+          <span style={{ fontSize: 26, fontWeight: 700 }} className="tracking-tight">
             <span className="text-white">Mentora</span>
             <span className="text-gradient">LM</span>
           </span>
