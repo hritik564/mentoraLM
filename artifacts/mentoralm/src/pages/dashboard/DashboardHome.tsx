@@ -127,26 +127,28 @@ export default function DashboardHome() {
           </motion.div>
         )}
 
-        {/* AI nudge */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-          className="mt-8 relative rounded-2xl overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-primary opacity-10" />
-          <div className="relative border border-primary/20 rounded-2xl p-8 flex items-center justify-between gap-6">
-            <div>
-              <h3 className="text-white font-bold text-lg mb-1">Your AI counsellor is ready</h3>
-              <p className="text-muted-foreground text-sm max-w-sm">
-                Ask anything — stream choices, college selection, exam prep, career paths. Available 24/7.
-              </p>
+        {/* AI nudge — only show when profile is meaningful (>= 50% complete) */}
+        {completionPercent >= 50 && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="mt-8 relative rounded-2xl overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-primary opacity-10" />
+            <div className="relative border border-primary/20 rounded-2xl p-8 flex items-center justify-between gap-6">
+              <div>
+                <h3 className="text-white font-bold text-lg mb-1">Your AI counsellor knows your profile</h3>
+                <p className="text-muted-foreground text-sm max-w-sm">
+                  Get personalised guidance based on your background, interests, and goals. Available 24/7.
+                </p>
+              </div>
+              <Link href="/dashboard/chat">
+                <Button className="bg-gradient-primary border-0 hover:opacity-90 flex-shrink-0" data-testid="start-chat-btn">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Start Chat
+                </Button>
+              </Link>
             </div>
-            <Link href="/dashboard/chat">
-              <Button className="bg-gradient-primary border-0 hover:opacity-90 flex-shrink-0" data-testid="start-chat-btn">
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Start Chat
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </DashboardLayout>
   );

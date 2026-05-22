@@ -2,31 +2,38 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { useGetChatMessages, useNewChat } from "@workspace/api-client-react";
+import { useGetChatMessages, useNewChat, useGetProfile } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import { Send, RotateCcw, Bot, User } from "lucide-react";
+import { Send, RotateCcw, Bot, User, Sparkles } from "lucide-react";
 
 interface Message {
   id?: number;
   role: "user" | "assistant";
   content: string;
   streaming?: boolean;
+  isFirst?: boolean;
 }
 
 export default function ChatPage() {
   const { token } = useAuth();
   const { data: history, refetch } = useGetChatMessages();
+  const { data: profile } = useGetProfile();
   const newChatMutation = useNewChat();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isNewSession, setIsNewSession] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const completionPercent = profile?.completionPercent ?? 0;
+  const hasProfile = completionPercent >= 30;
 
   useEffect(() => {
     if (history) {
       setMessages(history.map((m) => ({ id: m.id, role: m.role as "user" | "assistant", content: m.content })));
+      setIsNewSession(false);
     }
   }, [history]);
 
@@ -37,11 +44,17 @@ export default function ChatPage() {
   const sendMessage = useCallback(async () => {
     if (!input.trim() || isStreaming) return;
     const userMsg: Message = { role: "user", content: input.trim() };
+    const isFirstEverMessage = messages.length === 0;
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsStreaming(true);
 
-    const assistantMsg: Message = { role: "assistant", content: "", streaming: true };
+    const assistantMsg: Message = {
+      role: "assistant",
+      content: "",
+      streaming: true,
+      isFirst: isFirstEverMessage && hasProfile,
+    };
     setMessages((prev) => [...prev, assistantMsg]);
 
     try {
@@ -60,14 +73,21 @@ export default function ChatPage() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process all complete SSE frames (delimited by \n\n)
+        const frames = buffer.split("\n\n");
+        // Keep the last (potentially incomplete) frame in buffer
+        buffer = frames.pop() ?? "";
+
+        for (const frame of frames) {
+          for (const line of frame.split("\n")) {
+            if (!line.startsWith("data: ")) continue;
             const data = line.slice(6).trim();
             if (data === "[DONE]") break;
             try {
@@ -76,12 +96,17 @@ export default function ChatPage() {
                 accumulated += parsed.text;
                 setMessages((prev) => {
                   const updated = [...prev];
-                  updated[updated.length - 1] = { role: "assistant", content: accumulated, streaming: true };
+                  const last = updated[updated.length - 1];
+                  updated[updated.length - 1] = {
+                    ...last,
+                    content: accumulated,
+                    streaming: true,
+                  };
                   return updated;
                 });
               }
             } catch {
-              // ignore parse errors on SSE lines
+              // ignore malformed SSE lines
             }
           }
         }
@@ -89,7 +114,8 @@ export default function ChatPage() {
 
       setMessages((prev) => {
         const updated = [...prev];
-        updated[updated.length - 1] = { role: "assistant", content: accumulated, streaming: false };
+        const last = updated[updated.length - 1];
+        updated[updated.length - 1] = { ...last, content: accumulated, streaming: false };
         return updated;
       });
     } catch {
@@ -98,7 +124,7 @@ export default function ChatPage() {
     } finally {
       setIsStreaming(false);
     }
-  }, [input, isStreaming, token]);
+  }, [input, isStreaming, token, messages.length, hasProfile]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -111,6 +137,7 @@ export default function ChatPage() {
     newChatMutation.mutate(undefined, {
       onSuccess: () => {
         setMessages([]);
+        setIsNewSession(true);
         refetch();
       },
     });
@@ -130,6 +157,7 @@ export default function ChatPage() {
             size="sm"
             className="border-border text-muted-foreground hover:text-white"
             onClick={startNewChat}
+            disabled={newChatMutation.isPending}
             data-testid="new-chat-btn"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
@@ -146,24 +174,28 @@ export default function ChatPage() {
               </div>
               <h3 className="text-white font-bold text-lg mb-2">Hello! I'm your AI career counsellor</h3>
               <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                I've read your profile and I'm ready to help. Ask me about streams, colleges, exams, careers — anything.
+                {hasProfile
+                  ? "I've read your profile and I'm ready to help. Ask me about streams, colleges, exams, careers — anything."
+                  : "Ask me anything about careers, streams, or exams. Complete your profile for personalised advice."}
               </p>
-              <div className="flex flex-wrap gap-2 justify-center mt-6">
-                {[
-                  "Which stream should I choose?",
-                  "Help me with college selection",
-                  "What career fits my interests?",
-                  "How to prepare for JEE?",
-                ].map((prompt) => (
-                  <button
-                    key={prompt}
-                    onClick={() => { setInput(prompt); textareaRef.current?.focus(); }}
-                    className="px-4 py-2 rounded-xl bg-card border border-border text-muted-foreground hover:text-white hover:border-primary/40 text-sm transition-colors"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
+              {!isNewSession && (
+                <div className="flex flex-wrap gap-2 justify-center mt-6">
+                  {[
+                    "Which stream should I choose?",
+                    "Help me with college selection",
+                    "What career fits my interests?",
+                    "How to prepare for JEE?",
+                  ].map((prompt) => (
+                    <button
+                      key={prompt}
+                      onClick={() => { setInput(prompt); textareaRef.current?.focus(); }}
+                      className="px-4 py-2 rounded-xl bg-card border border-border text-muted-foreground hover:text-white hover:border-primary/40 text-sm transition-colors"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -183,24 +215,33 @@ export default function ChatPage() {
                     : <Bot className="w-4 h-4 text-[#7B3FE4]" />
                   }
                 </div>
-                <div className={`max-w-[78%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.role === "user"
-                    ? "bg-primary/20 text-white rounded-tr-sm"
-                    : "bg-card border border-border text-white/90 rounded-tl-sm"
-                }`}>
-                  {msg.content}
-                  {msg.streaming && (
-                    <span className="inline-flex gap-1 ml-2">
-                      {[0, 1, 2].map((j) => (
-                        <motion.span
-                          key={j}
-                          className="w-1.5 h-1.5 rounded-full bg-primary inline-block"
-                          animate={{ opacity: [0.3, 1, 0.3] }}
-                          transition={{ duration: 1.2, repeat: Infinity, delay: j * 0.2 }}
-                        />
-                      ))}
+                <div className="max-w-[78%] flex flex-col gap-1">
+                  {/* Profile-based badge for first AI reply */}
+                  {msg.role === "assistant" && msg.isFirst && (
+                    <span className="flex items-center gap-1.5 text-[11px] text-[#00A8FF] font-semibold mb-0.5">
+                      <Sparkles className="w-3 h-3" />
+                      Based on your profile
                     </span>
                   )}
+                  <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                    msg.role === "user"
+                      ? "bg-primary/20 text-white rounded-tr-sm"
+                      : "bg-card border border-border text-white/90 rounded-tl-sm"
+                  }`}>
+                    <span className="whitespace-pre-wrap">{msg.content}</span>
+                    {msg.streaming && (
+                      <span className="inline-flex gap-1 ml-2">
+                        {[0, 1, 2].map((j) => (
+                          <motion.span
+                            key={j}
+                            className="w-1.5 h-1.5 rounded-full bg-primary inline-block"
+                            animate={{ opacity: [0.3, 1, 0.3] }}
+                            transition={{ duration: 1.2, repeat: Infinity, delay: j * 0.2 }}
+                          />
+                        ))}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}

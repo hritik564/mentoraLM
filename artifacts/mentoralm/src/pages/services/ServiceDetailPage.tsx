@@ -1,28 +1,242 @@
+import { useState } from "react";
 import { useParams, useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { useGetService, getGetServiceQueryKey } from "@workspace/api-client-react";
-import { Clock, User, CheckCircle, ArrowLeft, Calendar } from "lucide-react";
+import { useGetService, useCreateBooking, useVerifyBooking, getGetMyBookingsQueryKey, getGetServiceQueryKey } from "@workspace/api-client-react";
+import { Clock, User, CheckCircle, ArrowLeft, Calendar, X, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+declare global {
+  interface Window {
+    Razorpay: new (opts: Record<string, unknown>) => { open: () => void };
+  }
+}
+
+function loadRazorpay(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (window.Razorpay) { resolve(true); return; }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+function SlotModal({
+  service,
+  onClose,
+  onConfirm,
+  isPending,
+}: {
+  service: { title: string; price: number; duration: number | string };
+  onClose: () => void;
+  onConfirm: (slot: string) => void;
+  isPending: boolean;
+}) {
+  const today = new Date();
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const d = new Date(today);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  });
+  const [selectedTime, setSelectedTime] = useState("10:00");
+
+  const timeSlots = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+
+  const minDate = (() => {
+    const d = new Date(today);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  })();
+
+  const handleConfirm = () => {
+    const slotDateTime = `${selectedDate}T${selectedTime}:00`;
+    onConfirm(slotDateTime);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="bg-[#0F1628] border border-[#1E2A45] rounded-2xl w-full max-w-md"
+      >
+        <div className="flex items-center justify-between p-6 border-b border-[#1E2A45]">
+          <div>
+            <h2 className="text-white font-bold text-lg">Choose a slot</h2>
+            <p className="text-muted-foreground text-sm truncate max-w-[250px]">{service.title}</p>
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-white">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div>
+            <label className="text-sm font-medium text-white mb-2 block">Select date</label>
+            <input
+              type="date"
+              value={selectedDate}
+              min={minDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full rounded-lg border border-[#1E2A45] bg-[#080C1A] px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50"
+              data-testid="slot-date-picker"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-white mb-3 block">Select time</label>
+            <div className="grid grid-cols-3 gap-2">
+              {timeSlots.map((time) => (
+                <button
+                  key={time}
+                  onClick={() => setSelectedTime(time)}
+                  className={`rounded-lg py-2.5 text-sm font-medium transition-all ${
+                    selectedTime === time
+                      ? "bg-gradient-primary text-white"
+                      : "bg-[#080C1A] border border-[#1E2A45] text-muted-foreground hover:text-white hover:border-primary/30"
+                  }`}
+                  data-testid={`slot-time-${time.replace(":", "")}`}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-[#080C1A] rounded-xl p-4 border border-[#1E2A45]">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Session duration</span>
+              <span className="text-white">{service.duration} min</span>
+            </div>
+            <div className="flex justify-between text-sm mt-2">
+              <span className="text-muted-foreground">Total</span>
+              <span className="text-white font-bold">₹{service.price.toLocaleString("en-IN")}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-t border-[#1E2A45] flex gap-3">
+          <Button variant="outline" onClick={onClose} className="flex-1 border-border" disabled={isPending}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            disabled={isPending || !selectedDate}
+            className="flex-1 bg-gradient-primary border-0"
+            data-testid="confirm-slot-btn"
+          >
+            {isPending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</> : "Pay ₹" + service.price.toLocaleString("en-IN")}
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 export default function ServiceDetailPage() {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const [showModal, setShowModal] = useState(false);
+  const [isCheckoutPending, setIsCheckoutPending] = useState(false);
 
   const { data: service, isLoading, error } = useGetService(id, {
     query: { enabled: !!id, queryKey: getGetServiceQueryKey(id) },
   });
 
+  const createBookingMutation = useCreateBooking();
+  const verifyBookingMutation = useVerifyBooking();
+
   const handleBook = () => {
     if (!user) {
       setLocation(`/auth/signin`);
     } else {
-      setLocation(`/dashboard/marketplace`);
+      setShowModal(true);
+    }
+  };
+
+  const handleConfirmSlot = async (slotDateTime: string) => {
+    setIsCheckoutPending(true);
+    try {
+      const loaded = await loadRazorpay();
+      if (!loaded) {
+        toast.error("Failed to load payment gateway. Please try again.");
+        setIsCheckoutPending(false);
+        return;
+      }
+
+      createBookingMutation.mutate(
+        { data: { serviceId: id, slotDateTime } },
+        {
+          onSuccess: (order) => {
+            setShowModal(false);
+            const rzp = new window.Razorpay({
+              key: order.razorpayKeyId,
+              amount: order.amount,
+              currency: order.currency,
+              name: "MentorAlm",
+              description: service?.title || "Counselling Session",
+              order_id: order.razorpayOrderId,
+              prefill: {
+                name: user?.name,
+                email: user?.email,
+              },
+              theme: { color: "#00A8FF" },
+              handler: (response: {
+                razorpay_order_id: string;
+                razorpay_payment_id: string;
+                razorpay_signature: string;
+              }) => {
+                verifyBookingMutation.mutate(
+                  {
+                    data: {
+                      bookingId: order.bookingId,
+                      razorpayOrderId: response.razorpay_order_id,
+                      razorpayPaymentId: response.razorpay_payment_id,
+                      razorpaySignature: response.razorpay_signature,
+                    },
+                  },
+                  {
+                    onSuccess: () => {
+                      toast.success("Payment successful! Your session is confirmed.");
+                      queryClient.invalidateQueries({ queryKey: getGetMyBookingsQueryKey() });
+                      setIsCheckoutPending(false);
+                      setLocation("/dashboard/marketplace");
+                    },
+                    onError: () => {
+                      toast.error("Payment verification failed. Please contact support.");
+                      setIsCheckoutPending(false);
+                    },
+                  }
+                );
+              },
+              modal: {
+                ondismiss: () => {
+                  setIsCheckoutPending(false);
+                  toast.info("Payment cancelled.");
+                },
+              },
+            });
+            rzp.open();
+          },
+          onError: () => {
+            toast.error("Failed to create booking. Please try again.");
+            setIsCheckoutPending(false);
+          },
+        }
+      );
+    } catch {
+      toast.error("An unexpected error occurred.");
+      setIsCheckoutPending(false);
     }
   };
 
@@ -150,10 +364,14 @@ export default function ServiceDetailPage() {
 
                 <Button
                   onClick={handleBook}
+                  disabled={isCheckoutPending}
                   className="w-full bg-gradient-primary border-0 hover:opacity-90 h-12 font-semibold"
                   data-testid="book-now-btn"
                 >
-                  {user ? "Book This Session" : "Sign In to Book"}
+                  {isCheckoutPending
+                    ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>
+                    : user ? "Book This Session" : "Sign In to Book"
+                  }
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center mt-4">
@@ -164,6 +382,18 @@ export default function ServiceDetailPage() {
           </div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {showModal && (
+          <SlotModal
+            service={service}
+            onClose={() => { setShowModal(false); setIsCheckoutPending(false); }}
+            onConfirm={handleConfirmSlot}
+            isPending={isCheckoutPending || createBookingMutation.isPending}
+          />
+        )}
+      </AnimatePresence>
+
       <Footer />
     </div>
   );

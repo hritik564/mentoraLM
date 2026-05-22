@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetProfile, useUpdateProfile, getGetProfileQueryKey } from "@workspace/api-client-react";
+import type { StudentProfile } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -47,6 +48,42 @@ function ChipSelect({ options, value, onChange }: { options: string[]; value: st
   );
 }
 
+function parseChips(val: unknown): string[] {
+  if (!val) return [];
+  if (Array.isArray(val)) return val as string[];
+  if (typeof val === "string") return val.split(",").map((s) => s.trim()).filter(Boolean);
+  return [];
+}
+
+function buildForm(profile: StudentProfile | undefined, userPhone?: string | null) {
+  return {
+    dateOfBirth: profile?.dateOfBirth ?? "",
+    gender: profile?.gender ?? "",
+    city: profile?.city ?? "",
+    state: profile?.state ?? "",
+    phone: userPhone ?? "",
+    educationLevel: profile?.educationLevel ?? "",
+    board: profile?.board ?? "",
+    schoolCollege: profile?.schoolCollege ?? "",
+    gradePercentage: profile?.gradePercentage ?? "",
+    stream: profile?.stream ?? "",
+    interests: parseChips(profile?.interests),
+    strengths: parseChips(profile?.strengths),
+    hobbies: profile?.hobbies ?? "",
+    dreamCareer: profile?.dreamCareer ?? "",
+    targetColleges: profile?.targetColleges ?? "",
+    openToAbroad: profile?.openToAbroad ?? "",
+    familyIncome: profile?.familyIncome ?? "",
+    parentsEducation: profile?.parentsEducation ?? "",
+    familyPressure: profile?.familyPressure ?? "",
+    educationBudget: profile?.educationBudget ?? "",
+    fiveYearGoal: profile?.fiveYearGoal ?? "",
+    alreadyTried: profile?.alreadyTried ?? "",
+    stoppingYou: profile?.stoppingYou ?? "",
+    heardFrom: profile?.heardFrom ?? "",
+  };
+}
+
 export default function ProfileWizard() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -56,42 +93,32 @@ export default function ProfileWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [done, setDone] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  const [form, setForm] = useState({
-    dateOfBirth: profile?.dateOfBirth || "",
-    gender: profile?.gender || "",
-    city: profile?.city || "",
-    state: profile?.state || "",
-    phone: user?.phone || "",
-    educationLevel: profile?.educationLevel || "",
-    board: profile?.board || "",
-    schoolCollege: profile?.schoolCollege || "",
-    gradePercentage: profile?.gradePercentage || "",
-    stream: profile?.stream || "",
-    interests: profile?.interests || [],
-    strengths: profile?.strengths || [],
-    hobbies: profile?.hobbies || "",
-    dreamCareer: profile?.dreamCareer || "",
-    targetColleges: profile?.targetColleges || "",
-    openToAbroad: profile?.openToAbroad || "",
-    familyIncome: profile?.familyIncome || "",
-    parentsEducation: profile?.parentsEducation || "",
-    familyPressure: profile?.familyPressure || "",
-    educationBudget: profile?.educationBudget || "",
-    fiveYearGoal: profile?.fiveYearGoal || "",
-    alreadyTried: profile?.alreadyTried || "",
-    stoppingYou: profile?.stoppingYou || "",
-    heardFrom: profile?.heardFrom || "",
-  });
+  const [form, setForm] = useState(() => buildForm(undefined, user?.phone));
+
+  // Sync form when profile data first arrives from the server
+  useEffect(() => {
+    if (profile && !hydrated) {
+      setForm(buildForm(profile, user?.phone));
+      setHydrated(true);
+    }
+  }, [profile, hydrated, user?.phone]);
 
   const set = (key: keyof typeof form) => (val: string | string[]) =>
     setForm((prev) => ({ ...prev, [key]: val }));
 
   const saveStep = async () => {
     setIsSaving(true);
+    // Serialize chip arrays to comma-joined strings for the API
+    const payload = {
+      ...form,
+      interests: form.interests.join(", "),
+      strengths: form.strengths.join(", "),
+    };
     try {
       await new Promise<void>((resolve, reject) => {
-        updateMutation.mutate({ data: form as Parameters<typeof updateMutation.mutate>[0]["data"] }, {
+        updateMutation.mutate({ data: payload }, {
           onSuccess: () => { queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() }); resolve(); },
           onError: reject,
         });
