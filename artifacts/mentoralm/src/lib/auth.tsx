@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { UserPublic, useRefreshToken, useSignout, getMe } from "@workspace/api-client-react";
-import { configureAuthToken } from "./api";
+import { configureAuthToken, configureOn401Handler } from "./api";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface AuthContextType {
@@ -21,6 +21,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const refreshToken = useRefreshToken();
   const signoutMutation = useSignout();
+
+  const handleSignout = useCallback(() => {
+    signoutMutation.mutate(undefined, {
+      onSettled: () => {
+        setToken(null);
+        setUser(null);
+        configureAuthToken(null);
+        queryClient.clear();
+      }
+    });
+  }, [signoutMutation, queryClient]);
+
+  useEffect(() => {
+    // Wire up the 401 auto-refresh handler once on mount.
+    // On success: update local token state + configureAuthToken (done inside api.ts).
+    // On failure: sign the user out.
+    configureOn401Handler(
+      (newToken) => {
+        setToken(newToken);
+      },
+      () => {
+        setToken(null);
+        setUser(null);
+        configureAuthToken(null);
+        queryClient.clear();
+      }
+    );
+  }, [queryClient]);
 
   useEffect(() => {
     refreshToken.mutate(undefined, {
@@ -51,17 +79,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(newUser);
     configureAuthToken(newToken);
   }, []);
-
-  const handleSignout = useCallback(() => {
-    signoutMutation.mutate(undefined, {
-      onSettled: () => {
-        setToken(null);
-        setUser(null);
-        configureAuthToken(null);
-        queryClient.clear();
-      }
-    });
-  }, [signoutMutation, queryClient]);
 
   return (
     <AuthContext.Provider value={{ user, token, isLoading, signin: handleSignin, signout: handleSignout }}>

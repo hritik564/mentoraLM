@@ -8,6 +8,13 @@ export type BodyType<T> = T;
 
 export type AuthTokenGetter = () => Promise<string | null> | string | null;
 
+/**
+ * Called when the server returns a 401. Should try to refresh the access
+ * token and return the new token string. Return null to give up and let the
+ * original 401 error propagate.
+ */
+export type On401Handler = () => Promise<string | null>;
+
 const NO_BODY_STATUS = new Set([204, 205, 304]);
 const DEFAULT_JSON_ACCEPT = "application/json, application/problem+json";
 
@@ -17,6 +24,7 @@ const DEFAULT_JSON_ACCEPT = "application/json, application/problem+json";
 
 let _baseUrl: string | null = null;
 let _authTokenGetter: AuthTokenGetter | null = null;
+let _on401Handler: On401Handler | null = null;
 
 /**
  * Set a base URL that is prepended to every relative request URL
@@ -42,6 +50,16 @@ export function setBaseUrl(url: string | null): void {
  */
 export function setAuthTokenGetter(getter: AuthTokenGetter | null): void {
   _authTokenGetter = getter;
+}
+
+/**
+ * Register a handler that is called when the API responds with HTTP 401.
+ * The handler should attempt a token refresh and return the new token string.
+ * Returning null signals that the refresh failed; the 401 error propagates
+ * normally (and the application should sign the user out).
+ */
+export function setOn401Handler(handler: On401Handler | null): void {
+  _on401Handler = handler;
 }
 
 function isRequest(input: RequestInfo | URL): input is Request {
@@ -360,7 +378,19 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  let response = await fetch(input, { ...init, method, headers });
+
+  // ---------------------------------------------------------------------------
+  // 401 auto-refresh: attempt a single token refresh then replay the request
+  // ---------------------------------------------------------------------------
+  if (response.status === 401 && _on401Handler) {
+    const newToken = await _on401Handler();
+    if (newToken) {
+      // Update the Authorization header with the fresh token and retry once
+      headers.set("authorization", `Bearer ${newToken}`);
+      response = await fetch(input, { ...init, method, headers });
+    }
+  }
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);

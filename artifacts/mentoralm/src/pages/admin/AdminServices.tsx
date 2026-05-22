@@ -25,6 +25,7 @@ const emptyForm = {
   price: 0,
   counsellorName: "",
   counsellorBio: "",
+  thumbnailUrl: "",
   status: "published",
   slots: "10",
 };
@@ -57,6 +58,7 @@ export default function AdminServices() {
       price: s.price,
       counsellorName: s.counsellorName,
       counsellorBio: s.counsellorBio || "",
+      thumbnailUrl: s.thumbnailUrl || "",
       status: s.status,
       slots: String(s.slots),
     });
@@ -74,6 +76,7 @@ export default function AdminServices() {
       price: Number(form.price),
       counsellorName: form.counsellorName,
       counsellorBio: form.counsellorBio,
+      thumbnailUrl: form.thumbnailUrl || undefined,
       status: form.status,
       slots: form.slots,
     };
@@ -217,6 +220,26 @@ export default function AdminServices() {
                 <div>
                   <label className="text-sm font-medium text-white mb-1.5 block">Counsellor Bio</label>
                   <textarea value={form.counsellorBio} onChange={(e) => setForm((p) => ({ ...p, counsellorBio: e.target.value }))} rows={2} className={`w-full rounded-md border px-3 py-2 resize-none ${inputCls}`} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-white mb-1.5 block">Thumbnail URL</label>
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={form.thumbnailUrl}
+                    onChange={(e) => setForm((p) => ({ ...p, thumbnailUrl: e.target.value }))}
+                    className={inputCls}
+                  />
+                  {form.thumbnailUrl && (
+                    <div className="mt-2 rounded-lg overflow-hidden border border-[#1E2A45] h-24">
+                      <img
+                        src={form.thumbnailUrl}
+                        alt="Thumbnail preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.style.display = "none"; }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="p-6 border-t border-[#1E2A45] flex justify-end gap-3">

@@ -8,8 +8,14 @@ import { Clock, User, Calendar, CheckCircle, ChevronRight } from "lucide-react";
 
 export default function MarketplacePage() {
   const [tab, setTab] = useState<"browse" | "purchases">("browse");
+  const [activeCategory, setActiveCategory] = useState("All");
   const { data: services, isLoading: loadingServices } = useListServices();
   const { data: bookings, isLoading: loadingBookings } = useGetMyBookings();
+
+  const categories = ["All", ...Array.from(new Set((services ?? []).map((s) => s.category).filter(Boolean)))];
+  const filtered = activeCategory === "All"
+    ? (services ?? [])
+    : (services ?? []).filter((s) => s.category === activeCategory);
 
   const statusColor: Record<string, string> = {
     CONFIRMED: "text-emerald-400 bg-emerald-400/10",
@@ -43,13 +49,35 @@ export default function MarketplacePage() {
 
         {tab === "browse" && (
           <>
+            {/* Category filter pills */}
+            {categories.length > 1 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    data-testid={`category-filter-${cat.toLowerCase().replace(/\s+/g, "-")}`}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
+                      activeCategory === cat
+                        ? "text-white border-transparent bg-gradient-primary"
+                        : "text-muted-foreground border-border hover:text-white hover:border-primary/40 bg-transparent"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {loadingServices ? (
               <div className="grid md:grid-cols-2 gap-5">
                 {[1, 2, 3, 4].map((i) => <div key={i} className="bg-card border border-border rounded-2xl h-64 animate-pulse" />)}
               </div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-20 text-muted-foreground">No services in this category yet.</div>
             ) : (
               <div className="grid md:grid-cols-2 gap-5">
-                {(services || []).map((service, i) => (
+                {filtered.map((service, i) => (
                   <motion.div
                     key={service.id}
                     initial={{ opacity: 0, y: 16 }}
@@ -59,7 +87,15 @@ export default function MarketplacePage() {
                     className="bg-card border border-border rounded-2xl overflow-hidden"
                     data-testid={`marketplace-service-${service.id}`}
                   >
-                    <div className="h-20 bg-gradient-primary opacity-60" />
+                    {service.thumbnailUrl ? (
+                      <img
+                        src={service.thumbnailUrl}
+                        alt={service.title}
+                        className="w-full h-28 object-cover"
+                      />
+                    ) : (
+                      <div className="h-20 bg-gradient-primary opacity-60" />
+                    )}
                     <div className="p-5">
                       <div className="inline-block text-xs font-semibold text-primary bg-primary/10 rounded-full px-2.5 py-0.5 mb-2">
                         {service.category}

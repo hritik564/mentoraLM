@@ -18,20 +18,24 @@ interface Message {
   recommendedService?: Service;
 }
 
+/**
+ * Detect the [Book a Session] marker that the system prompt instructs the AI
+ * to output when deep personalised mentoring is needed.  When found, pair the
+ * response with a recommended service card.
+ */
 function detectRecommendedService(text: string, services: Service[]): Service | undefined {
   if (!services.length) return undefined;
-  const lower = text.toLowerCase();
-  if (!lower.includes("recommend") && !lower.includes("suggest") && !lower.includes("book") && !lower.includes("session")) {
-    return undefined;
-  }
-  for (const service of services) {
-    if (lower.includes(service.title.toLowerCase())) {
-      return service;
+  // Primary signal: explicit [Book a Session] marker in the AI response
+  if (text.includes("[Book a Session]")) {
+    // Try to find a service name mentioned nearby
+    const lower = text.toLowerCase();
+    for (const service of services) {
+      if (lower.includes(service.title.toLowerCase())) {
+        return service;
+      }
     }
-  }
-  // Fall back: if text mentions "session" and counselling context, suggest first published service
-  if ((lower.includes("1-on-1") || lower.includes("one-on-one") || lower.includes("expert")) && lower.includes("session")) {
-    return services.find((s) => s.status === "published") ?? undefined;
+    // Fall back to first published service
+    return services.find((s) => s.status === "published") ?? services[0];
   }
   return undefined;
 }
@@ -140,8 +144,9 @@ export default function ChatPage() {
             if (data === "[DONE]") break;
             try {
               const parsed = JSON.parse(data);
-              if (parsed.text) {
-                accumulated += parsed.text;
+              // Backend emits { content: "..." } chunks and { done: true } at end
+              if (parsed.content) {
+                accumulated += parsed.content;
                 setMessages((prev) => {
                   const updated = [...prev];
                   const last = updated[updated.length - 1];
@@ -156,15 +161,16 @@ export default function ChatPage() {
         }
       }
 
-      // Detect recommended service in the completed response
+      // Detect [Book a Session] marker and strip it from the display text
       const recommendedService = detectRecommendedService(accumulated, services ?? []);
+      const displayContent = accumulated.replace(/\[Book a Session\]/g, "").trim();
 
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
         updated[updated.length - 1] = {
           ...last,
-          content: accumulated,
+          content: displayContent,
           streaming: false,
           recommendedService,
         };
