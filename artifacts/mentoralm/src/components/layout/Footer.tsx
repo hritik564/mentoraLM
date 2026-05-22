@@ -36,7 +36,7 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} MentorAlm. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} MentoraLM. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             {/* Social links could go here */}
           </div>

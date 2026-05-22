@@ -97,7 +97,7 @@ const testimonials = [
   {
     name: "Aanya Sharma",
     stream: "Class 12, Science",
-    quote: "I was completely lost between engineering and medicine. MentorAlm's AI mapped my strengths and gave me clarity I couldn't find in 2 years of searching. I'm now confidently preparing for NEET.",
+    quote: "I was completely lost between engineering and medicine. MentoraLM's AI mapped my strengths and gave me clarity I couldn't find in 2 years of searching. I'm now confidently preparing for NEET.",
     rating: 5,
   },
   {
@@ -115,7 +115,7 @@ const testimonials = [
 ];
 
 export default function HomePage() {
-  usePageMeta(undefined, "MentorAlm helps Indian students discover the right career path using AI-powered counselling, personalised roadmaps, and expert sessions.");
+  usePageMeta(undefined, "MentoraLM helps Indian students discover the right career path using AI-powered counselling, personalised roadmaps, and expert sessions.");
   const { data: services } = useListServices();
   const featuresRef = useRef<HTMLDivElement>(null);
   const featuresInView = useInView(featuresRef, { once: true });
@@ -152,7 +152,7 @@ export default function HomePage() {
                 </motion.h1>
 
                 <motion.p variants={fadeUp} className="text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed">
-                  Most career advice is generic. Ours isn't. MentorAlm's AI learns your background, strengths, and goals — then guides you like a counsellor who's known you for years.
+                  Most career advice is generic. Ours isn't. MentoraLM's AI learns your background, strengths, and goals — then guides you like a counsellor who's known you for years.
                 </motion.p>
 
                 <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
@@ -300,7 +300,7 @@ export default function HomePage() {
         <section className="py-24 px-6 bg-white/2 border-y border-white/5">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">How MentorAlm works</h2>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">How MentoraLM works</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">From sign-up to clarity in four steps.</p>
             </div>
 

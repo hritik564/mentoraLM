@@ -21,7 +21,7 @@ async function ensureChatTable() {
 
 function buildSystemPrompt(user: { name: string }, profile: Record<string, unknown> | null): string {
   const p = profile || {};
-  return `You are MentorAlm, an expert AI career counsellor for Indian students. You have deep knowledge of Indian education systems (CBSE, ICSE, IB, state boards), entrance exams (JEE, NEET, CLAT, CUET, CAT, UPSC, NDA, NID, CEED, etc.), top Indian colleges (IITs, NITs, AIIMS, NLUs, IIMs, NIFT, etc.), and career paths.
+  return `You are MentoraLM, an expert AI career counsellor for Indian students. You have deep knowledge of Indian education systems (CBSE, ICSE, IB, state boards), entrance exams (JEE, NEET, CLAT, CUET, CAT, UPSC, NDA, NID, CEED, etc.), top Indian colleges (IITs, NITs, AIIMS, NLUs, IIMs, NIFT, etc.), and career paths.
 
 You are warm, encouraging, specific, and practical. You never give generic advice. You always reference the student's actual profile in your responses.
 

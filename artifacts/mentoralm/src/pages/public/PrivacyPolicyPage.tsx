@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const sections = [
   {
     title: "1. Information We Collect",
-    body: `We collect information you provide directly to us when you create an account, complete your profile, or use our services. This includes your name, email address, educational background, career interests, and any other information you choose to provide.\n\nWe also automatically collect certain information when you use MentorAlm, including your IP address, browser type, pages visited, and usage patterns through standard server logs and analytics tools.`,
+    body: `We collect information you provide directly to us when you create an account, complete your profile, or use our services. This includes your name, email address, educational background, career interests, and any other information you choose to provide.\n\nWe also automatically collect certain information when you use MentoraLM, including your IP address, browser type, pages visited, and usage patterns through standard server logs and analytics tools.`,
   },
   {
     title: "2. How We Use Your Information",
@@ -26,24 +26,24 @@ const sections = [
   },
   {
     title: "6. Cookies",
-    body: `MentorAlm uses cookies and similar tracking technologies to maintain your session, remember your preferences, and analyse how our platform is used. You can control cookie settings through your browser; however, disabling cookies may affect certain features of the platform.`,
+    body: `MentoraLM uses cookies and similar tracking technologies to maintain your session, remember your preferences, and analyse how our platform is used. You can control cookie settings through your browser; however, disabling cookies may affect certain features of the platform.`,
   },
   {
     title: "7. Children's Privacy",
-    body: `MentorAlm is designed for students, including those under 18. We take extra care to protect the privacy of younger users. We do not knowingly collect personally identifiable information from children under 13 without verifiable parental consent. If you believe we have collected such information, please contact us immediately.`,
+    body: `MentoraLM is designed for students, including those under 18. We take extra care to protect the privacy of younger users. We do not knowingly collect personally identifiable information from children under 13 without verifiable parental consent. If you believe we have collected such information, please contact us immediately.`,
   },
   {
     title: "8. Changes to This Policy",
-    body: `We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page with an updated date. Your continued use of MentorAlm after such changes constitutes your acceptance of the revised policy.`,
+    body: `We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on this page with an updated date. Your continued use of MentoraLM after such changes constitutes your acceptance of the revised policy.`,
   },
   {
     title: "9. Contact Us",
-    body: `If you have questions or concerns about this Privacy Policy, please contact us at:\n\nMentorAlm\nEmail: privacy@mentoralm.com`,
+    body: `If you have questions or concerns about this Privacy Policy, please contact us at:\n\nMentoraLM\nEmail: privacy@mentoralm.com`,
   },
 ];
 
 export default function PrivacyPolicyPage() {
-  usePageMeta("Privacy Policy", "MentorAlm's privacy policy — how we collect, use, and protect your personal information.");
+  usePageMeta("Privacy Policy", "MentoraLM's privacy policy — how we collect, use, and protect your personal information.");
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
             transition={{ delay: 0.1 }}
             className="text-white/70 leading-relaxed mb-12 text-base"
           >
-            At MentorAlm, we take your privacy seriously. This policy explains what information we collect, how we use it, and the choices you have. By using MentorAlm, you agree to the collection and use of information in accordance with this policy.
+            At MentoraLM, we take your privacy seriously. This policy explains what information we collect, how we use it, and the choices you have. By using MentoraLM, you agree to the collection and use of information in accordance with this policy.
           </motion.p>
 
           <div className="space-y-10">

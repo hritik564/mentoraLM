@@ -9,7 +9,7 @@ import { Clock, Users, ChevronRight } from "lucide-react";
 import { usePageMeta } from "@/lib/usePageMeta";
 
 export default function ServicesPage() {
-  usePageMeta("Counselling Services", "Browse MentorAlm's expert career counselling sessions — stream selection, college choice, JEE/NEET prep and more.");
+  usePageMeta("Counselling Services", "Browse MentoraLM's expert career counselling sessions — stream selection, college choice, JEE/NEET prep and more.");
   const { data: services, isLoading } = useListServices();
   const [activeCategory, setActiveCategory] = useState<string>("All");
 

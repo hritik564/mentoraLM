@@ -43,7 +43,7 @@ const team = [
 ];
 
 export default function AboutPage() {
-  usePageMeta("About Us", "Learn about MentorAlm's mission to democratise career counselling for every Indian student.");
+  usePageMeta("About Us", "Learn about MentoraLM's mission to democratise career counselling for every Indian student.");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -61,7 +61,7 @@ export default function AboutPage() {
               deserves a <span className="text-gradient">brilliant mentor</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-              MentorAlm was built because most career advice in India is either too expensive, too generic, or too late. 
+              MentoraLM was built because most career advice in India is either too expensive, too generic, or too late. 
               We use AI to give every student access to the kind of personalised guidance that used to be reserved for those who could afford a premium counsellor.
             </p>
           </motion.div>
@@ -99,13 +99,13 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-white mb-6">Our story</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                MentorAlm started with a simple observation: the students who succeed in India's competitive education landscape often have one thing in common — a trusted adult who helped them navigate the noise. Whether a parent, teacher, or counsellor, that mentor made the difference.
+                MentoraLM started with a simple observation: the students who succeed in India's competitive education landscape often have one thing in common — a trusted adult who helped them navigate the noise. Whether a parent, teacher, or counsellor, that mentor made the difference.
               </p>
               <p>
                 Most students don't have that. They rely on Google, YouTube, and well-meaning relatives who repeat the same advice: "Study hard, get into engineering or medicine." Meanwhile, the landscape of careers has exploded — design, law, product management, data science, research, policy — and students are more lost than ever.
               </p>
               <p>
-                We built MentorAlm to change that. By combining AI that deeply understands each student's profile with real human counsellors for complex decisions, we give every student access to the kind of guidance that helps them make confident, informed choices about their futures.
+                We built MentoraLM to change that. By combining AI that deeply understands each student's profile with real human counsellors for complex decisions, we give every student access to the kind of guidance that helps them make confident, informed choices about their futures.
               </p>
             </div>
           </motion.div>

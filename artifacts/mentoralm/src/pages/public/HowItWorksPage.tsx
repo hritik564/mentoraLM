@@ -62,15 +62,15 @@ const steps = [
 ];
 
 const faqs = [
-  { q: "Is MentorAlm free to use?", a: "Signing up and using the AI counsellor is free. Expert 1-on-1 sessions with human counsellors are paid — see our Services page for pricing." },
-  { q: "How is MentorAlm different from generic career advice sites?", a: "Most advice is one-size-fits-all. MentorAlm's AI reads your full profile — your stream, grades, interests, family situation, goals — and gives guidance that actually fits you." },
+  { q: "Is MentoraLM free to use?", a: "Signing up and using the AI counsellor is free. Expert 1-on-1 sessions with human counsellors are paid — see our Services page for pricing." },
+  { q: "How is MentoraLM different from generic career advice sites?", a: "Most advice is one-size-fits-all. MentoraLM's AI reads your full profile — your stream, grades, interests, family situation, goals — and gives guidance that actually fits you." },
   { q: "Who are the human counsellors?", a: "Our counsellors are experienced career guidance professionals who have worked with hundreds of Indian students across engineering, medicine, law, commerce, and creative fields." },
   { q: "Is my data private?", a: "Yes. Your profile data is used solely to personalise your AI counsellor. It is never sold or shared with third parties." },
-  { q: "What if I haven't decided my stream yet?", a: "That's exactly what MentorAlm is for. Start the chat and tell your AI counsellor where you are — it'll guide you through the decision step by step." },
+  { q: "What if I haven't decided my stream yet?", a: "That's exactly what MentoraLM is for. Start the chat and tell your AI counsellor where you are — it'll guide you through the decision step by step." },
 ];
 
 export default function HowItWorksPage() {
-  usePageMeta("How It Works", "See how MentorAlm uses AI and expert counsellors to guide Indian students step-by-step toward their dream career.");
+  usePageMeta("How It Works", "See how MentoraLM uses AI and expert counsellors to guide Indian students step-by-step toward their dream career.");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -84,7 +84,7 @@ export default function HowItWorksPage() {
           {/* Header */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
             <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
-              How MentorAlm works
+              How MentoraLM works
             </h1>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
               From sign-up to career clarity in four steps. No jargon, no generic advice — just guidance built around you.
@@ -160,7 +160,7 @@ export default function HowItWorksPage() {
           {/* CTA */}
           <div className="text-center">
             <h2 className="text-2xl font-bold text-white mb-3">Ready to find your direction?</h2>
-            <p className="text-muted-foreground mb-8">Join hundreds of students who've found clarity with MentorAlm.</p>
+            <p className="text-muted-foreground mb-8">Join hundreds of students who've found clarity with MentoraLM.</p>
             <Link href="/auth/signup">
               <Button className="bg-gradient-primary border-0 hover:opacity-90 px-10 h-12 font-semibold">
                 Get Started Free

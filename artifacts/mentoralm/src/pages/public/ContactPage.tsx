@@ -20,7 +20,7 @@ const schema = z.object({
 });
 
 export default function ContactPage() {
-  usePageMeta("Contact Us", "Get in touch with the MentorAlm team for support, partnerships, or any questions about our counselling services.");
+  usePageMeta("Contact Us", "Get in touch with the MentoraLM team for support, partnerships, or any questions about our counselling services.");
   const [sent, setSent] = useState(false);
   const submitMutation = useSubmitContact();
 

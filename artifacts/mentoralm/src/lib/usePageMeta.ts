@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
-const BASE_TITLE = "MentorAlm — AI Career Counselling for Indian Students";
+const BASE_TITLE = "MentoraLM — AI Career Counselling for Indian Students";
 
 export function usePageMeta(title?: string, description?: string) {
   useEffect(() => {
     const prev = document.title;
-    document.title = title ? `${title} | MentorAlm` : BASE_TITLE;
+    document.title = title ? `${title} | MentoraLM` : BASE_TITLE;
 
     let metaDesc = document.querySelector<HTMLMetaElement>('meta[name="description"]');
     const prevDesc = metaDesc?.content;

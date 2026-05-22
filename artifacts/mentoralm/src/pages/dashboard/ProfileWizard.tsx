@@ -500,7 +500,7 @@ export default function ProfileWizard() {
                     <Input placeholder="e.g. Lack of guidance, financial constraints..." value={form.stoppingYou as string} onChange={(e) => set("stoppingYou")(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">How did you hear about MentorAlm?</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">How did you hear about MentoraLM?</label>
                     <select value={form.heardFrom as string} onChange={(e) => set("heardFrom")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                       <option value="">Select</option>
                       <option>Social Media</option>

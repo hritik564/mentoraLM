@@ -16,19 +16,19 @@ export async function sendWelcomeEmail(to: string, name: string) {
   if (!process.env.SMTP_USER) return; // Skip if not configured
   try {
     await transporter.sendMail({
-      from: `MentorAlm <${FROM}>`,
+      from: `MentoraLM <${FROM}>`,
       to,
-      subject: "Welcome to MentorAlm! 🎯",
+      subject: "Welcome to MentoraLM! 🎯",
       html: `
         <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A0F; color: #fff; padding: 40px; border-radius: 12px;">
-          <h1 style="color: #1A1AFF; margin-bottom: 16px;">Welcome to MentorAlm, ${name}!</h1>
+          <h1 style="color: #1A1AFF; margin-bottom: 16px;">Welcome to MentoraLM, ${name}!</h1>
           <p style="color: #8888AA; font-size: 16px; line-height: 1.6;">
             Your AI career counsellor is ready. Start by completing your profile — the more we know about you, the better we can guide you.
           </p>
           <a href="https://mentoralm.com/onboarding" style="display: inline-block; margin-top: 24px; padding: 14px 28px; background: linear-gradient(135deg, #1A1AFF, #0000CC); color: #fff; text-decoration: none; border-radius: 50px; font-weight: 600;">
             Complete Your Profile →
           </a>
-          <p style="color: #8888AA; margin-top: 32px; font-size: 14px;">© 2025 MentorAlm</p>
+          <p style="color: #8888AA; margin-top: 32px; font-size: 14px;">© 2025 MentoraLM</p>
         </div>
       `,
     });
@@ -41,9 +41,9 @@ export async function sendOtpEmail(to: string, otp: string) {
   if (!process.env.SMTP_USER) return;
   try {
     await transporter.sendMail({
-      from: `MentorAlm <${FROM}>`,
+      from: `MentoraLM <${FROM}>`,
       to,
-      subject: "Your MentorAlm Password Reset OTP",
+      subject: "Your MentoraLM Password Reset OTP",
       html: `
         <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A0F; color: #fff; padding: 40px; border-radius: 12px;">
           <h1 style="color: #1A1AFF;">Password Reset OTP</h1>
@@ -67,7 +67,7 @@ export async function sendBookingConfirmationEmail(
   if (!process.env.SMTP_USER) return;
   try {
     await transporter.sendMail({
-      from: `MentorAlm <${FROM}>`,
+      from: `MentoraLM <${FROM}>`,
       to,
       subject: `Booking Confirmed: ${serviceTitle}`,
       html: `
@@ -78,7 +78,7 @@ export async function sendBookingConfirmationEmail(
             <p style="color: #fff; font-size: 18px; font-weight: 600; margin: 0 0 8px;">${serviceTitle}</p>
             <p style="color: #8888AA; margin: 0;">📅 ${new Date(slotDateTime).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
           </div>
-          <p style="color: #8888AA; font-size: 14px;">© 2025 MentorAlm</p>
+          <p style="color: #8888AA; font-size: 14px;">© 2025 MentoraLM</p>
         </div>
       `,
     });

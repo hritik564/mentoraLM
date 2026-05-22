@@ -98,7 +98,7 @@ export default function AdminContacts() {
                   {/* Action buttons */}
                   <div className="pl-12 flex items-center gap-2">
                     <a
-                      href={`mailto:${contact.email}?subject=Re: Your MentorAlm Enquiry`}
+                      href={`mailto:${contact.email}?subject=Re: Your MentoraLM Enquiry`}
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-[#00A8FF] hover:text-[#00A8FF]/80 bg-[#00A8FF]/10 hover:bg-[#00A8FF]/15 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       <Reply className="w-3.5 h-3.5" />

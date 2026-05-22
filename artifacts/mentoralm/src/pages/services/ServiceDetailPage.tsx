@@ -205,7 +205,7 @@ export default function ServiceDetailPage() {
               key: order.razorpayKeyId,
               amount: order.amount,
               currency: order.currency,
-              name: "MentorAlm",
+              name: "MentoraLM",
               description: service?.title || "Counselling Session",
               order_id: order.razorpayOrderId,
               prefill: {
