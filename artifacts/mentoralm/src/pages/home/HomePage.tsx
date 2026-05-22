@@ -80,7 +80,7 @@ const fadeUp = {
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
 };
 
-function Counter({ to, label, suffix = "" }: { to: number; label: string; suffix?: string }) {
+function Counter({ to, label, suffix = "", decimals = 0 }: { to: number; label: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true });
   return (
@@ -97,11 +97,14 @@ function Counter({ to, label, suffix = "" }: { to: number; label: string; suffix
           onUpdate={(latest) => {
             if (ref.current) {
               const el = ref.current.querySelector("span.count-val");
-              if (el) el.textContent = Math.round((latest as { textContent: number }).textContent).toString();
+              if (el) {
+                const val = (latest as { textContent: number }).textContent;
+                el.textContent = decimals > 0 ? Number(val).toFixed(decimals) : Math.round(val).toString();
+              }
             }
           }}
         >
-          <span className="count-val">0</span>
+          <span className="count-val">{decimals > 0 ? (0).toFixed(decimals) : "0"}</span>
         </motion.span>
         {suffix}
       </motion.div>
@@ -308,7 +311,7 @@ export default function HomePage() {
                 <>
                   <Counter to={500} label="Students Guided" suffix="+" />
                   <Counter to={95} label="Satisfaction Rate" suffix="%" />
-                  <Counter to={4.8} label="Average Rating" suffix="★" />
+                  <Counter to={4.8} label="Average Rating" suffix="★" decimals={1} />
                   <Counter to={2} label="Expert Counsellors" />
                 </>
               )}
