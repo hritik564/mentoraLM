@@ -1,0 +1,136 @@
+Update the entire frontend design system to match the MentorAlm logo and 
+gradright.com style. Here are the exact specifications:
+
+---
+
+## UPDATED DESIGN SYSTEM
+
+### Colors (replace all previous color values):
+- Background: #080C1A (deep navy black)
+- Card background: #0F1628
+- Border: #1E2A45
+- Primary gradient: linear-gradient(135deg, #00A8FF 0%, #7B3FE4 100%)
+- Accent orange: #FF8C00
+- Accent pink: #FF4D6D
+- Text primary: #FFFFFF
+- Text muted: #6B7280
+- Success: #10B981
+
+### Logo Usage:
+- "Mentora" in white bold, "LM" in gradient (#00A8FF → #7B3FE4)
+- Use the uploaded logo image in the navbar and footer
+
+### Typography:
+- Headings: "Plus Jakarta Sans", bold/extrabold
+- Body: "Inter"
+- Hero headline size: 64px desktop, 36px mobile
+- All imported from Google Fonts
+
+### Buttons:
+- Primary: gradient background (#00A8FF → #7B3FE4), white text, 
+  pill-shaped (border-radius: 50px), glow shadow on hover:
+  box-shadow: 0 0 30px rgba(0, 168, 255, 0.4)
+- Secondary: transparent with gradient border, gradient text
+- Hover: scale(1.03) + glow intensifies
+
+### Cards:
+- Background: #0F1628
+- Border: 1px solid #1E2A45
+- Border-radius: 16px
+- Hover: border color shifts to #00A8FF, subtle blue glow
+- Backdrop blur on hero cards
+
+### Navbar:
+- Transparent on scroll top, #080C1A with blur when scrolled
+- Logo on left, nav links center, "Sign In" + "Get Started" CTAs right
+- "Get Started" button uses primary gradient style
+- Smooth hide/show on scroll
+
+### Hero Section (gradright.com style):
+- Full viewport height
+- Large bold headline with gradient text on key words
+- Floating animated cards in background showing career paths 
+  (use CSS animations, not just static)
+- Particle/constellation background (use tsParticles or CSS only)
+- Two CTAs side by side
+- Scroll indicator arrow at bottom
+
+### Animations (Framer Motion — match gradright.com energy):
+- Staggered fade-up on all section entries (0.1s delay between items)
+- Hero elements animate in sequence on load
+- Number counters animate when scrolled into view
+  (e.g., "500+ Students", "95% Success Rate", "4.9★ Rating")
+- Cards lift on hover with smooth spring animation
+- Page transitions: fade + slight upward slide
+- Gradient orbs in background slowly animate (CSS keyframes)
+- Navbar links have underline slide-in hover effect
+
+### Gradient Orbs (background atmosphere):
+Add these to the hero and key sections:
+- Large blurred circle: #00A8FF at 10% opacity, top-left, 600px
+- Large blurred circle: #7B3FE4 at 10% opacity, bottom-right, 800px
+- Animate with slow pulse (4s infinite alternate)
+These give the deep space/premium feel like gradright.com
+
+---
+
+## HOMEPAGE SECTIONS (in order):
+
+### 1. Navbar
+Logo + nav links (Home, How It Works, Services, About, Contact) + 
+Sign In (ghost) + Get Started (gradient pill)
+
+### 2. Hero
+Headline: "Your AI Career Counsellor, <gradient>Available 24/7</gradient>"
+Subheadline: "Most career advice is generic. Ours isn't. MentorAlm's AI 
+learns your background, strengths, and goals — then guides you like a 
+counsellor who's known you for years."
+CTA 1: "Try AI Counsellor Free" (gradient button)
+CTA 2: "Explore Services" (ghost button)
+Floating visual: 5 animated cards orbiting a central AI brain icon, 
+each card showing a career path (Engineering, Medicine, Design, Law, Business)
+Background: gradient orbs + subtle particle grid
+
+### 3. Social Proof Bar
+Animated counters: "500+ Students Guided", "95% Satisfaction Rate", 
+"4.9★ Average Rating", "2 Expert Counsellors"
+Dark card strip with gradient border top
+
+### 4. Features (3 cards in a row)
+Card 1: Brain/AI icon — "Counselling That Knows You"
+Card 2: Person icon — "Real Experts, When You Need Them"  
+Card 3: Map icon — "Your Personalised Roadmap"
+Each card: gradient icon background, hover lift animation
+
+### 5. How It Works (4 steps, alternating left-right layout)
+Step 1: Complete your profile (icon: person)
+Step 2: Chat with AI counsellor (icon: chat bubble)
+Step 3: Get your roadmap (icon: map/compass)
+Step 4: Book expert session (icon: calendar)
+Connected by animated dotted line
+
+### 6. Services Preview (3 cards)
+Show the 2 seeded services + "More Coming Soon" card
+Each card: gradient top border, price, duration, Book Now CTA
+
+### 7. Testimonials (3 cards, carousel on mobile)
+Student photo placeholder + quote + name + stream/class
+Star rating shown
+
+### 8. CTA Banner
+Full-width gradient background section
+"Ready to find your path?" headline
+"Start Free Today" button
+
+### 9. Footer
+Logo + tagline, nav links, social icons, 
+"© 2025 MentorAlm. Built for India's students."
+
+---
+
+Make every section scroll-animate in. The overall feel should be:
+premium, modern, dark, energetic — like gradright.com but with the 
+MentorAlm blue-purple-orange color identity.
+
+Apply this same design system consistently across ALL pages and the 
+student dashboard.
