@@ -312,7 +312,7 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="relative z-10 flex flex-col"
+                    className="relative z-10 flex flex-col items-center text-center"
                   >
                     <div className="text-5xl font-extrabold text-gradient mb-4 opacity-40">{step.step}</div>
                     <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
