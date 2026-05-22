@@ -1,22 +1,38 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: MentorAlm API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: profile
+    description: Student profile operations
+  - name: services
+    description: Service marketplace operations
+  - name: bookings
+    description: Booking operations
+  - name: chat
+    description: AI chat operations
+  - name: roadmap
+    description: Career roadmap operations
+  - name: admin
+    description: Admin panel operations
+  - name: contact
+    description: Contact form operations
+  - name: anthropic
+    description: Anthropic AI chat operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,7 +40,767 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      summary: Register a new student account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupInput"
+      responses:
+        "201":
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/signin:
+    post:
+      operationId: signin
+      tags: [auth]
+      summary: Sign in with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SigninInput"
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/signout:
+    post:
+      operationId: signout
+      tags: [auth]
+      summary: Sign out and invalidate refresh token
+      responses:
+        "204":
+          description: Signed out
+
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      tags: [auth]
+      summary: Refresh access token using refresh token cookie
+      responses:
+        "200":
+          description: New access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshResponse"
+        "401":
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [auth]
+      summary: Send OTP to email for password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordInput"
+      responses:
+        "200":
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/reset-password:
+    post:
+      operationId: resetPassword
+      tags: [auth]
+      summary: Reset password with OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordInput"
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Invalid or expired OTP
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPublic"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get student profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Student profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update student profile (any subset of fields)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileInput"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentProfile"
+
+  /profile/photo:
+    post:
+      operationId: uploadProfilePhoto
+      tags: [profile]
+      summary: Upload profile photo
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Photo uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoUploadResponse"
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      summary: List published services
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /services/{id}:
+    get:
+      operationId: getService
+      tags: [services]
+      summary: Get a single service
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Service details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /services/{id}/slots:
+    get:
+      operationId: getServiceSlots
+      tags: [services]
+      summary: Get available slots for a service
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Available slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /bookings:
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a booking and Razorpay order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingInput"
+      responses:
+        "201":
+          description: Booking initiated with Razorpay order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingOrderResponse"
+
+  /bookings/verify:
+    post:
+      operationId: verifyBooking
+      tags: [bookings]
+      summary: Verify Razorpay payment and confirm booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyPaymentInput"
+      responses:
+        "200":
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/mine:
+    get:
+      operationId: getMyBookings
+      tags: [bookings]
+      summary: Get current user bookings
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingWithService"
+
+  /chat/messages:
+    get:
+      operationId: getChatMessages
+      tags: [chat]
+      summary: Get chat message history
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Chat messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+
+  /chat/stream:
+    post:
+      operationId: streamChatMessage
+      tags: [chat]
+      summary: Send a message and receive SSE streamed AI response
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "200":
+          description: SSE stream of assistant response
+          content:
+            text/event-stream: {}
+        "429":
+          description: Daily rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /chat/new:
+    post:
+      operationId: newChat
+      tags: [chat]
+      summary: Start a new chat session (clears history)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: New session started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /roadmap:
+    get:
+      operationId: getRoadmap
+      tags: [roadmap]
+      summary: Get career roadmap
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Career roadmap
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadmap"
+        "404":
+          description: No roadmap generated yet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /roadmap/generate:
+    post:
+      operationId: generateRoadmap
+      tags: [roadmap]
+      summary: Generate or regenerate career roadmap using AI
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Generated roadmap
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadmap"
+
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit a contact form message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Message submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get platform stats
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/students:
+    get:
+      operationId: listAdminStudents
+      tags: [admin]
+      summary: List all students
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Students list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminStudent"
+
+  /admin/students/{id}:
+    get:
+      operationId: getAdminStudent
+      tags: [admin]
+      summary: Get full student profile (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Full student data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStudentDetail"
+
+  /admin/bookings:
+    get:
+      operationId: listAdminBookings
+      tags: [admin]
+      summary: List all bookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: serviceId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Bookings list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminBooking"
+
+  /admin/bookings/{id}:
+    patch:
+      operationId: updateAdminBooking
+      tags: [admin]
+      summary: Update booking status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBookingStatusInput"
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminBooking"
+
+  /admin/services:
+    post:
+      operationId: createAdminService
+      tags: [admin]
+      summary: Create a service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateServiceInput"
+      responses:
+        "201":
+          description: Service created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+
+  /admin/services/{id}:
+    patch:
+      operationId: updateAdminService
+      tags: [admin]
+      summary: Update a service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateServiceInput"
+      responses:
+        "200":
+          description: Updated service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+    delete:
+      operationId: deleteAdminService
+      tags: [admin]
+      summary: Delete a service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /admin/contacts:
+    get:
+      operationId: listAdminContacts
+      tags: [admin]
+      summary: List contact form submissions
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Contact messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactMessage"
+
+  /anthropic/conversations:
+    get:
+      operationId: listAnthropicConversations
+      tags: [anthropic]
+      summary: List all conversations
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnthropicConversation"
+    post:
+      operationId: createAnthropicConversation
+      tags: [anthropic]
+      summary: Create a new conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnthropicConversationInput"
+      responses:
+        "201":
+          description: Created conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicConversation"
+
+  /anthropic/conversations/{id}:
+    get:
+      operationId: getAnthropicConversation
+      tags: [anthropic]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicConversationWithMessages"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicError"
+    delete:
+      operationId: deleteAnthropicConversation
+      tags: [anthropic]
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnthropicError"
+
+  /anthropic/conversations/{id}/messages:
+    get:
+      operationId: listAnthropicMessages
+      tags: [anthropic]
+      summary: List messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnthropicMessage"
+    post:
+      operationId: sendAnthropicMessage
+      tags: [anthropic]
+      summary: Send a message and receive an AI response (SSE stream)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnthropicMessageInput"
+      responses:
+        "200":
+          description: SSE stream of assistant response chunks
+          content:
+            text/event-stream: {}
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +810,774 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    SignupInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        password:
+          type: string
+          minLength: 6
+        confirmPassword:
+          type: string
+      required:
+        - name
+        - email
+        - password
+        - confirmPassword
+
+    SigninInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    ForgotPasswordInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    ResetPasswordInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        otp:
+          type: string
+        newPassword:
+          type: string
+          minLength: 6
+      required:
+        - email
+        - otp
+        - newPassword
+
+    UserPublic:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        role:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - role
+        - createdAt
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        user:
+          $ref: "#/components/schemas/UserPublic"
+      required:
+        - accessToken
+        - user
+
+    RefreshResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+      required:
+        - accessToken
+
+    StudentProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        dateOfBirth:
+          type: string
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+        photoUrl:
+          type: string
+          nullable: true
+        educationLevel:
+          type: string
+          nullable: true
+        board:
+          type: string
+          nullable: true
+        schoolCollege:
+          type: string
+          nullable: true
+        gradePercentage:
+          type: string
+          nullable: true
+        stream:
+          type: string
+          nullable: true
+        interests:
+          type: string
+          nullable: true
+        strengths:
+          type: string
+          nullable: true
+        hobbies:
+          type: string
+          nullable: true
+        energizedBy:
+          type: string
+          nullable: true
+        dreamCareer:
+          type: string
+          nullable: true
+        targetColleges:
+          type: string
+          nullable: true
+        openToAbroad:
+          type: string
+          nullable: true
+        biggestConcern:
+          type: string
+          nullable: true
+        familyIncome:
+          type: string
+          nullable: true
+        parentsEducation:
+          type: string
+          nullable: true
+        familyPressure:
+          type: string
+          nullable: true
+        educationBudget:
+          type: string
+          nullable: true
+        fiveYearGoal:
+          type: string
+          nullable: true
+        alreadyTried:
+          type: string
+          nullable: true
+        stoppingYou:
+          type: string
+          nullable: true
+        heardFrom:
+          type: string
+          nullable: true
+        completionPercent:
+          type: number
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - completionPercent
+        - updatedAt
+        - createdAt
+
+    UpdateProfileInput:
+      type: object
+      properties:
+        dateOfBirth:
+          type: string
+        gender:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        educationLevel:
+          type: string
+        board:
+          type: string
+        schoolCollege:
+          type: string
+        gradePercentage:
+          type: string
+        stream:
+          type: string
+        interests:
+          type: string
+        strengths:
+          type: string
+        hobbies:
+          type: string
+        energizedBy:
+          type: string
+        dreamCareer:
+          type: string
+        targetColleges:
+          type: string
+        openToAbroad:
+          type: string
+        biggestConcern:
+          type: string
+        familyIncome:
+          type: string
+        parentsEducation:
+          type: string
+        familyPressure:
+          type: string
+        educationBudget:
+          type: string
+        fiveYearGoal:
+          type: string
+        alreadyTried:
+          type: string
+        stoppingYou:
+          type: string
+        heardFrom:
+          type: string
+
+    PhotoUploadResponse:
+      type: object
+      properties:
+        photoUrl:
+          type: string
+      required:
+        - photoUrl
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        shortDesc:
+          type: string
+        fullDesc:
+          type: string
+        included:
+          type: string
+        category:
+          type: string
+        duration:
+          type: string
+        price:
+          type: integer
+        counsellorName:
+          type: string
+        counsellorBio:
+          type: string
+        thumbnailUrl:
+          type: string
+          nullable: true
+        status:
+          type: string
+        slots:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - shortDesc
+        - fullDesc
+        - included
+        - category
+        - duration
+        - price
+        - counsellorName
+        - counsellorBio
+        - status
+        - slots
+        - createdAt
+
+    CreateServiceInput:
+      type: object
+      properties:
+        title:
+          type: string
+        shortDesc:
+          type: string
+        fullDesc:
+          type: string
+        included:
+          type: string
+        category:
+          type: string
+        duration:
+          type: string
+        price:
+          type: integer
+        counsellorName:
+          type: string
+        counsellorBio:
+          type: string
+        thumbnailUrl:
+          type: string
+        status:
+          type: string
+        slots:
+          type: string
+      required:
+        - title
+        - shortDesc
+        - fullDesc
+        - included
+        - category
+        - duration
+        - price
+        - counsellorName
+        - counsellorBio
+
+    UpdateServiceInput:
+      type: object
+      properties:
+        title:
+          type: string
+        shortDesc:
+          type: string
+        fullDesc:
+          type: string
+        included:
+          type: string
+        category:
+          type: string
+        duration:
+          type: string
+        price:
+          type: integer
+        counsellorName:
+          type: string
+        counsellorBio:
+          type: string
+        thumbnailUrl:
+          type: string
+        status:
+          type: string
+        slots:
+          type: string
+
+    CreateBookingInput:
+      type: object
+      properties:
+        serviceId:
+          type: integer
+        slotDateTime:
+          type: string
+      required:
+        - serviceId
+        - slotDateTime
+
+    VerifyPaymentInput:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+        razorpayOrderId:
+          type: string
+        razorpayPaymentId:
+          type: string
+        razorpaySignature:
+          type: string
+      required:
+        - bookingId
+        - razorpayOrderId
+        - razorpayPaymentId
+        - razorpaySignature
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        serviceId:
+          type: integer
+        slotDateTime:
+          type: string
+        paymentStatus:
+          type: string
+        razorpayOrderId:
+          type: string
+          nullable: true
+        razorpayPaymentId:
+          type: string
+          nullable: true
+        amount:
+          type: integer
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - serviceId
+        - slotDateTime
+        - paymentStatus
+        - amount
+        - status
+        - createdAt
+
+    BookingWithService:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        serviceId:
+          type: integer
+        slotDateTime:
+          type: string
+        paymentStatus:
+          type: string
+        razorpayOrderId:
+          type: string
+          nullable: true
+        razorpayPaymentId:
+          type: string
+          nullable: true
+        amount:
+          type: integer
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        service:
+          $ref: "#/components/schemas/Service"
+      required:
+        - id
+        - userId
+        - serviceId
+        - slotDateTime
+        - paymentStatus
+        - amount
+        - status
+        - createdAt
+        - service
+
+    BookingOrderResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+        razorpayOrderId:
+          type: string
+        razorpayKeyId:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+      required:
+        - bookingId
+        - razorpayOrderId
+        - razorpayKeyId
+        - amount
+        - currency
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - role
+        - content
+        - createdAt
+
+    ChatMessageInput:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+
+    Roadmap:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        content:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - content
+        - generatedAt
+
+    ContactInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - message
+
+    ContactMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - message
+        - createdAt
+
+    AdminStats:
+      type: object
+      properties:
+        totalStudents:
+          type: integer
+        activeThisWeek:
+          type: integer
+        totalRevenue:
+          type: integer
+        bookingsThisMonth:
+          type: integer
+      required:
+        - totalStudents
+        - activeThisWeek
+        - totalRevenue
+        - bookingsThisMonth
+
+    AdminStudent:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        completionPercent:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - completionPercent
+        - createdAt
+
+    AdminStudentDetail:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserPublic"
+        profile:
+          $ref: "#/components/schemas/StudentProfile"
+      required:
+        - user
+
+    AdminBooking:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        studentName:
+          type: string
+        studentEmail:
+          type: string
+        serviceId:
+          type: integer
+        serviceTitle:
+          type: string
+        slotDateTime:
+          type: string
+        paymentStatus:
+          type: string
+        amount:
+          type: integer
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - studentName
+        - studentEmail
+        - serviceId
+        - serviceTitle
+        - slotDateTime
+        - paymentStatus
+        - amount
+        - status
+        - createdAt
+
+    UpdateBookingStatusInput:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    AnthropicConversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - createdAt
+    AnthropicMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - conversationId
+        - role
+        - content
+        - createdAt
+    AnthropicConversationInput:
+      type: object
+      properties:
+        title:
+          type: string
+      required:
+        - title
+    AnthropicMessageInput:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+    AnthropicConversationWithMessages:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnthropicMessage"
+      required:
+        - id
+        - title
+        - createdAt
+        - messages
+    AnthropicError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

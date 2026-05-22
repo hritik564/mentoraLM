@@ -1,4 +1,4 @@
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "postgresql-16"]
 
 [deployment]
 router = "application"
@@ -26,3 +26,13 @@ externalPort = 8080
 [[ports]]
 localPort = 8081
 externalPort = 80
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+ADMIN_EMAIL = "admin@mentoralm.com"
+ADMIN_PASSWORD = "Admin@123"
+JWT_SECRET = "mentoralm-jwt-secret-2025-change-me"
