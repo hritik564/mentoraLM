@@ -308,13 +308,13 @@ export default function HomePage() {
                 <>
                   <Counter to={500} label="Students Guided" suffix="+" />
                   <Counter to={95} label="Satisfaction Rate" suffix="%" />
-                  <Counter to={4.9} label="Average Rating" suffix="★" />
+                  <Counter to={4.8} label="Average Rating" suffix="★" />
                   <Counter to={2} label="Expert Counsellors" />
                 </>
               )}
               {!statsInView && (
                 <>
-                  {["500+", "95%", "4.9★", "2"].map((v, i) => (
+                  {["500+", "95%", "4.8★", "2"].map((v, i) => (
                     <div key={i} className="text-center">
                       <div className="text-4xl font-extrabold text-white mb-1">{v}</div>
                       <p className="text-muted-foreground text-sm font-medium">
