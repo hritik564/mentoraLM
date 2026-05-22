@@ -61,9 +61,8 @@ export default function SignInPage() {
       </div>
       
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <Link href="/" className="text-3xl font-bold tracking-tight text-center block mb-6">
-          <span className="text-white">Mentora</span>
-          <span className="text-gradient">LM</span>
+        <Link href="/" className="flex justify-center mb-6">
+          <img src="/logo.png" alt="MentoraLM" className="h-16 w-auto" />
         </Link>
         <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-white">
           Sign in to your account

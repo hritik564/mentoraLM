@@ -45,9 +45,8 @@ export function Navbar() {
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"} className="text-2xl font-bold tracking-tight">
-          <span className="text-white">Mentora</span>
-          <span className="text-gradient">LM</span>
+        <Link href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"}>
+          <img src="/logo.png" alt="MentoraLM" className="h-10 w-auto" />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">

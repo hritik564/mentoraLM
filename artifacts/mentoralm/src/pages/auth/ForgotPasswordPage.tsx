@@ -59,9 +59,8 @@ export default function ForgotPasswordPage() {
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <Link href="/" className="text-3xl font-bold tracking-tight text-center block mb-6">
-          <span className="text-white">Mentora</span>
-          <span className="text-gradient">LM</span>
+        <Link href="/" className="flex justify-center mb-6">
+          <img src="/logo.png" alt="MentoraLM" className="h-16 w-auto" />
         </Link>
 
         <div className="bg-[#0F1628] py-8 px-8 shadow-xl border border-[#1E2A45] rounded-xl">

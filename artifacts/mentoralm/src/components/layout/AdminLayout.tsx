@@ -29,10 +29,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-[#0F1628] border-r border-[#1E2A45]">
       <div className="p-6 border-b border-[#1E2A45]">
-        <Link href="/admin/dashboard" className="text-2xl font-bold tracking-tight">
-          <span className="text-white">Mentora</span>
-          <span className="text-gradient">LM</span>
-          <span className="ml-2 text-xs bg-destructive text-white px-2 py-0.5 rounded uppercase tracking-wider font-bold">Admin</span>
+        <Link href="/admin/dashboard" className="flex items-center gap-2">
+          <img src="/logo.png" alt="MentoraLM" className="h-9 w-auto" />
+          <span className="text-xs bg-destructive text-white px-2 py-0.5 rounded uppercase tracking-wider font-bold">Admin</span>
         </Link>
       </div>
       <div className="flex-1 py-6 px-4 space-y-2">
@@ -83,9 +82,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0F1628] border-b border-[#1E2A45] z-50 flex items-center justify-between px-4">
-        <Link href="/admin/dashboard" className="text-xl font-bold tracking-tight">
-          <span className="text-white">Mentora</span>
-          <span className="text-gradient">LM</span>
+        <Link href="/admin/dashboard">
+          <img src="/logo.png" alt="MentoraLM" className="h-8 w-auto" />
         </Link>
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
           <SheetTrigger asChild>
