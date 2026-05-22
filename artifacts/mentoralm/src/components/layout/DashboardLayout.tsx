@@ -8,7 +8,8 @@ import {
   ShoppingBag, 
   Map, 
   LogOut,
-  Menu
+  Menu,
+  Settings
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,6 +25,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { href: "/dashboard/chat", label: "AI Counsellor", icon: MessageSquare },
     { href: "/dashboard/roadmap", label: "Career Roadmap", icon: Map },
     { href: "/dashboard/marketplace", label: "Services", icon: ShoppingBag },
+    { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   const SidebarContent = () => (

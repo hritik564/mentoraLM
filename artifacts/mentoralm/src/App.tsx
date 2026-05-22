@@ -26,6 +26,7 @@ import ProfileWizard from "@/pages/dashboard/ProfileWizard";
 import ChatPage from "@/pages/dashboard/ChatPage";
 import MarketplacePage from "@/pages/dashboard/MarketplacePage";
 import RoadmapPage from "@/pages/dashboard/RoadmapPage";
+import SettingsPage from "@/pages/dashboard/SettingsPage";
 
 // Admin Pages
 import AdminLogin from "@/pages/admin/AdminLogin";
@@ -70,6 +71,9 @@ function Router() {
       </Route>
       <Route path="/dashboard/roadmap">
         <ProtectedRoute><RoadmapPage /></ProtectedRoute>
+      </Route>
+      <Route path="/dashboard/settings">
+        <ProtectedRoute><SettingsPage /></ProtectedRoute>
       </Route>
 
       {/* Admin Routes */}

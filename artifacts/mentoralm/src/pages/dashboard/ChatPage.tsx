@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { useGetChatMessages, useNewChat, useGetProfile, useListServices } from "@workspace/api-client-react";
@@ -281,25 +282,43 @@ export default function ChatPage() {
                       Based on your profile
                     </span>
                   )}
-                  <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                    msg.role === "user"
-                      ? "bg-primary/20 text-white rounded-tr-sm"
-                      : "bg-card border border-border text-white/90 rounded-tl-sm"
-                  }`}>
-                    <span className="whitespace-pre-wrap">{msg.content}</span>
-                    {msg.streaming && (
-                      <span className="inline-flex gap-1 ml-2">
-                        {[0, 1, 2].map((j) => (
-                          <motion.span
-                            key={j}
-                            className="w-1.5 h-1.5 rounded-full bg-primary inline-block"
-                            animate={{ opacity: [0.3, 1, 0.3] }}
-                            transition={{ duration: 1.2, repeat: Infinity, delay: j * 0.2 }}
-                          />
-                        ))}
-                      </span>
-                    )}
-                  </div>
+                  {msg.role === "user" ? (
+                    <div className="px-4 py-3 rounded-2xl rounded-tr-sm text-sm leading-relaxed bg-primary/20 text-white">
+                      <span className="whitespace-pre-wrap">{msg.content}</span>
+                    </div>
+                  ) : (
+                    <div className="px-4 py-4 rounded-2xl rounded-tl-sm bg-card border border-border text-white/90 text-sm leading-relaxed prose-ai">
+                      <ReactMarkdown
+                        components={{
+                          h1: ({ children }) => <h1 className="text-white font-bold text-xl mb-2 mt-3 first:mt-0">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-white font-bold text-lg mb-2 mt-3 first:mt-0">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-white font-semibold text-base mb-1.5 mt-2.5 first:mt-0">{children}</h3>,
+                          strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
+                          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc pl-5 mb-2 space-y-1">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal pl-5 mb-2 space-y-1">{children}</ol>,
+                          li: ({ children }) => <li className="text-white/90">{children}</li>,
+                          hr: () => <hr className="border-[#1E2A45] my-3" />,
+                          blockquote: ({ children }) => <blockquote className="border-l-2 border-primary/40 pl-3 italic text-white/70 my-2">{children}</blockquote>,
+                          code: ({ children }) => <code className="bg-white/10 rounded px-1.5 py-0.5 text-xs font-mono text-[#00A8FF]">{children}</code>,
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                      {msg.streaming && (
+                        <span className="inline-flex gap-1 ml-1 mt-1">
+                          {[0, 1, 2].map((j) => (
+                            <motion.span
+                              key={j}
+                              className="w-1.5 h-1.5 rounded-full bg-primary inline-block"
+                              animate={{ opacity: [0.3, 1, 0.3] }}
+                              transition={{ duration: 1.2, repeat: Infinity, delay: j * 0.2 }}
+                            />
+                          ))}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {/* Recommended service card */}
                   {msg.role === "assistant" && !msg.streaming && msg.recommendedService && (
                     <RecommendedServiceCard service={msg.recommendedService} />

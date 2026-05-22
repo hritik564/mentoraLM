@@ -260,6 +260,67 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+// PATCH /auth/me — update name / phone
+router.patch("/me", requireAuth, async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    const updates: Record<string, string> = {};
+    if (name && typeof name === "string") updates.name = name.trim();
+    if (phone !== undefined) updates.phone = phone;
+    if (Object.keys(updates).length === 0) {
+      res.status(400).json({ error: "Nothing to update" });
+      return;
+    }
+    const [user] = await db
+      .update(usersTable)
+      .set(updates)
+      .where(eq(usersTable.id, req.user!.userId))
+      .returning();
+    const { passwordHash: _, ...userPublic } = user;
+    res.json(userPublic);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// POST /auth/change-password
+router.post("/change-password", requireAuth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ error: "currentPassword and newPassword are required" });
+      return;
+    }
+    if (newPassword.length < 6) {
+      res.status(400).json({ error: "New password must be at least 6 characters" });
+      return;
+    }
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, req.user!.userId));
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: "Current password is incorrect" });
+      return;
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await db
+      .update(usersTable)
+      .set({ passwordHash })
+      .where(eq(usersTable.id, req.user!.userId));
+    res.json({ message: "Password changed successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // GET /auth/me
 router.get("/me", requireAuth, async (req, res) => {
   try {

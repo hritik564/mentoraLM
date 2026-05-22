@@ -58,8 +58,10 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen bg-[#080C1A] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#7B3FE4]/5 blur-[120px]" />
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#00A8FF]/10 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full bg-[#7B3FE4]/10 blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-[#7B3FE4]/5 blur-[100px]" />
       </div>
       
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
