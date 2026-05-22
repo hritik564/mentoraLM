@@ -66,6 +66,10 @@ export default function AdminServices() {
   };
 
   const handleSave = () => {
+    if (!form.counsellorName.trim()) {
+      toast.error("Counsellor name is required");
+      return;
+    }
     const data = {
       title: form.title,
       shortDesc: form.shortDesc,
@@ -182,12 +186,25 @@ export default function AdminServices() {
                 <button onClick={() => setIsModalOpen(false)} className="text-muted-foreground hover:text-white"><X className="w-5 h-5" /></button>
               </div>
               <div className="p-6 space-y-4">
-                {(["title", "shortDesc", "category", "counsellorName"] as const).map((field) => (
+                {(["title", "shortDesc", "category"] as const).map((field) => (
                   <div key={field}>
                     <label className="text-sm font-medium text-white mb-1.5 block capitalize">{field.replace(/([A-Z])/g, " $1")}</label>
                     <Input value={form[field]} onChange={(e) => setForm((p) => ({ ...p, [field]: e.target.value }))} className={inputCls} />
                   </div>
                 ))}
+                <div>
+                  <label className="text-sm font-medium text-white mb-1.5 flex items-center gap-1">
+                    Counsellor Name
+                    <span className="text-red-400 text-sm">*</span>
+                  </label>
+                  <Input
+                    value={form.counsellorName}
+                    onChange={(e) => setForm((p) => ({ ...p, counsellorName: e.target.value }))}
+                    placeholder="e.g. Munish LP"
+                    className={inputCls}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1.5">This name will be shown to students.</p>
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="text-sm font-medium text-white mb-1.5 block">Price (₹)</label>
