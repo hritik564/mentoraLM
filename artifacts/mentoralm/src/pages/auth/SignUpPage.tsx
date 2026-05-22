@@ -87,7 +87,7 @@ export default function SignUpPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Full Name <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
                       <Input placeholder="John Doe" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
                     </FormControl>
@@ -101,7 +101,7 @@ export default function SignUpPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email address</FormLabel>
+                    <FormLabel>Email address <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="you@example.com" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
                     </FormControl>
@@ -115,7 +115,7 @@ export default function SignUpPage() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel>Phone Number <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
                       <Input type="tel" placeholder="+91 9876543210" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
                     </FormControl>
@@ -129,7 +129,7 @@ export default function SignUpPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Password <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
                     </FormControl>
@@ -143,7 +143,7 @@ export default function SignUpPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>Confirm Password <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
                     </FormControl>
