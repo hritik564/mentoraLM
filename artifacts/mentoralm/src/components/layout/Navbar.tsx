@@ -84,8 +84,7 @@ export function Navbar() {
               width: 36,
               height: 36,
               borderRadius: 8,
-              objectFit: "cover",
-              objectPosition: "center top",
+              objectFit: "contain",
               marginRight: 8,
             }}
           />
