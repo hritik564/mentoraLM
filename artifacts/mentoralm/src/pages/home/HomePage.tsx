@@ -127,13 +127,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden">
       <Navbar />
-
       {/* Background Orbs */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#00A8FF]/10 blur-[120px] animate-[pulse-slow_4s_infinite_alternate]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full bg-[#7B3FE4]/10 blur-[120px] animate-[pulse-slow_4s_infinite_alternate_reverse]" />
       </div>
-
       <main className="flex-1 relative z-10">
         {/* Hero */}
         <section className="pt-36 pb-6 px-6">
@@ -298,7 +296,7 @@ export default function HomePage() {
 
         {/* How It Works */}
         <section className="py-24 px-6 bg-white/2 border-y border-white/5">
-          <div className="container mx-auto max-w-6xl">
+          <div className="container mx-auto max-w-6xl text-center">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">How MentoraLM works</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">From sign-up to clarity in four steps.</p>
@@ -317,7 +315,7 @@ export default function HomePage() {
                     className="relative z-10"
                   >
                     <div className="text-5xl font-extrabold text-gradient mb-4 opacity-40">{step.step}</div>
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 flex-row">
                       <step.icon className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-base font-bold text-white mb-2">{step.title}</h3>
@@ -544,7 +542,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );
