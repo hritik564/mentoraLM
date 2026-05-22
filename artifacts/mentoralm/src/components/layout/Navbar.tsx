@@ -45,7 +45,7 @@ export function Navbar() {
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold tracking-tight">
+        <Link href={user ? (user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard") : "/"} className="text-2xl font-bold tracking-tight">
           <span className="text-white">Mentora</span>
           <span className="text-gradient">LM</span>
         </Link>
