@@ -80,6 +80,222 @@ const fadeUp = {
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
 };
 
+const howItWorksSteps = [
+  { icon: Users, title: "Complete your profile", desc: "Tell us about your background, interests, and goals in 6 quick steps.", step: "01" },
+  { icon: MessageSquare, title: "Chat with AI counsellor", desc: "Your personal AI that's read your profile and knows your story.", step: "02" },
+  { icon: Compass, title: "Get your roadmap", desc: "A personalised 5-year career plan built around your unique strengths.", step: "03" },
+  { icon: Calendar, title: "Book an expert session", desc: "Connect with our human counsellors for complex decisions.", step: "04" },
+];
+
+function HowItWorksSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [triggered, setTriggered] = useState(false);
+  const [activeSteps, setActiveSteps] = useState([false, false, false, false]);
+  const [activeLines, setActiveLines] = useState([false, false, false]);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !triggered) {
+          setTriggered(true);
+          [0, 1, 2, 3].forEach((i) => {
+            setTimeout(() => setActiveSteps((s) => { const n = [...s]; n[i] = true; return n; }), i * 600);
+            if (i < 3) setTimeout(() => setActiveLines((l) => { const n = [...l]; n[i] = true; return n; }), i * 600 + 300);
+          });
+        }
+      },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [triggered]);
+
+  const gradientText = {
+    background: "linear-gradient(135deg, #00A8FF, #7B3FE4)",
+    WebkitBackgroundClip: "text" as const,
+    WebkitTextFillColor: "transparent" as const,
+    backgroundClip: "text" as const,
+  };
+
+  return (
+    <section ref={sectionRef} className="py-24 px-6 bg-white/2 border-y border-white/5">
+      <div className="container mx-auto max-w-6xl">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">How MentoraLM works</h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">From sign-up to clarity in four steps.</p>
+        </div>
+
+        {/* Desktop layout */}
+        <div className="hidden md:flex items-start">
+          {howItWorksSteps.map((step, i) => {
+            const active = activeSteps[i];
+            const Icon = step.icon;
+            return (
+              <div key={i} className="contents">
+                <div
+                  className="flex-1 flex flex-col items-center text-center px-4"
+                  style={{
+                    filter: active ? "drop-shadow(0 4px 20px rgba(0,168,255,0.15))" : "none",
+                    transition: "filter 0.6s ease",
+                  }}
+                >
+                  <div
+                    className="text-[56px] font-extrabold leading-none mb-3"
+                    style={active ? gradientText : { color: "#1E2A45", transition: "color 0.4s ease" }}
+                  >
+                    {step.step}
+                  </div>
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
+                    style={{
+                      background: active
+                        ? "linear-gradient(135deg, rgba(0,168,255,0.13), rgba(123,63,228,0.13))"
+                        : "#0F1628",
+                      border: active ? "1px solid rgba(0,168,255,0.4)" : "1px solid #1E2A45",
+                      transition: "all 0.4s ease",
+                    }}
+                  >
+                    <Icon
+                      className="w-6 h-6"
+                      style={{
+                        color: active ? "#00A8FF" : "#2A3A5C",
+                        animation: active ? "pulse-icon 2s ease-in-out infinite" : "none",
+                        transition: "color 0.4s ease",
+                      }}
+                    />
+                  </div>
+                  <h3
+                    className="text-base font-bold mb-2"
+                    style={{ color: active ? "#ffffff" : "#4A5568", transition: "color 0.4s ease" }}
+                  >
+                    {step.title}
+                  </h3>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: active ? "#8888AA" : "#4A5568", transition: "color 0.4s ease" }}
+                  >
+                    {step.desc}
+                  </p>
+                </div>
+
+                {i < 3 && (
+                  <div className="flex-shrink-0 w-16 flex items-start pt-[44px]">
+                    <div className="relative w-full h-[2px] bg-[#1E2A45] overflow-hidden rounded-full">
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          height: "100%",
+                          width: activeLines[i] ? "100%" : "0%",
+                          background: "linear-gradient(90deg, #00A8FF, #7B3FE4)",
+                          boxShadow: activeLines[i] ? "0 0 8px rgba(0,168,255,0.6)" : "none",
+                          transition: "width 600ms ease, box-shadow 600ms ease",
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Mobile layout — vertical timeline */}
+        <div className="md:hidden flex flex-col">
+          {howItWorksSteps.map((step, i) => {
+            const active = activeSteps[i];
+            const Icon = step.icon;
+            return (
+              <div key={i} className="flex gap-4">
+                {/* Timeline column */}
+                <div className="flex flex-col items-center flex-shrink-0 w-6">
+                  <div
+                    className="w-3 h-3 rounded-full mt-5 flex-shrink-0"
+                    style={{
+                      background: active ? "linear-gradient(135deg, #00A8FF, #7B3FE4)" : "#1E2A45",
+                      boxShadow: active ? "0 0 8px rgba(0,168,255,0.6)" : "none",
+                      transition: "all 0.4s ease",
+                    }}
+                  />
+                  {i < 3 && (
+                    <div
+                      className="relative flex-1 w-[2px] bg-[#1E2A45] overflow-hidden my-1"
+                      style={{ minHeight: 64 }}
+                    >
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: activeLines[i] ? "100%" : "0%",
+                          background: "linear-gradient(180deg, #00A8FF, #7B3FE4)",
+                          boxShadow: activeLines[i] ? "0 0 8px rgba(0,168,255,0.6)" : "none",
+                          transition: "height 600ms ease, box-shadow 600ms ease",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Step content */}
+                <div
+                  className="flex-1 pb-8"
+                  style={{
+                    filter: active ? "drop-shadow(0 4px 20px rgba(0,168,255,0.15))" : "none",
+                    transition: "filter 0.6s ease",
+                  }}
+                >
+                  <div
+                    className="text-4xl font-extrabold leading-none mb-2"
+                    style={active ? gradientText : { color: "#1E2A45" }}
+                  >
+                    {step.step}
+                  </div>
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                    style={{
+                      background: active
+                        ? "linear-gradient(135deg, rgba(0,168,255,0.13), rgba(123,63,228,0.13))"
+                        : "#0F1628",
+                      border: active ? "1px solid rgba(0,168,255,0.4)" : "1px solid #1E2A45",
+                      transition: "all 0.4s ease",
+                    }}
+                  >
+                    <Icon
+                      className="w-5 h-5"
+                      style={{
+                        color: active ? "#00A8FF" : "#2A3A5C",
+                        animation: active ? "pulse-icon 2s ease-in-out infinite" : "none",
+                        transition: "color 0.4s ease",
+                      }}
+                    />
+                  </div>
+                  <h3
+                    className="text-base font-bold mb-1"
+                    style={{ color: active ? "#ffffff" : "#4A5568", transition: "color 0.4s ease" }}
+                  >
+                    {step.title}
+                  </h3>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: active ? "#8888AA" : "#4A5568", transition: "color 0.4s ease" }}
+                  >
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Counter({ to, label, suffix = "", decimals = 0 }: { to: number; label: string; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true });
@@ -146,12 +362,6 @@ export function getCategoryVisual(category: string): { gradient: string; emoji: 
   return { gradient: "linear-gradient(135deg, #1a1a4e, #7B3FE4)", emoji: "🎓" };
 }
 
-const steps = [
-  { icon: Users, title: "Complete your profile", desc: "Tell us about your background, interests, and goals in 6 quick steps.", step: "01" },
-  { icon: MessageSquare, title: "Chat with AI counsellor", desc: "Your personal AI that's read your profile and knows your story.", step: "02" },
-  { icon: Compass, title: "Get your roadmap", desc: "A personalised 5-year career plan built around your unique strengths.", step: "03" },
-  { icon: Calendar, title: "Book an expert session", desc: "Connect with our human counsellors for complex decisions.", step: "04" },
-];
 
 const features = [
   {
@@ -377,37 +587,7 @@ export default function HomePage() {
         </section>
 
         {/* How It Works */}
-        <section className="py-24 px-6 bg-white/2 border-y border-white/5">
-          <div className="container mx-auto max-w-6xl text-center">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">How MentoraLM works</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">From sign-up to clarity in four steps.</p>
-            </div>
-
-            {/* Steps with full-width dashed connector */}
-            <div className="relative">
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {steps.map((step, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="relative z-10 flex flex-col items-center text-center"
-                  >
-                    <div className="text-5xl font-extrabold text-gradient mb-4 opacity-40">{step.step}</div>
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-                      <step.icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="text-base font-bold text-white mb-2">{step.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        <HowItWorksSection />
 
         {/* Services Preview — always shown, with "Coming Soon" 3rd card */}
         <section className="pt-24 pb-8 md:py-24 px-6">

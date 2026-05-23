@@ -1,0 +1,60 @@
+Redesign the "How MentoraLM works" section with a scroll-activated 
+animated connection line:
+
+## LAYOUT:
+- 4 steps in a horizontal row on desktop, vertical stack on mobile
+- Between each step, a horizontal connecting line (desktop) or 
+  vertical line (mobile)
+
+## CONNECTING LINE:
+- Base line: 2px solid #1E2A45 (dim, inactive state)
+- Active line: 2px gradient (#00A8FF to #7B3FE4) with glow:
+  box-shadow: 0 0 8px rgba(0,168,255,0.6)
+- On page load, the line "fills in" from left to right using 
+  a CSS width animation (0% to 100%, duration 600ms per segment)
+- Each segment fills after the previous step activates
+
+## STEP CARDS — two states:
+
+INACTIVE (before animation reaches it):
+- Number: #1E2A45 (dark, barely visible)
+- Icon background: #0F1628
+- Icon color: #2A3A5C
+- Text: #4A5568 (muted)
+
+ACTIVE (when animation reaches it):
+- Number: gradient text (#00A8FF to #7B3FE4), font-size 56px
+- Icon background: linear-gradient(135deg, #00A8FF22, #7B3FE422)
+- Icon border: 1px solid #00A8FF66
+- Icon color: #00A8FF
+- Icon: subtle pulse animation (scale 1 to 1.05, 2s infinite)
+- Title: white, font-weight 700
+- Description: #8888AA
+- The entire card gets a subtle blue glow underneath:
+  filter: drop-shadow(0 4px 20px rgba(0,168,255,0.15))
+
+## ANIMATION TRIGGER:
+- Use Intersection Observer to detect when the section enters 
+  viewport
+- Once triggered, activate steps sequentially:
+  Step 1 activates at 0ms
+  Line 1 fills at 300ms
+  Step 2 activates at 600ms
+  Line 2 fills at 900ms
+  Step 3 activates at 1200ms
+  Line 3 fills at 1500ms
+  Step 4 activates at 1800ms
+- Animation only plays once (not on every scroll)
+
+## STEP CONTENT (keep existing):
+01 - Complete your profile (person icon)
+02 - Chat with AI counsellor (chat icon)  
+03 - Get your roadmap (compass icon)
+04 - Book an expert session (calendar icon)
+
+## MOBILE (max-width: 768px):
+- Stack vertically, center aligned
+- Connecting line becomes a vertical line on the left side 
+  (like a timeline), 2px wide, same gradient fill animation
+- Each step card has left padding to sit beside the line
+- Same activation animation but top to bottom
