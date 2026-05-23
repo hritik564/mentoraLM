@@ -6,6 +6,7 @@ import * as z from "zod";
 import { useSignin } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,6 +25,7 @@ const signinSchema = z.object({
 
 export default function SignInPage() {
   const [, setLocation] = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
   const { signin } = useAuth();
   const signinMutation = useSignin();
   
@@ -105,7 +107,23 @@ export default function SignInPage() {
                       </Link>
                     </div>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          {...field}
+                          className="bg-[#080C1A] border-[#1E2A45] pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                          tabIndex={-1}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

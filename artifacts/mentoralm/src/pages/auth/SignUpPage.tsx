@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +6,7 @@ import * as z from "zod";
 import { useSignup } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -29,6 +31,8 @@ const signupSchema = z.object({
 
 export default function SignUpPage() {
   const [, setLocation] = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signin } = useAuth();
   const signupMutation = useSignup();
   
@@ -132,7 +136,23 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Password <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          {...field}
+                          className="bg-[#080C1A] border-[#1E2A45] pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                          tabIndex={-1}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -146,7 +166,23 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Confirm Password <span className="text-red-400">*</span></FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="bg-[#080C1A] border-[#1E2A45]" />
+                      <div className="relative">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          {...field}
+                          className="bg-[#080C1A] border-[#1E2A45] pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
+                          tabIndex={-1}
+                          aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
