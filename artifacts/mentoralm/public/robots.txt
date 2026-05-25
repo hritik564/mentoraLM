@@ -7,4 +7,4 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://mentoralm--hritik1995gupta.replit.app/sitemap.xml
+Sitemap: https://www.mentoralm.com/sitemap.xml
