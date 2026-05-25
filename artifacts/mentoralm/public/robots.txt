@@ -1,2 +1,10 @@
 User-agent: *
 Allow: /
+
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://mentoralm--hritik1995gupta.replit.app/sitemap.xml
