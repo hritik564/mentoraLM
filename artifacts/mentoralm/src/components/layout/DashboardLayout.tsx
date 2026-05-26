@@ -24,7 +24,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const desktopNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/profile", label: "Profile", icon: UserCircle },
-    { href: "/dashboard/chat", label: "AI Counsellor", icon: MessageSquare },
+    { href: "/dashboard/chat", label: "Menti", icon: MessageSquare },
     { href: "/dashboard/roadmap", label: "Career Roadmap", icon: Map },
     { href: "/dashboard/marketplace", label: "Services", icon: ShoppingBag },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
@@ -32,7 +32,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   const mobileNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/chat", label: "AI Counsellor", icon: MessageSquare },
+    { href: "/dashboard/chat", label: "Menti", icon: MessageSquare },
     { href: "/dashboard/roadmap", label: "Career Roadmap", icon: Map },
     { href: "/dashboard/marketplace", label: "Services", icon: ShoppingBag },
     { href: "/dashboard/profile", label: "Profile", icon: UserCircle },

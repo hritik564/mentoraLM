@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useGetChatMessages, useNewChat, useGetProfile, useListServices } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import { Send, RotateCcw, Bot, User, Sparkles, ChevronRight } from "lucide-react";
+import { Send, RotateCcw, User, Sparkles, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import type { Service } from "@workspace/api-client-react";
 
@@ -208,8 +208,8 @@ export default function ChatPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-shrink-0">
           <div>
-            <h1 className="text-2xl font-extrabold text-white">AI Counsellor</h1>
-            <p className="text-muted-foreground text-sm">Powered by Claude. Knows your full profile.</p>
+            <h1 className="text-2xl font-extrabold text-white">Menti</h1>
+            <p className="text-muted-foreground text-sm">Your personal career counsellor. Powered by MentoraLM.</p>
           </div>
           <Button
             variant="outline"
@@ -228,22 +228,25 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto space-y-6 pb-4 pr-1 scrollbar-thin">
           {messages.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
-              <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
-                <Bot className="w-8 h-8 text-primary" />
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ background: "linear-gradient(135deg, #00A8FF, #7B3FE4)" }}
+              >
+                <span style={{ color: "white", fontSize: 28, fontWeight: 800, lineHeight: 1 }}>M</span>
               </div>
-              <h3 className="text-white font-bold text-lg mb-2">Hello! I'm your AI career counsellor</h3>
+              <h3 className="text-white font-bold text-lg mb-2">Hi, I'm Menti 👋</h3>
               <p className="text-muted-foreground text-sm max-w-sm mx-auto">
                 {hasProfile
-                  ? "I've read your profile and I'm ready to help. Ask me about streams, colleges, exams, careers — anything."
-                  : "Ask me anything about careers, streams, or exams. Complete your profile for personalised advice."}
+                  ? "Your personal career counsellor. I've already read your profile — just ask me anything."
+                  : "Your personal career counsellor. Complete your profile for personalised advice."}
               </p>
               {!isNewSession && (
                 <div className="flex flex-wrap gap-2 justify-center mt-6">
                   {[
-                    "Which stream should I choose?",
-                    "Help me with college selection",
-                    "What career fits my interests?",
-                    "How to prepare for JEE?",
+                    "What career suits me?",
+                    "Help me pick the right stream",
+                    "Which colleges should I target?",
+                    "How do I prepare for JEE/NEET?",
                   ].map((prompt) => (
                     <button
                       key={prompt}
@@ -266,12 +269,16 @@ export default function ChatPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  msg.role === "user" ? "bg-primary/20" : "bg-[#7B3FE4]/20"
-                }`}>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={msg.role === "user"
+                    ? { background: "rgba(0,168,255,0.2)" }
+                    : { background: "linear-gradient(135deg, #00A8FF, #7B3FE4)" }
+                  }
+                >
                   {msg.role === "user"
                     ? <User className="w-4 h-4 text-primary" />
-                    : <Bot className="w-4 h-4 text-[#7B3FE4]" />
+                    : <span style={{ color: "white", fontSize: 14, fontWeight: 800, lineHeight: 1 }}>M</span>
                   }
                 </div>
                 <div className="max-w-[78%] flex flex-col gap-1">
@@ -339,7 +346,7 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask your AI counsellor anything..."
+                placeholder="Ask Menti anything..."
                 rows={1}
                 disabled={isStreaming}
                 data-testid="chat-input"

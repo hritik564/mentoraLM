@@ -22,7 +22,7 @@ const values = [
   {
     icon: Zap,
     title: "Always available",
-    desc: "Career anxiety doesn't wait for office hours. Our AI counsellor is available 24/7 — at midnight before boards, during weekends, whenever you need it most.",
+    desc: "Career anxiety doesn't wait for office hours. Menti is available 24/7 — at midnight before boards, during weekends, whenever you need it most.",
     color: "#FF8C00",
   },
 ];
@@ -138,7 +138,7 @@ export default function AboutPage() {
 
           {/* CTA */}
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-3">Meet your AI counsellor</h2>
+            <h2 className="text-2xl font-bold text-white mb-3">Meet Menti</h2>
             <p className="text-muted-foreground mb-8">
               Sign up free and start getting the guidance you deserve.
             </p>

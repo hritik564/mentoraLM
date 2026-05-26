@@ -11,7 +11,7 @@ const steps = [
     number: "01",
     icon: Users,
     title: "Complete your profile",
-    desc: "Tell us about your education, interests, strengths, family context, and career goals. The more you share, the sharper your AI counsellor becomes.",
+    desc: "Tell us about your education, interests, strengths, family context, and career goals. The more you share, the sharper Menti becomes.",
     color: "#00A8FF",
     details: [
       "Takes about 10 minutes",
@@ -23,8 +23,8 @@ const steps = [
   {
     number: "02",
     icon: MessageSquare,
-    title: "Chat with your AI counsellor",
-    desc: "Your AI has read every detail of your profile. Ask about streams, exams, colleges, careers — it gives advice that actually fits your situation.",
+    title: "Chat with Menti",
+    desc: "Menti has read every detail of your profile. Ask about streams, exams, colleges, careers — it gives advice that actually fits your situation.",
     color: "#7B3FE4",
     details: [
       "Available 24/7, no waiting",
@@ -62,11 +62,11 @@ const steps = [
 ];
 
 const faqs = [
-  { q: "Is MentoraLM free to use?", a: "Signing up and using the AI counsellor is free. Expert 1-on-1 sessions with human counsellors are paid — see our Services page for pricing." },
+  { q: "Is MentoraLM free to use?", a: "Signing up and chatting with Menti is free. Expert 1-on-1 sessions with human counsellors are paid — see our Services page for pricing." },
   { q: "How is MentoraLM different from generic career advice sites?", a: "Most advice is one-size-fits-all. MentoraLM's AI reads your full profile — your stream, grades, interests, family situation, goals — and gives guidance that actually fits you." },
   { q: "Who are the human counsellors?", a: "Our counsellors are experienced career guidance professionals who have worked with hundreds of Indian students across engineering, medicine, law, commerce, and creative fields." },
-  { q: "Is my data private?", a: "Yes. Your profile data is used solely to personalise your AI counsellor. It is never sold or shared with third parties." },
-  { q: "What if I haven't decided my stream yet?", a: "That's exactly what MentoraLM is for. Start the chat and tell your AI counsellor where you are — it'll guide you through the decision step by step." },
+  { q: "Is my data private?", a: "Yes. Your profile data is used solely to personalise Menti. It is never sold or shared with third parties." },
+  { q: "What if I haven't decided my stream yet?", a: "That's exactly what MentoraLM is for. Start the chat and tell Menti where you are — it'll guide you through the decision step by step." },
 ];
 
 export default function HowItWorksPage() {

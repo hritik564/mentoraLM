@@ -185,11 +185,11 @@ export default function ProfileWizard() {
             </div>
             <h2 className="text-3xl font-extrabold text-white mb-3">Profile complete!</h2>
             <p className="text-muted-foreground mb-8">
-              Your AI counsellor now has everything it needs to give you personalised, meaningful guidance.
+              Menti now has everything it needs to give you personalised, meaningful guidance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-gradient-primary border-0" onClick={() => setLocation("/dashboard/chat")} data-testid="go-to-chat-btn">
-                Talk to AI Counsellor
+                Chat with Menti
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
               <Button variant="outline" className="border-border" onClick={() => setLocation("/dashboard/roadmap")}>

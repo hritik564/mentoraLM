@@ -112,7 +112,7 @@ export default function RoadmapPage() {
                   </div>
                   <div>
                     <p className={`font-semibold text-sm ${chatEligible ? "text-emerald-400" : "text-white"}`}>
-                      {chatEligible ? `${chatCount} chats completed ✓` : `Have at least ${MIN_CHATS} AI chat sessions`}
+                      {chatEligible ? `${chatCount} chats completed ✓` : `Have at least ${MIN_CHATS} conversations with Menti`}
                     </p>
                     {!chatEligible && (
                       <p className="text-muted-foreground text-xs mt-0.5">{chatCount} of {MIN_CHATS} sessions done</p>
@@ -136,7 +136,7 @@ export default function RoadmapPage() {
                   <Link href="/dashboard/chat">
                     <Button variant={profileEligible ? "default" : "outline"} className={profileEligible ? "bg-gradient-primary border-0" : "border-border"} data-testid="go-to-chat-btn">
                       <MessageSquare className="w-4 h-4 mr-2" />
-                      Chat with AI Counsellor
+                      Talk to Menti
                     </Button>
                   </Link>
                   <Link href="/dashboard/chat">
@@ -163,7 +163,7 @@ export default function RoadmapPage() {
             </div>
             <h2 className="text-2xl font-bold text-white mb-3">Ready to generate your roadmap</h2>
             <p className="text-muted-foreground max-w-sm mx-auto mb-8">
-              Your AI counsellor will create a personalised, 4-phase career plan based on your profile and conversations.
+              Menti will create a personalised, 4-phase career plan based on your profile and conversations.
             </p>
             <Button
               onClick={handleGenerate}
@@ -258,11 +258,11 @@ export default function RoadmapPage() {
             <div className="mt-10 bg-card border border-border rounded-2xl p-8 text-center">
               <h3 className="text-white font-bold text-lg mb-2">Want to dive deeper?</h3>
               <p className="text-muted-foreground text-sm mb-6">
-                Chat with your AI counsellor to get detailed guidance on any phase of your roadmap.
+                Chat with Menti to get detailed guidance on any phase of your roadmap.
               </p>
               <Link href="/dashboard/chat">
                 <Button className="bg-gradient-primary border-0" data-testid="roadmap-chat-cta">
-                  Discuss with AI Counsellor
+                  Talk to Menti
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>

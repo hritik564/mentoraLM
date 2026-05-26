@@ -26,7 +26,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground max-w-sm">
-              Your personal AI career counsellor. Navigate your future with personalized, data-driven advice.
+              Meet Menti — your personal AI career counsellor. Navigate your future with personalised, data-driven advice.
             </p>
           </div>
           

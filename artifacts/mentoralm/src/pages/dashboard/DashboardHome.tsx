@@ -63,7 +63,7 @@ export default function DashboardHome() {
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const quickActions = [
-    { icon: MessageSquare, label: "Chat with AI", desc: "Ask anything about your career", href: "/dashboard/chat", color: "#00A8FF" },
+    { icon: MessageSquare, label: "Chat with Menti", desc: "Your personal counsellor who knows your story", href: "/dashboard/chat", color: "#00A8FF" },
     { icon: Map, label: "Career Roadmap", desc: "View your personalised plan", href: "/dashboard/roadmap", color: "#7B3FE4" },
     { icon: ShoppingBag, label: "Book a Session", desc: "Connect with expert counsellors", href: "/dashboard/marketplace", color: "#FF8C00" },
     { icon: UserCircle, label: "Complete Profile", desc: "Unlock full AI counselling", href: "/dashboard/profile", color: "#10B981" },
@@ -89,7 +89,7 @@ export default function DashboardHome() {
           <p className="text-muted-foreground">
             {completionPercent < 50
               ? "Complete your profile to unlock personalised AI counselling."
-              : "Your AI counsellor is ready. What would you like to explore today?"}
+              : "Menti is ready. What would you like to explore today?"}
           </p>
         </motion.div>
 
@@ -132,7 +132,7 @@ export default function DashboardHome() {
               </div>
               <div>
                 <h3 className="text-white font-bold text-sm">Your profile summary</h3>
-                <p className="text-muted-foreground text-xs">What your AI counsellor knows about you</p>
+                <p className="text-muted-foreground text-xs">What Menti knows about you</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 text-sm">
@@ -160,7 +160,7 @@ export default function DashboardHome() {
               <Link href="/dashboard/chat">
                 <Button size="sm" className="bg-gradient-primary border-0 text-xs" data-testid="start-chat-btn">
                   <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
-                  Chat with AI based on this profile
+                  Chat with Menti
                 </Button>
               </Link>
             </div>

@@ -82,7 +82,7 @@ const fadeUp = {
 
 const howItWorksSteps = [
   { icon: Users, title: "Complete your profile", desc: "Tell us about your background, interests, and goals in 6 quick steps.", step: "01" },
-  { icon: MessageSquare, title: "Chat with AI counsellor", desc: "Your personal AI that's read your profile and knows your story.", step: "02" },
+  { icon: MessageSquare, title: "Chat with Menti", desc: "Menti reads your profile and counsels you like someone who's known you for years.", step: "02" },
   { icon: Compass, title: "Get your roadmap", desc: "A personalised 5-year career plan built around your unique strengths.", step: "03" },
   { icon: Calendar, title: "Book an expert session", desc: "Connect with our human counsellors for complex decisions.", step: "04" },
 ];
@@ -367,7 +367,7 @@ const features = [
   {
     icon: Brain,
     title: "Counselling That Knows You",
-    desc: "Our AI reads your full profile — education, strengths, family context, dreams — and gives advice that actually fits your life. Not generic. Yours.",
+    desc: "Menti reads your full profile — education, strengths, family context, dreams — and gives advice that actually fits your life. Not generic. Yours.",
     color: "#00A8FF",
   },
   {
@@ -452,7 +452,7 @@ export default function HomePage() {
                       className="bg-gradient-primary border-0 hover:opacity-90 text-white font-semibold text-base px-8 h-14 rounded-xl"
                       data-testid="hero-cta-primary"
                     >
-                      Try AI Counsellor Free
+                      Try Menti Free
                       <ChevronRight className="w-5 h-5 ml-1" />
                     </Button>
                   </Link>
@@ -754,7 +754,7 @@ export default function HomePage() {
                     Your career clarity starts today
                   </h2>
                   <p className="text-white/60 max-w-lg mx-auto mb-8">
-                    Sign up free, complete your profile, and talk to your AI counsellor in minutes. No credit card needed.
+                    Sign up free, complete your profile, and chat with Menti in minutes. No credit card needed.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
                     <Link href="/auth/signup" className="block w-full sm:w-auto">
