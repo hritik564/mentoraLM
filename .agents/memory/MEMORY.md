@@ -1,0 +1,2 @@
+- [Auth refresh race condition](auth-refresh-race.md) — onSettled fires before async onSuccess completes getMe(); always put setIsLoading(false) in finally block inside onSuccess, not in onSettled.
+- [Refresh cookie credentials](auth-refresh-credentials.md) — useRefreshToken and useSignout must be called with { request: { credentials: "include" } } or the httpOnly cookie is never sent.
