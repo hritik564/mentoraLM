@@ -204,7 +204,7 @@ export default function ChatPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-3xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
+      <div className="max-w-3xl mx-auto h-[calc(100dvh-8rem)] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-shrink-0">
           <div>
@@ -225,7 +225,7 @@ export default function ChatPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto space-y-6 pb-4 pr-1 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto space-y-6 pb-[100px] pr-1 scrollbar-thin">
           {messages.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
               <div
@@ -338,7 +338,10 @@ export default function ChatPage() {
         </div>
 
         {/* Input */}
-        <div className="flex-shrink-0 pt-4 border-t border-border">
+        <div
+          className="flex-shrink-0 sticky bottom-0 pt-4 border-t border-border"
+          style={{ backgroundColor: "#080C1A", paddingBottom: "env(safe-area-inset-bottom, 16px)" }}
+        >
           <div className="flex gap-3 items-end">
             <div className="flex-1 relative">
               <textarea
