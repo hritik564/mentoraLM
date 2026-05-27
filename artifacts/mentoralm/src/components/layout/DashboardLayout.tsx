@@ -79,8 +79,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                         : "text-muted-foreground hover:text-white hover:bg-white/5"
                     }`}
                   >
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
                     <span className="font-medium">{item.label}</span>
+                    {item.label === "Menti" && (
+                      <span className="relative flex items-center justify-center flex-shrink-0" style={{ width: 8, height: 8 }}>
+                        <span className="absolute rounded-full bg-[#22C55E]/40 animate-ping" style={{ width: 8, height: 8 }} />
+                        <motion.span
+                          className="relative rounded-full bg-[#22C55E]"
+                          style={{ width: 8, height: 8 }}
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                      </span>
+                    )}
                   </div>
                 </Link>
               );
@@ -167,8 +178,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                             : "text-muted-foreground hover:text-white hover:bg-white/5"
                         }`}
                       >
-                        <item.icon className="w-5 h-5" />
+                        <item.icon className="w-5 h-5 flex-shrink-0" />
                         <span className="font-medium">{item.label}</span>
+                        {item.label === "Menti" && (
+                          <span className="relative flex items-center justify-center flex-shrink-0" style={{ width: 8, height: 8 }}>
+                            <span className="absolute rounded-full bg-[#22C55E]/40 animate-ping" style={{ width: 8, height: 8 }} />
+                            <motion.span
+                              className="relative rounded-full bg-[#22C55E]"
+                              style={{ width: 8, height: 8 }}
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                            />
+                          </span>
+                        )}
                       </div>
                     </Link>
                   );
