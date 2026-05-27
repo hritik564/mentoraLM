@@ -204,7 +204,7 @@ export default function ChatPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-3xl mx-auto h-[calc(100dvh-8rem)] flex flex-col">
+      <div className="max-w-3xl mx-auto h-[calc(100dvh-7rem)] md:h-[calc(100dvh-4rem)] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-shrink-0">
           <div>
