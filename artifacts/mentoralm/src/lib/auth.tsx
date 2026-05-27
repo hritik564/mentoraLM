@@ -19,8 +19,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const queryClient = useQueryClient();
-  const refreshToken = useRefreshToken();
-  const signoutMutation = useSignout();
+  const refreshToken = useRefreshToken({ request: { credentials: "include" } });
+  const signoutMutation = useSignout({ request: { credentials: "include" } });
 
   const handleSignout = useCallback(() => {
     signoutMutation.mutate(undefined, {
