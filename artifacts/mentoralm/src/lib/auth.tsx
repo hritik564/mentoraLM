@@ -61,16 +61,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch {
           setToken(null);
           configureAuthToken(null);
+        } finally {
+          setIsLoading(false);
         }
       },
       onError: () => {
         setToken(null);
         setUser(null);
         configureAuthToken(null);
-      },
-      onSettled: () => {
         setIsLoading(false);
-      }
+      },
     });
   }, []);
 
