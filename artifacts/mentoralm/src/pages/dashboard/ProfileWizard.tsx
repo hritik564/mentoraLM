@@ -242,13 +242,16 @@ function CardSelect({
   options,
   value,
   onChange,
+  cols,
 }: {
   options: { emoji: string; label: string; value: string }[];
   value: string;
   onChange: (v: string) => void;
+  cols?: 2 | 3;
 }) {
+  const gridCls = cols === 2 ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-3";
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div className={`grid ${gridCls} gap-3`}>
       {options.map((opt) => {
         const selected = value === opt.value;
         return (
@@ -627,15 +630,6 @@ export default function ProfileWizard() {
                     <label className={labelCls}>Which subjects are you strongest in?</label>
                     <ChipSelect options={SUBJECT_OPTIONS} value={form.subjectStrengths as string[]} onChange={(v) => set("subjectStrengths")(v)} />
                   </div>
-                  <div>
-                    <label className={labelCls}>Appeared for any entrance exams?</label>
-                    <ChipSelect options={EXAM_OPTIONS} value={form.entranceExams as string[]} onChange={(v) => set("entranceExams")(v)} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>If yes — approximate score or percentile?</label>
-                    <Input placeholder="e.g. JEE 85 percentile, NEET 520 marks..." value={form.entranceScores} onChange={(e) => set("entranceScores")(e.target.value)} className={inputCls} />
-                    <p className={helperCls}>Skip this if you haven't appeared yet</p>
-                  </div>
                 </>
               )}
 
@@ -688,6 +682,15 @@ export default function ProfileWizard() {
                         { emoji: "🔄", label: "Depends on the day", value: "Depends on the day" },
                       ]}
                     />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Appeared for any entrance exams?</label>
+                    <ChipSelect options={EXAM_OPTIONS} value={form.entranceExams as string[]} onChange={(v) => set("entranceExams")(v)} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>If yes — approximate score or percentile?</label>
+                    <Input placeholder="e.g. JEE 85 percentile, NEET 520 marks..." value={form.entranceScores} onChange={(e) => set("entranceScores")(e.target.value)} className={inputCls} />
+                    <p className={helperCls}>Skip this if you haven't appeared yet</p>
                   </div>
                 </>
               )}
@@ -742,6 +745,7 @@ export default function ProfileWizard() {
                     <CardSelect
                       value={form.careerClarity}
                       onChange={(v) => set("careerClarity")(v)}
+                      cols={2}
                       options={[
                         { emoji: "😅", label: "Totally lost", value: "Totally lost" },
                         { emoji: "🤷", label: "Have some ideas", value: "Have some ideas" },
@@ -808,6 +812,7 @@ export default function ProfileWizard() {
                   <div>
                     <label className={labelCls}>Is there a specific career your family wants you to pursue?</label>
                     <Input placeholder="e.g. Doctor, Engineer, CA, Government job... or leave blank" value={form.familyCareerExpectation} onChange={(e) => set("familyCareerExpectation")(e.target.value)} className={inputCls} />
+                    <p className={helperCls}>Completely optional — only share if you're comfortable 🤝</p>
                   </div>
                 </>
               )}
