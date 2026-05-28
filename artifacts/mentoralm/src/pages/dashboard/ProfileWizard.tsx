@@ -9,19 +9,48 @@ import type { StudentProfile } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, ChevronLeft, CheckCircle, Camera, Upload } from "lucide-react";
+import { ChevronRight, ChevronLeft, Camera, Upload } from "lucide-react";
 
 const steps = [
-  { title: "Personal Info", desc: "Tell us about yourself" },
-  { title: "Academic Background", desc: "Your education details" },
-  { title: "Interests & Strengths", desc: "What drives you" },
-  { title: "Career Aspirations", desc: "Where you want to go" },
-  { title: "Family Context", desc: "Help us understand your situation" },
-  { title: "Your Goals", desc: "The bigger picture" },
+  { title: "First, the basics", desc: "Tell me a little about yourself" },
+  { title: "Your academic journey", desc: "Tell me where you are right now" },
+  { title: "What makes you, YOU", desc: "Pick what genuinely excites you" },
+  { title: "Your big dreams", desc: "Where do you see yourself going?" },
+  { title: "Your real-world situation", desc: "Help me understand your context" },
+  { title: "The bigger picture", desc: "Almost there — just a few more things!" },
+];
+
+const STEP_BUBBLES = [
+  "Hi! I'm Menti 👋 Before we dive in, let me get to know you a little. Don't worry — this only takes 2 minutes!",
+  "Now let's talk about where you are academically. No judgment here — this just helps me give you the most relevant guidance! 📚",
+  "This is my favourite part! 🌟 Tell me what lights you up — this is what I'll use to give you advice that actually fits YOU.",
+  "Dream big here — there are no wrong answers. ✨ Even if you're unsure, just tell me what excites you most right now.",
+  "Almost done! This part helps me give you advice that's actually realistic for your situation — not just textbook perfect. Everything here stays between us. 🤝",
+  "Last step! 🎉 These questions help me understand what's really going on for you. Take your time — the more honest you are, the better I can help.",
 ];
 
 const INTERESTS_OPTIONS = ["Science", "Technology", "Arts", "Commerce", "Sports", "Music", "Writing", "Social Work", "Research", "Entrepreneurship", "Teaching", "Medicine"];
 const STRENGTHS_OPTIONS = ["Analytical Thinking", "Communication", "Creativity", "Leadership", "Problem Solving", "Teamwork", "Time Management", "Empathy", "Technical Skills", "Critical Thinking"];
+
+function MentiAvatar() {
+  return (
+    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-extrabold text-white text-base select-none"
+      style={{ background: "linear-gradient(135deg, #00A8FF, #7B3FE4)" }}>
+      M
+    </div>
+  );
+}
+
+function MentiChatBubble({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3 mb-7">
+      <MentiAvatar />
+      <div className="relative bg-[#0D1526] border border-[#1E2A45] rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-white/90 leading-relaxed max-w-prose">
+        {text}
+      </div>
+    </div>
+  );
+}
 
 function ChipSelect({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
   const toggle = (opt: string) => {
@@ -102,7 +131,6 @@ export default function ProfileWizard() {
 
   const [form, setForm] = useState(() => buildForm(undefined, user?.phone));
 
-  // Sync form when profile data first arrives from the server
   useEffect(() => {
     if (profile && !hydrated) {
       setForm(buildForm(profile, user?.phone));
@@ -142,7 +170,6 @@ export default function ProfileWizard() {
 
   const saveStep = async () => {
     setIsSaving(true);
-    // Serialize chip arrays to comma-joined strings for the API
     const payload = {
       ...form,
       interests: form.interests.join(", "),
@@ -175,27 +202,35 @@ export default function ProfileWizard() {
 
   const inputCls = "bg-[#080C1A] border-[#1E2A45] text-white placeholder:text-muted-foreground";
 
+  const stepLabel = currentStep >= 3
+    ? `Step ${currentStep + 1} of ${steps.length} — almost there! 🎯`
+    : `Step ${currentStep + 1} of ${steps.length}`;
+
+  const nextBtnLabel = isSaving
+    ? "Saving..."
+    : currentStep === steps.length - 1
+    ? "Complete Profile 🎉"
+    : "Next →";
+
   if (done) {
     return (
       <DashboardLayout>
-        <div className="max-w-lg mx-auto text-center py-16">
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-            <div className="w-20 h-20 rounded-full bg-emerald-400/10 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-emerald-400" />
-            </div>
-            <h2 className="text-3xl font-extrabold text-white mb-3">Profile complete!</h2>
-            <p className="text-muted-foreground mb-8">
-              Menti now has everything it needs to give you personalised, meaningful guidance.
+        <div className="max-w-lg mx-auto text-center py-16 px-4">
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200, damping: 18 }}>
+            <div className="text-7xl mb-6 select-none">🎉</div>
+            <h2 className="text-3xl font-extrabold text-white mb-3">
+              You're all set, {user?.name?.split(" ")[0]}!
+            </h2>
+            <p className="text-muted-foreground mb-8 text-base leading-relaxed">
+              Menti has everything she needs to give you personalised guidance. Let's get started!
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-gradient-primary border-0" onClick={() => setLocation("/dashboard/chat")} data-testid="go-to-chat-btn">
-                Chat with Menti
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-              <Button variant="outline" className="border-border" onClick={() => setLocation("/dashboard/roadmap")}>
-                View Roadmap
-              </Button>
-            </div>
+            <Button
+              className="bg-gradient-primary border-0 w-full text-base py-6 rounded-xl hover:opacity-90"
+              onClick={() => setLocation("/dashboard/chat")}
+              data-testid="go-to-chat-btn"
+            >
+              Chat with Menti →
+            </Button>
           </motion.div>
         </div>
       </DashboardLayout>
@@ -207,8 +242,8 @@ export default function ProfileWizard() {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-extrabold text-white mb-2">Complete Your Profile</h1>
-          <p className="text-muted-foreground text-sm">Step {currentStep + 1} of {steps.length}</p>
+          <h1 className="text-2xl font-extrabold text-white mb-2">Let's get to know you</h1>
+          <p className="text-muted-foreground text-sm">{stepLabel}</p>
           <div className="mt-4 flex gap-1.5">
             {steps.map((_, i) => (
               <div
@@ -222,6 +257,9 @@ export default function ProfileWizard() {
 
         {/* Step card */}
         <div className="bg-card border border-border rounded-2xl p-8">
+          {/* Menti bubble */}
+          <MentiChatBubble text={STEP_BUBBLES[currentStep]} />
+
           <div className="mb-8">
             <h2 className="text-xl font-bold text-white mb-1">{steps[currentStep].title}</h2>
             <p className="text-muted-foreground text-sm">{steps[currentStep].desc}</p>
@@ -283,16 +321,16 @@ export default function ProfileWizard() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Full Name</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">What's your name?</label>
                     <Input value={user?.name || ""} disabled className={`${inputCls} opacity-60`} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-white mb-1.5 block">Date of Birth</label>
+                      <label className="text-sm font-medium text-white mb-1.5 block">When's your birthday? 🎂</label>
                       <Input type="date" value={form.dateOfBirth} onChange={(e) => set("dateOfBirth")(e.target.value)} className={inputCls} />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-white mb-1.5 block">Gender</label>
+                      <label className="text-sm font-medium text-white mb-1.5 block">How do you identify?</label>
                       <select value={form.gender} onChange={(e) => set("gender")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                         <option value="">Select</option>
                         <option>Male</option>
@@ -304,16 +342,16 @@ export default function ProfileWizard() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-white mb-1.5 block">City</label>
+                      <label className="text-sm font-medium text-white mb-1.5 block">Which city are you based in?</label>
                       <Input placeholder="e.g. Mumbai" value={form.city} onChange={(e) => set("city")(e.target.value)} className={inputCls} />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-white mb-1.5 block">State</label>
+                      <label className="text-sm font-medium text-white mb-1.5 block">And the state?</label>
                       <Input placeholder="e.g. Maharashtra" value={form.state} onChange={(e) => set("state")(e.target.value)} className={inputCls} />
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Phone Number</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">Best number to reach you?</label>
                     <Input type="tel" placeholder="+91 9876543210" value={form.phone} onChange={(e) => set("phone")(e.target.value)} className={inputCls} />
                   </div>
                 </>
@@ -323,7 +361,7 @@ export default function ProfileWizard() {
               {currentStep === 1 && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Education Level</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">What stage are you at?</label>
                     <select value={form.educationLevel} onChange={(e) => set("educationLevel")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                       <option value="">Select level</option>
                       <option>Class 10</option>
@@ -335,7 +373,7 @@ export default function ProfileWizard() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-white mb-1.5 block">Board</label>
+                      <label className="text-sm font-medium text-white mb-1.5 block">Which board are you from?</label>
                       <select value={form.board} onChange={(e) => set("board")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                         <option value="">Select board</option>
                         <option>CBSE</option>
@@ -346,7 +384,7 @@ export default function ProfileWizard() {
                       </select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-white mb-1.5 block">Stream</label>
+                      <label className="text-sm font-medium text-white mb-1.5 block">What stream are you in?</label>
                       <select value={form.stream} onChange={(e) => set("stream")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                         <option value="">Select stream</option>
                         <option>Science (PCM)</option>
@@ -359,11 +397,11 @@ export default function ProfileWizard() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">School / College Name</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">Name of your school or college?</label>
                     <Input placeholder="e.g. Delhi Public School" value={form.schoolCollege} onChange={(e) => set("schoolCollege")(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Grade / Percentage</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">How are your grades looking? (be honest, no judgment!)</label>
                     <Input placeholder="e.g. 85% or 8.5 CGPA" value={form.gradePercentage} onChange={(e) => set("gradePercentage")(e.target.value)} className={inputCls} />
                   </div>
                 </>
@@ -373,16 +411,16 @@ export default function ProfileWizard() {
               {currentStep === 2 && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-white mb-3 block">Interests (select all that apply)</label>
+                    <label className="text-sm font-medium text-white mb-3 block">What do you genuinely enjoy? Pick all that fit 👇</label>
                     <ChipSelect options={INTERESTS_OPTIONS} value={form.interests as string[]} onChange={(v) => set("interests")(v)} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-3 block">Strengths (select all that apply)</label>
+                    <label className="text-sm font-medium text-white mb-3 block">What are you naturally good at? Be honest! 💪</label>
                     <ChipSelect options={STRENGTHS_OPTIONS} value={form.strengths as string[]} onChange={(v) => set("strengths")(v)} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Hobbies</label>
-                    <Input placeholder="e.g. Reading, Coding, Photography" value={form.hobbies as string} onChange={(e) => set("hobbies")(e.target.value)} className={inputCls} />
+                    <label className="text-sm font-medium text-white mb-1.5 block">Any hobbies or things you do just for fun?</label>
+                    <Input placeholder="e.g. cricket, sketching, gaming, cooking..." value={form.hobbies as string} onChange={(e) => set("hobbies")(e.target.value)} className={inputCls} />
                   </div>
                 </>
               )}
@@ -391,15 +429,15 @@ export default function ProfileWizard() {
               {currentStep === 3 && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Dream Career</label>
-                    <Input placeholder="e.g. Software Engineer, Doctor, Entrepreneur..." value={form.dreamCareer as string} onChange={(e) => set("dreamCareer")(e.target.value)} className={inputCls} />
+                    <label className="text-sm font-medium text-white mb-1.5 block">If nothing could stop you, what would you want to become?</label>
+                    <Input placeholder="e.g. Entrepreneur, Doctor, Designer, CA..." value={form.dreamCareer as string} onChange={(e) => set("dreamCareer")(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Target Colleges</label>
-                    <Input placeholder="e.g. IIT Bombay, AIIMS, St. Xavier's..." value={form.targetColleges as string} onChange={(e) => set("targetColleges")(e.target.value)} className={inputCls} />
+                    <label className="text-sm font-medium text-white mb-1.5 block">Any colleges on your wishlist? (even dream ones!)</label>
+                    <Input placeholder="e.g. IIM, SRCC, NIT, MIT..." value={form.targetColleges as string} onChange={(e) => set("targetColleges")(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-2 block">Open to studying abroad?</label>
+                    <label className="text-sm font-medium text-white mb-2 block">Would you consider studying abroad? 🌍</label>
                     <div className="flex gap-3">
                       {["Yes", "No", "Maybe"].map((opt) => (
                         <button
@@ -424,7 +462,7 @@ export default function ProfileWizard() {
               {currentStep === 4 && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Annual Family Income</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">Roughly what's your family's annual income?</label>
                     <select value={form.familyIncome as string} onChange={(e) => set("familyIncome")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                       <option value="">Select range</option>
                       <option>Below ₹2 Lakh</option>
@@ -433,9 +471,10 @@ export default function ProfileWizard() {
                       <option>₹10–20 Lakh</option>
                       <option>Above ₹20 Lakh</option>
                     </select>
+                    <p className="text-muted-foreground text-xs mt-1.5">This helps me suggest options that are actually achievable for you</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Parents' Highest Education</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">What's the highest education level in your family?</label>
                     <select value={form.parentsEducation as string} onChange={(e) => set("parentsEducation")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                       <option value="">Select</option>
                       <option>No formal education</option>
@@ -446,26 +485,30 @@ export default function ProfileWizard() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-2 block">Family pressure on career choice?</label>
+                    <label className="text-sm font-medium text-white mb-2 block">How much say does your family have in your career choice?</label>
                     <div className="flex gap-3">
-                      {["Low", "Medium", "High"].map((opt) => (
+                      {[
+                        { label: "I decide", value: "I decide" },
+                        { label: "We discuss", value: "We discuss" },
+                        { label: "They decide", value: "They decide" },
+                      ].map((opt) => (
                         <button
-                          key={opt}
+                          key={opt.value}
                           type="button"
-                          onClick={() => set("familyPressure")(opt)}
+                          onClick={() => set("familyPressure")(opt.value)}
                           className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-all ${
-                            form.familyPressure === opt
+                            form.familyPressure === opt.value
                               ? "bg-gradient-primary text-white border-transparent"
                               : "border-border text-muted-foreground hover:text-white"
                           }`}
                         >
-                          {opt}
+                          {opt.label}
                         </button>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Education Budget</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">What's your rough budget for higher education per year?</label>
                     <select value={form.educationBudget as string} onChange={(e) => set("educationBudget")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                       <option value="">Select range</option>
                       <option>Below ₹1 Lakh/year</option>
@@ -481,9 +524,9 @@ export default function ProfileWizard() {
               {currentStep === 5 && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">Where do you see yourself in 5 years?</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">Picture yourself 5 years from now — what does your life look like? 🚀</label>
                     <textarea
-                      placeholder="Describe your vision..."
+                      placeholder="e.g. Running my own startup, working at a top company, studying abroad..."
                       value={form.fiveYearGoal as string}
                       onChange={(e) => set("fiveYearGoal")(e.target.value)}
                       rows={3}
@@ -491,15 +534,15 @@ export default function ProfileWizard() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">What have you already tried?</label>
-                    <Input placeholder="e.g. Coaching classes, online courses..." value={form.alreadyTried as string} onChange={(e) => set("alreadyTried")(e.target.value)} className={inputCls} />
+                    <label className="text-sm font-medium text-white mb-1.5 block">What steps have you already taken toward your goal?</label>
+                    <Input placeholder="e.g. Coaching classes, online courses, entrance exam attempts..." value={form.alreadyTried as string} onChange={(e) => set("alreadyTried")(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">What's stopping you from reaching your goal?</label>
-                    <Input placeholder="e.g. Lack of guidance, financial constraints..." value={form.stoppingYou as string} onChange={(e) => set("stoppingYou")(e.target.value)} className={inputCls} />
+                    <label className="text-sm font-medium text-white mb-1.5 block">What feels like the biggest obstacle right now?</label>
+                    <Input placeholder="e.g. Not sure which path to take, family pressure, financial constraints..." value={form.stoppingYou as string} onChange={(e) => set("stoppingYou")(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white mb-1.5 block">How did you hear about MentoraLM?</label>
+                    <label className="text-sm font-medium text-white mb-1.5 block">One last thing — how did you find us? 😊</label>
                     <select value={form.heardFrom as string} onChange={(e) => set("heardFrom")(e.target.value)} className={`w-full rounded-md border px-3 py-2 text-sm ${inputCls}`}>
                       <option value="">Select</option>
                       <option>Social Media</option>
@@ -532,8 +575,8 @@ export default function ProfileWizard() {
             className="bg-gradient-primary border-0 hover:opacity-90"
             data-testid="profile-next-btn"
           >
-            {isSaving ? "Saving..." : currentStep === steps.length - 1 ? "Complete Profile" : "Save & Continue"}
-            {!isSaving && <ChevronRight className="w-4 h-4 ml-1" />}
+            {nextBtnLabel}
+            {!isSaving && currentStep < steps.length - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
           </Button>
         </div>
       </div>

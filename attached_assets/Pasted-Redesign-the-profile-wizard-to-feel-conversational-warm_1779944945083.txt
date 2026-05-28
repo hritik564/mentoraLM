@@ -1,0 +1,139 @@
+Redesign the profile wizard to feel conversational, warm and fun.
+Menti is asking the questions — not a form. Keep ALL the same 
+fields and data collection, only change the copy, titles, 
+subtitles, and question framing. Do not change the UI components 
+or layout — same chips, dropdowns, text fields, buttons.
+
+## GLOBAL CHANGES:
+- Replace "Complete Your Profile" header with "Let's get to 
+  know you" 
+- Replace "Step X of 6" with "Step X of 6 — almost there! 🎯" 
+  for steps 4, 5, 6 to give encouragement mid-way
+- Replace "Save & Continue" button text with "Next →" 
+  (except last step which stays "Complete Profile 🎉")
+- Add a small Menti avatar (the gradient M circle) + a 
+  conversational intro line at the top of each step card, 
+  above the fields. This makes it feel like Menti is asking.
+
+## STEP 1 — Personal Info:
+Menti says (show as a small chat bubble above the form):
+"Hi! I'm Menti 👋 Before we dive in, let me get to know 
+you a little. Don't worry — this only takes 2 minutes!"
+
+- Title: "First, the basics" (remove "Personal Info")
+- Subtitle: "Tell me a little about yourself"
+- "Full Name" label → "What's your name?"
+- "Date of Birth" label → "When's your birthday? 🎂"
+- "Gender" label → "How do you identify?"
+- "City" label → "Which city are you based in?"
+- "State" label → "And the state?"
+- "Phone Number" label → "Best number to reach you?"
+- Remove "Name from your account" helper text entirely
+
+## STEP 2 — Academic Background:
+Menti says:
+"Now let's talk about where you are academically. 
+No judgment here — this just helps me give you 
+the most relevant guidance! 📚"
+
+- Title: "Your academic journey"
+- Subtitle: "Tell me where you are right now"
+- "Education Level" label → "What stage are you at?"
+- "Board" label → "Which board are you from?"
+- "Stream" label → "What stream are you in?"
+- "School / College Name" label → "Name of your school 
+  or college?"
+- "Grade / Percentage" label → "How are your grades 
+  looking? (be honest, no judgment!)"
+
+## STEP 3 — Interests & Strengths:
+Menti says:
+"This is my favourite part! 🌟 Tell me what lights you 
+up — this is what I'll use to give you advice that 
+actually fits YOU."
+
+- Title: "What makes you, YOU"
+- Subtitle: "Pick what genuinely excites you"
+- "Interests (select all that apply)" → 
+  "What do you genuinely enjoy? Pick all that fit 👇"
+- "Strengths (select all that apply)" → 
+  "What are you naturally good at? Be honest! 💪"
+- "Hobbies" label → "Any hobbies or things you do 
+  just for fun?"
+- Hobbies placeholder: "e.g. cricket, sketching, 
+  gaming, cooking..."
+
+## STEP 4 — Career Aspirations:
+Menti says:
+"Dream big here — there are no wrong answers. ✨ 
+Even if you're unsure, just tell me what excites you 
+most right now."
+
+- Title: "Your big dreams"
+- Subtitle: "Where do you see yourself going?"
+- "Dream Career" label → "If nothing could stop you, 
+  what would you want to become?"
+- Dream Career placeholder: "e.g. Entrepreneur, 
+  Doctor, Designer, CA..."
+- "Target Colleges" label → "Any colleges on your 
+  wishlist? (even dream ones!)"
+- Target Colleges placeholder: "e.g. IIM, SRCC, 
+  NIT, MIT..."
+- "Open to studying abroad?" label → "Would you 
+  consider studying abroad? 🌍"
+
+## STEP 5 — Family Context:
+Menti says:
+"Almost done! This part helps me give you advice 
+that's actually realistic for your situation — 
+not just textbook perfect. Everything here stays 
+between us. 🤝"
+
+- Title: "Your real-world situation"
+- Subtitle: "Help me understand your context"
+- "Annual Family Income" label → "Roughly what's 
+  your family's annual income?"
+  Add helper text below: "This helps me suggest 
+  options that are actually achievable for you"
+- "Parents' Highest Education" label → "What's the 
+  highest education level in your family?"
+- "Family pressure on career choice?" label → 
+  "How much say does your family have in your 
+  career choice?"
+  Change options: Low → "I decide" | 
+  Medium → "We discuss" | High → "They decide"
+- "Education Budget" label → "What's your rough 
+  budget for higher education per year?"
+
+## STEP 6 — Goals:
+Menti says:
+"Last step! 🎉 These questions help me understand 
+what's really going on for you. Take your time — 
+the more honest you are, the better I can help."
+
+- Title: "The bigger picture"
+- Subtitle: "Almost there — just a few more things!"
+- "Where do you see yourself in 5 years?" → 
+  "Picture yourself 5 years from now — what does 
+  your life look like? 🚀"
+  Placeholder: "e.g. Running my own startup, 
+  working at a top company, studying abroad..."
+- "What have you already tried?" → 
+  "What steps have you already taken toward 
+  your goal?"
+  Placeholder: "e.g. Coaching classes, online 
+  courses, entrance exam attempts..."
+- "What's stopping you from reaching your goal?" → 
+  "What feels like the biggest obstacle right now?"
+  Placeholder: "e.g. Not sure which path to take, 
+  family pressure, financial constraints..."
+- "How did you hear about MentoraLM?" → 
+  "One last thing — how did you find us? 😊"
+
+## COMPLETION SCREEN:
+After step 6, show a celebration screen:
+- Large emoji: 🎉
+- Heading: "You're all set, [Name]!"
+- Subtext: "Menti has everything she needs to 
+  give you personalised guidance. Let's get started!"
+- Button: "Chat with Menti →" (gradient, full width)
