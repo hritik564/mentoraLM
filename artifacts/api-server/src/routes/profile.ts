@@ -9,7 +9,6 @@ import { requireAuth } from "../middlewares/auth.js";
 
 const router = Router();
 
-// Set up multer for profile photo uploads
 const uploadDir = "./uploads/photos";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -24,21 +23,23 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// Compute completion percentage based on filled fields
 function computeCompletion(profile: Record<string, unknown>): number {
   const fields = [
     // Step 1
     "dateOfBirth", "gender", "city", "state",
     // Step 2
     "educationLevel", "board", "schoolCollege", "gradePercentage", "stream",
+    "subjectStrengths", "entranceExams",
     // Step 3
-    "interests", "strengths", "hobbies", "energizedBy",
+    "achievements", "workStyle", "thinkingStyle", "energyType",
     // Step 4
-    "dreamCareer", "targetColleges", "openToAbroad", "biggestConcern",
+    "interests", "strengths", "hobbies", "freeTimeActivity",
     // Step 5
-    "familyIncome", "parentsEducation", "familyPressure", "educationBudget",
+    "dreamCareer", "targetColleges", "openToAbroad", "careerClarity", "decisionTimeline",
     // Step 6
-    "fiveYearGoal", "alreadyTried", "stoppingYou", "heardFrom",
+    "familyIncome", "parentsEducation", "familyPressure", "educationBudget",
+    // Step 7
+    "fiveYearGoal", "alreadyTried", "obstacles", "stressLevel", "heardFrom",
   ];
   const filled = fields.filter(
     (f) => profile[f] !== null && profile[f] !== undefined && profile[f] !== ""
@@ -55,7 +56,6 @@ router.get("/", requireAuth, async (req, res) => {
       .where(eq(studentProfilesTable.userId, req.user!.userId));
 
     if (!profile) {
-      // Return empty profile
       res.json(null);
       return;
     }
@@ -72,7 +72,6 @@ router.patch("/", requireAuth, async (req, res) => {
     const userId = req.user!.userId;
     const updates = req.body;
 
-    // Check if profile exists
     const [existing] = await db
       .select()
       .from(studentProfilesTable)

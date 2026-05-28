@@ -1,0 +1,378 @@
+Completely redesign the profile wizard with new questions, 
+conversational copy, and step transition animations.
+
+## ANIMATIONS — IMPLEMENT THESE FIRST:
+
+### Step Transition Animation:
+When student clicks "Next →":
+- Current step slides out to the LEFT (translateX 0 to -60px, 
+  opacity 1 to 0, duration 300ms, ease-in)
+- New step slides in from the RIGHT (translateX 60px to 0, 
+  opacity 0 to 1, duration 350ms, ease-out)
+- Use React state + CSS transitions, no external libraries
+
+### When clicking "Previous":
+- Current step slides out to the RIGHT
+- Previous step slides in from the LEFT
+- Same timing as above but mirrored
+
+### Progress Bar Animation:
+- When moving forward, the progress bar fills smoothly 
+  (width transition, 400ms ease)
+- Add a subtle "pop" when a new segment completes 
+  (scale 1 to 1.05 to 1, 200ms)
+
+### Chip/Button Selection Animation:
+- When student selects a chip or option button:
+  Scale from 1 to 0.95 to 1.05 to 1 (spring bounce, 300ms)
+  Background transitions smoothly to gradient
+  Add a subtle checkmark ✓ that fades in on selected chips
+
+### Menti Avatar Entrance:
+- On each new step, the Menti M avatar bounces in from above
+  (translateY -20px to 0, with spring bounce, 400ms)
+- The chat bubble text types in character by character 
+  (typewriter effect, 30ms per character)
+
+### Completion Celebration:
+- When profile is completed, show a burst of confetti 
+  (use canvas-confetti: npm install canvas-confetti)
+- Confetti colors: #00A8FF, #7B3FE4, #FF8C00, #ffffff
+- Duration: 3 seconds
+- Then show the completion screen
+
+---
+
+## RESTRUCTURED WIZARD — 7 STEPS:
+
+### GLOBAL CHANGES:
+- Main header: "Let's get to know you" (replaces 
+  "Complete Your Profile")
+- Progress indicator: "Step X of 7"
+- Add encouraging messages at steps 4, 5, 6, 7:
+  Step 4: "Step 4 of 7 — you're doing great! 🌟"
+  Step 5: "Step 5 of 7 — halfway there! 💪"
+  Step 6: "Step 6 of 7 — almost done! 🔥"
+  Step 7: "Step 7 of 7 — last one, promise! 😊"
+- Button text: "Next →" (not "Save & Continue")
+- Last step button: "Complete Profile 🎉"
+
+---
+
+### STEP 1 — Personal Info:
+
+Menti bubble (typewriter animation):
+"Hi! I'm Menti 👋 I'm your personal career counsellor 
+and I can't wait to help you. Let's start with the 
+basics — this'll only take 2 minutes!"
+
+- Title: "First, the basics"
+- Subtitle: "Tell me a little about yourself"
+
+Fields:
+- Profile photo upload (keep as is)
+- "What's your name?" (pre-filled from account)
+- "When's your birthday? 🎂" (date picker)
+- "How do you identify?" (gender dropdown)
+- "Which city are you in?" (text)
+- "And the state?" (text)
+- "Best number to reach you?" (phone, pre-filled)
+
+Remove "Name from your account" helper text.
+
+---
+
+### STEP 2 — Academic Background:
+
+Menti bubble:
+"Now let's talk academics. Don't stress — there 
+are no right or wrong answers here. I just want 
+to understand where you are right now! 📚"
+
+- Title: "Your academic journey"
+- Subtitle: "Tell me where you are right now"
+
+Fields:
+- "What stage are you at?" (dropdown)
+  Options: Class 9 / Class 10 / Class 11 / Class 12 / 
+  Undergraduate / Graduate / Gap Year
+
+- "Which board are you from?" (dropdown)
+  Options: CBSE / ICSE / IB / State Board / Other
+
+- "What stream are you in?" (dropdown)
+  Options: Science (PCM) / Science (PCB) / Commerce / 
+  Arts/Humanities / Undecided / Not applicable
+
+- "Name of your school or college?"
+  Placeholder: "e.g. DPS, Christ College, IIT Bombay..."
+
+- "How are your grades? (be honest, no judgment! 😄)"
+  Placeholder: "e.g. 85%, 9.2 CGPA, First Class..."
+
+- "Which subjects are you strongest in?"
+  Multi-select chips:
+  Mathematics | Physics | Chemistry | Biology | 
+  Economics | Accountancy | Business Studies | 
+  History | Geography | English | Computer Science | 
+  Physical Education | Fine Arts | Other
+
+- "Appeared for any entrance exams?"
+  Multi-select chips:
+  JEE | NEET | CUET | CLAT | CAT | GMAT | SAT | 
+  NDA | NIFT | CEED | None yet | Other
+
+- "If yes — approximate score or percentile?" 
+  (text field, optional)
+  Placeholder: "e.g. JEE 85 percentile, NEET 520 marks..."
+  Helper text: "Skip this if you haven't appeared yet"
+
+---
+
+### STEP 3 — Achievements & Personality:
+
+Menti bubble:
+"This is where it gets interesting! 🌟 Tell me 
+what makes you stand out — and how you naturally 
+like to work. This is the heart of my 
+Mother Nature philosophy!"
+
+- Title: "What makes you stand out"
+- Subtitle: "Your achievements and how you work best"
+
+Fields:
+- "Any competitions, awards, or leadership roles?" 
+  (text area)
+  Placeholder: "e.g. State chess champion, School 
+  Head Boy/Girl, Science Olympiad rank, NSS volunteer, 
+  startup intern... Don't be shy! 🏆"
+  Helper: "Even small wins count — mention everything"
+
+- "I prefer working..." 
+  (3 large button cards, single select)
+  🧍 "On my own" | 👥 "In a team" | 🤝 "Both equally"
+
+- "I'm more naturally..." 
+  (3 large button cards, single select)
+  🎨 "Creative" | 🧠 "Analytical" | ⚡ "Both equally"
+
+- "My energy is higher when I'm..."
+  (3 large button cards, single select)
+  💻 "Indoors, focused" | 🌍 "Outdoors, active" | 
+  🔄 "Depends on the day"
+
+---
+
+### STEP 4 — Interests & Strengths:
+
+Menti bubble:
+"My favourite step! Pick what genuinely excites 
+you — not what sounds impressive. The more honest 
+you are, the better I can help you! 🎯"
+
+- Title: "What lights you up"
+- Subtitle: "Pick everything that genuinely resonates"
+
+Fields:
+- "What do you genuinely enjoy? Pick all that fit 👇"
+  Multi-select chips (same as current + add):
+  Science | Technology | Arts | Commerce | Sports | 
+  Music | Writing | Social Work | Research | 
+  Entrepreneurship | Teaching | Medicine | Design | 
+  Finance | Law | Gaming | Travel | Food & Cooking | 
+  Environment | Psychology | Other
+
+- "What are you naturally good at? 💪"
+  Multi-select chips (same as current + add):
+  Analytical Thinking | Communication | Creativity | 
+  Leadership | Problem Solving | Teamwork | 
+  Time Management | Empathy | Critical Thinking | 
+  Technical Skills | Public Speaking | Negotiation | 
+  Writing | Research | Organisation | Other
+
+- "Any hobbies you do just for fun?"
+  Placeholder: "e.g. cricket, sketching, gaming, 
+  cooking, reading, YouTube..."
+
+- "When you have free time, you usually..."
+  (single select chips)
+  Build/create something | Learn something new | 
+  Socialise with friends | Play sports | 
+  Consume content | Help others | Other
+
+---
+
+### STEP 5 — Career Aspirations:
+
+Menti bubble:
+"Dream big — there are absolutely no wrong 
+answers here. ✨ Even 'I have no idea' is a 
+perfectly valid answer. That's what I'm here for!"
+
+- Title: "Your big dreams"
+- Subtitle: "Where do you want to go?"
+
+Fields:
+- "If nothing could stop you, what would you 
+  want to become?"
+  Placeholder: "e.g. Entrepreneur, Doctor, 
+  Filmmaker, CA, Game Developer..."
+
+- "Any colleges on your wishlist? 🎓"
+  Placeholder: "e.g. IIM, SRCC, NIT, NLU, 
+  Parsons, MIT — even dream ones!"
+
+- "Would you consider studying abroad? 🌍"
+  (3 button cards)
+  ✈️ "Yes, absolutely!" | 🤔 "Maybe, if possible" | 
+  🏠 "No, prefer India"
+
+- "How clear are you about your career direction?"
+  (4 button cards with emoji)
+  😅 "Totally lost" | 🤷 "Have some ideas" | 
+  🙂 "Pretty clear" | ✅ "Very sure"
+
+- "When do you need to make your next big 
+  career decision?"
+  (chips, single select)
+  In 3 months | In 6 months | In 1 year | 
+  In 2 years | Already overdue 😅
+
+---
+
+### STEP 6 — Family Context:
+
+Menti bubble:
+"Almost there! 🏁 This helps me give you advice 
+that's actually realistic — not just textbook 
+perfect. Everything you share stays completely 
+private. I promise. 🤝"
+
+- Title: "Your real-world situation"
+- Subtitle: "Help me understand your context"
+
+Fields:
+- "Roughly what's your family's annual income?"
+  (dropdown — same options as current)
+  Helper: "This helps me suggest options that 
+  are genuinely achievable for you"
+
+- "Highest education level in your family?"
+  (dropdown — same options as current)
+
+- "How much say does your family have in your 
+  career choice?"
+  (3 large button cards)
+  🙋 "I decide" | 💬 "We discuss together" | 
+  👨‍👩‍👦 "They mostly decide"
+
+- "What's your budget for higher education 
+  per year?"
+  (dropdown — same options as current)
+
+- "Is there a specific career your family 
+  wants you to pursue?"
+  (text field, optional)
+  Placeholder: "e.g. Doctor, Engineer, CA, 
+  Government job... or leave blank"
+
+---
+
+### STEP 7 — Goals & Blockers:
+
+Menti bubble:
+"Last step, I promise! 🎉 These questions help 
+me understand what's really going on for you. 
+Be as honest as you can — the more real you are, 
+the more I can actually help."
+
+- Title: "The bigger picture"
+- Subtitle: "Let's understand what you really want"
+
+Fields:
+- "Picture yourself 5 years from now — what 
+  does your life look like? 🚀"
+  (text area)
+  Placeholder: "e.g. Running my own startup, 
+  working at a top MNC, studying abroad, 
+  serving in the army..."
+
+- "What steps have you already taken toward 
+  your goal?"
+  Placeholder: "e.g. Coaching classes, online 
+  courses, JEE attempt, internship..."
+
+- "What feels like your biggest obstacle 
+  right now?"
+  (multi-select chips — new!)
+  Not sure which path to take | 
+  Family pressure | 
+  Financial constraints | 
+  Low grades/scores | 
+  Lack of guidance | 
+  Too many options, can't decide | 
+  Fear of making the wrong choice | 
+  Don't know the right people/network | 
+  Other
+
+- "How stressed are you about your future 
+  right now?" 
+  (emoji scale — visual and fun!)
+  😌 1 | 🙂 2 | 😐 3 | 😟 4 | 😰 5
+  Label below: "Not stressed at all → 
+  Very stressed"
+
+- "How did you find MentoraLM? 😊"
+  (dropdown — same options as current)
+
+---
+
+### COMPLETION SCREEN (after Step 7):
+
+Trigger confetti animation (canvas-confetti).
+
+Show:
+- Large: 🎉
+- Heading: "You're all set, [Name]!"
+- Subtext: "Menti has everything she needs to 
+  give you advice that's actually built for you. 
+  Ready to start your journey?"
+- Primary button: "Chat with Menti →" (gradient)
+- Secondary link: "Go to Dashboard"
+
+---
+
+## IMPORTANT TECHNICAL NOTES:
+
+1. All new fields must save to the database — 
+   add columns if needed:
+   - subject_strengths (array)
+   - entrance_exams (array)
+   - entrance_scores (text)
+   - achievements (text)
+   - work_style (text: alone/team/both)
+   - thinking_style (text: creative/analytical/both)
+   - energy_type (text)
+   - free_time_activity (text)
+   - career_clarity (text)
+   - decision_timeline (text)
+   - family_career_expectation (text)
+   - stress_level (integer 1-5)
+   - obstacles (array)
+
+2. All new profile fields must be included 
+   in the Menti system prompt context — 
+   inject them alongside existing fields.
+
+3. Profile completion percentage must 
+   recalculate based on new total fields.
+
+4. Step transition animations must not 
+   cause any data loss — save each step 
+   to backend on "Next →" click before 
+   animating to next step, exactly as before.
+
+5. Mobile: all button card selections must 
+   be full-width on mobile, animations must 
+   work smoothly on mobile (use 
+   will-change: transform on animated elements).

@@ -21,25 +21,44 @@ async function ensureChatTable() {
 
 function buildSystemPrompt(user: { name: string }, profile: Record<string, unknown> | null): string {
   const p = profile || {};
-  return `You are MentoraLM, an expert AI career counsellor for Indian students. You have deep knowledge of Indian education systems (CBSE, ICSE, IB, state boards), entrance exams (JEE, NEET, CLAT, CUET, CAT, UPSC, NDA, NID, CEED, etc.), top Indian colleges (IITs, NITs, AIIMS, NLUs, IIMs, NIFT, etc.), and career paths.
+  return `You are Menti, MentoraLM's expert AI career counsellor for Indian students. You have deep knowledge of Indian education systems (CBSE, ICSE, IB, state boards), entrance exams (JEE, NEET, CLAT, CUET, CAT, UPSC, NDA, NID, CEED, etc.), top Indian colleges (IITs, NITs, AIIMS, NLUs, IIMs, NIFT, etc.), and career paths.
 
 You are warm, encouraging, specific, and practical. You never give generic advice. You always reference the student's actual profile in your responses.
 
 Student Profile:
 Name: ${user.name}
-Age/Class: ${p.educationLevel || "Not specified"}
+Education Stage: ${p.educationLevel || "Not specified"}
 Board: ${p.board || "Not specified"}
 Stream: ${p.stream || "Not specified"}
+School/College: ${p.schoolCollege || "Not specified"}
 Grades: ${p.gradePercentage || "Not specified"}
+Subject Strengths: ${p.subjectStrengths || "Not specified"}
+Entrance Exams Appeared: ${p.entranceExams || "Not specified"}
+Entrance Scores: ${p.entranceScores || "Not specified"}
 City: ${p.city || "Not specified"}
+State: ${p.state || "Not specified"}
+Achievements: ${p.achievements || "Not specified"}
+Work Style: ${p.workStyle || "Not specified"}
+Thinking Style: ${p.thinkingStyle || "Not specified"}
+Energy Type: ${p.energyType || "Not specified"}
 Interests: ${p.interests || "Not specified"}
 Strengths: ${p.strengths || "Not specified"}
-Dream career: ${p.dreamCareer || "Not specified"}
-Target colleges: ${p.targetColleges || "Not specified"}
-Biggest concern: ${p.biggestConcern || "Not specified"}
-Family budget: ${p.educationBudget || "Not specified"}
-5-year goal: ${p.fiveYearGoal || "Not specified"}
-What's stopping them: ${p.stoppingYou || "Not specified"}
+Hobbies: ${p.hobbies || "Not specified"}
+Free Time Activity: ${p.freeTimeActivity || "Not specified"}
+Dream Career: ${p.dreamCareer || "Not specified"}
+Target Colleges: ${p.targetColleges || "Not specified"}
+Open to Abroad: ${p.openToAbroad || "Not specified"}
+Career Clarity: ${p.careerClarity || "Not specified"}
+Decision Timeline: ${p.decisionTimeline || "Not specified"}
+Family Income: ${p.familyIncome || "Not specified"}
+Parents' Education: ${p.parentsEducation || "Not specified"}
+Family Say in Career: ${p.familyPressure || "Not specified"}
+Family's Career Expectation: ${p.familyCareerExpectation || "Not specified"}
+Education Budget: ${p.educationBudget || "Not specified"}
+5-Year Goal: ${p.fiveYearGoal || "Not specified"}
+Steps Already Taken: ${p.alreadyTried || "Not specified"}
+Obstacles: ${p.obstacles || "Not specified"}
+Stress Level (1-5): ${p.stressLevel || "Not specified"}
 
 Rules:
 1. Always address the student by their first name
@@ -48,7 +67,8 @@ Rules:
 4. When a question requires deep personalised mentoring or emotional support, acknowledge it and say: "For this, a 1-on-1 session with our expert counsellor would give you a much more in-depth answer. [Book a Session]"
 5. Keep responses concise and scannable (use bullet points when listing steps)
 6. Never make up statistics. If unsure, say so.
-7. Maintain context within the conversation.`;
+7. Maintain context within the conversation.
+8. Take into account their stress level and obstacles when framing advice — be especially warm and encouraging if stress level is 4 or 5.`;
 }
 
 // GET /chat/messages
@@ -93,33 +113,28 @@ router.post("/stream", requireAuth, async (req, res) => {
       return;
     }
 
-    // Load profile and user
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
     const [profile] = await db
       .select()
       .from(studentProfilesTable)
       .where(eq(studentProfilesTable.userId, userId));
 
-    // Save user message
     await pool.query(
       `INSERT INTO chat_messages (user_id, role, content) VALUES ($1, 'user', $2)`,
       [userId, content]
     );
 
-    // Load last 20 messages for context
     const historyResult = await pool.query(
       `SELECT role, content FROM chat_messages WHERE user_id = $1 ORDER BY created_at DESC LIMIT 20`,
       [userId]
     );
     const history = historyResult.rows.reverse();
 
-    // Build messages array for Claude
     const chatMessages = history.map((m: { role: string; content: string }) => ({
       role: m.role as "user" | "assistant",
       content: m.content,
     }));
 
-    // Set SSE headers
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
@@ -141,7 +156,6 @@ router.post("/stream", requireAuth, async (req, res) => {
       }
     }
 
-    // Save assistant message
     await pool.query(
       `INSERT INTO chat_messages (user_id, role, content) VALUES ($1, 'assistant', $2)`,
       [userId, fullResponse]

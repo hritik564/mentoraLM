@@ -18,26 +18,41 @@ export const studentProfilesTable = pgTable("student_profiles", {
   schoolCollege: text("school_college"),
   gradePercentage: text("grade_percentage"),
   stream: text("stream"),
-  // Step 3 - Interests & Strengths
-  interests: text("interests"), // JSON array as text
-  strengths: text("strengths"), // JSON array as text
+  subjectStrengths: text("subject_strengths"),    // JSON array as text
+  entranceExams: text("entrance_exams"),           // JSON array as text
+  entranceScores: text("entrance_scores"),
+  // Step 3 - Achievements & Personality
+  achievements: text("achievements"),
+  workStyle: text("work_style"),
+  thinkingStyle: text("thinking_style"),
+  energyType: text("energy_type"),
+  // Step 4 - Interests & Strengths
+  interests: text("interests"),                   // JSON array as text
+  strengths: text("strengths"),                   // JSON array as text
   hobbies: text("hobbies"),
-  energizedBy: text("energized_by"),
-  // Step 4 - Career Aspirations
+  freeTimeActivity: text("free_time_activity"),
+  // Step 5 - Career Aspirations
   dreamCareer: text("dream_career"),
   targetColleges: text("target_colleges"),
   openToAbroad: text("open_to_abroad"),
-  biggestConcern: text("biggest_concern"),
-  // Step 5 - Family & Financial Context
+  careerClarity: text("career_clarity"),
+  decisionTimeline: text("decision_timeline"),
+  // Step 6 - Family & Financial Context
   familyIncome: text("family_income"),
   parentsEducation: text("parents_education"),
   familyPressure: text("family_pressure"),
   educationBudget: text("education_budget"),
-  // Step 6 - Goals & Timeline
+  familyCareerExpectation: text("family_career_expectation"),
+  // Step 7 - Goals & Blockers
   fiveYearGoal: text("five_year_goal"),
   alreadyTried: text("already_tried"),
-  stoppingYou: text("stopping_you"),
+  obstacles: text("obstacles"),                   // JSON array as text
+  stressLevel: integer("stress_level"),
   heardFrom: text("heard_from"),
+  // Legacy fields kept for backwards compat
+  energizedBy: text("energized_by"),
+  biggestConcern: text("biggest_concern"),
+  stoppingYou: text("stopping_you"),
   // Meta
   completionPercent: real("completion_percent").notNull().default(0),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
