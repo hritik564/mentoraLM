@@ -359,7 +359,13 @@ export function getCategoryVisual(category: string): { gradient: string; emoji: 
   if (c.includes("counsel")) {
     return { gradient: "linear-gradient(135deg, #2d1a4e, #7B3FE4)", emoji: "🧭" };
   }
-  return { gradient: "linear-gradient(135deg, #1a1a4e, #7B3FE4)", emoji: "🎓" };
+  if (c.includes("resume") || c.includes("cv")) {
+    return { gradient: "linear-gradient(135deg, #1a2e1a, #10B981)", emoji: "📄" };
+  }
+  if (c.includes("college") || c.includes("admission")) {
+    return { gradient: "linear-gradient(135deg, #2e1a1a, #FF5C00)", emoji: "🎓" };
+  }
+  return { gradient: "linear-gradient(135deg, #1a1a2e, #7B3FE4)", emoji: "⭐" };
 }
 
 

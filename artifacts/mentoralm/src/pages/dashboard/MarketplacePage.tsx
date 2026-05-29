@@ -95,6 +95,12 @@ export default function MarketplacePage() {
                       style={{ background: gradient }}
                     >
                       <span className="text-5xl drop-shadow-lg">{emoji}</span>
+                      {service.duration && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1">
+                          <Clock className="w-3 h-3 text-white/70" />
+                          <span className="text-white/90 text-xs font-medium">{service.duration} min</span>
+                        </div>
+                      )}
                     </div>
                     <div className="p-5">
                       <div className="inline-block text-xs font-semibold text-primary bg-primary/10 rounded-full px-2.5 py-0.5 mb-2">
