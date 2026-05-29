@@ -46,6 +46,8 @@ export function Navbar() {
     setIsMobileOpen(false);
   }, [location]);
 
+  const isDashboard = !!user && location.startsWith("/dashboard");
+
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/services", label: "Services" },
@@ -176,58 +178,108 @@ export function Navbar() {
             transition={{ duration: 0.2 }}
             className="md:hidden absolute top-full left-0 right-0 bg-[#080C1A]/95 backdrop-blur-md border-b border-white/5"
           >
-            <div className="flex flex-col px-6 py-4 gap-1">
-              {navLinks.map((link) => (
+            {isDashboard ? (
+              /* ── Dashboard mobile menu ── */
+              <div className="flex flex-col px-6 py-4 gap-1">
+                {[
+                  { href: "/dashboard", label: "Dashboard", icon: "🏠" },
+                  { href: "/dashboard/profile", label: "Profile", icon: "👤" },
+                  { href: "/dashboard/roadmap", label: "Career Roadmap", icon: "🗺️" },
+                  { href: "/dashboard/marketplace", label: "Services", icon: "🛍️" },
+                  { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
+                ].map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileOpen(false)}
+                    className={`flex items-center gap-3 text-base font-medium py-3 px-2 rounded-lg transition-colors ${
+                      location === link.href
+                        ? "text-white bg-white/5"
+                        : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    <span>{link.icon}</span>
+                    {link.label}
+                  </Link>
+                ))}
+                {/* Menti with pulsing dot */}
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  href="/dashboard/chat"
                   onClick={() => setIsMobileOpen(false)}
-                  className={`text-base font-medium py-3 px-2 rounded-lg transition-colors ${
-                    location === link.href
+                  className={`flex items-center gap-3 text-base font-medium py-3 px-2 rounded-lg transition-colors ${
+                    location === "/dashboard/chat"
                       ? "text-white bg-white/5"
                       : "text-muted-foreground hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  {link.label}
+                  <span>💬</span>
+                  <span>Menti</span>
+                  <span className="relative flex items-center ml-1">
+                    <span className="absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                  </span>
                 </Link>
-              ))}
-              <div className="h-px bg-white/5 my-2" />
-              {user ? (
-                <>
+                <div className="h-px bg-white/5 my-2" />
+                <button
+                  onClick={() => { setIsMobileOpen(false); signout(); }}
+                  className="flex items-center gap-3 text-base font-medium py-3 px-2 rounded-lg text-left text-muted-foreground hover:text-white hover:bg-white/5"
+                >
+                  <span>→</span>
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              /* ── Public mobile menu ── */
+              <div className="flex flex-col px-6 py-4 gap-1">
+                {navLinks.map((link) => (
                   <Link
-                    href={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setIsMobileOpen(false)}
-                    className="text-base font-medium py-3 px-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5"
+                    className={`text-base font-medium py-3 px-2 rounded-lg transition-colors ${
+                      location === link.href
+                        ? "text-white bg-white/5"
+                        : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    }`}
                   >
-                    Dashboard
+                    {link.label}
                   </Link>
-                  <button
-                    onClick={() => {
-                      setIsMobileOpen(false);
-                      signout();
-                    }}
-                    className="text-base font-medium py-3 px-2 rounded-lg text-left text-muted-foreground hover:text-white hover:bg-white/5"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/auth/signin"
-                    onClick={() => setIsMobileOpen(false)}
-                    className="text-base font-medium py-3 px-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5"
-                  >
-                    Sign In
-                  </Link>
-                  <Link href="/auth/signup" onClick={() => setIsMobileOpen(false)}>
-                    <Button className="w-full mt-2 bg-gradient-primary border-0 hover:opacity-90 text-white font-medium h-11">
-                      Get Started
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+                ))}
+                <div className="h-px bg-white/5 my-2" />
+                {user ? (
+                  <>
+                    <Link
+                      href={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}
+                      onClick={() => setIsMobileOpen(false)}
+                      className="text-base font-medium py-3 px-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => { setIsMobileOpen(false); signout(); }}
+                      className="text-base font-medium py-3 px-2 rounded-lg text-left text-muted-foreground hover:text-white hover:bg-white/5"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/signin"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="text-base font-medium py-3 px-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5"
+                    >
+                      Sign In
+                    </Link>
+                    <Link href="/auth/signup" onClick={() => setIsMobileOpen(false)}>
+                      <Button className="w-full mt-2 bg-gradient-primary border-0 hover:opacity-90 text-white font-medium h-11">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
