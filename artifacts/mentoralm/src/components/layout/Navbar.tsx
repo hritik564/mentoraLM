@@ -176,7 +176,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-[#080C1A]/95 backdrop-blur-md border-b border-white/5"
+            className="md:hidden absolute top-full left-0 right-0 bg-[#080C1A] border-b border-white/5"
           >
             {isDashboard ? (
               /* ── Dashboard mobile menu ── */
@@ -186,7 +186,6 @@ export function Navbar() {
                   { href: "/dashboard/profile", label: "Profile", icon: "👤" },
                   { href: "/dashboard/roadmap", label: "Career Roadmap", icon: "🗺️" },
                   { href: "/dashboard/marketplace", label: "Services", icon: "🛍️" },
-                  { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
                 ].map((link) => (
                   <Link
                     key={link.href}
@@ -218,6 +217,19 @@ export function Navbar() {
                     <span className="absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75 animate-ping" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                   </span>
+                </Link>
+                {/* Settings */}
+                <Link
+                  href="/dashboard/settings"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 text-base font-medium py-3 px-2 rounded-lg transition-colors ${
+                    location === "/dashboard/settings"
+                      ? "text-white bg-white/5"
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <span>⚙️</span>
+                  Settings
                 </Link>
                 <div className="h-px bg-white/5 my-2" />
                 <button
