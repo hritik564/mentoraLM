@@ -4,7 +4,7 @@ import { X, Send } from "lucide-react";
 import { Link } from "wouter";
 
 const OPENING_MESSAGE =
-  "Hey there! 👋 I'm Menti, your AI career counsellor.\nI'm here to help you figure out your path — whether you're confused about streams, careers, colleges, or just don't know where to start.\nWhat's on your mind?";
+  "Hey there! 👋 I'm Menti, your AI career counsellor. I'm here to help you figure out your path — whether you're confused about streams, careers, colleges, or just don't know where to start. What's on your mind?";
 
 const MAX_GUEST_MESSAGES = 5;
 
@@ -164,10 +164,12 @@ export function MentiWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.82, y: 12 }}
             transition={{ duration: 0.28, ease: "easeOut" }}
-            className="fixed bottom-[96px] right-6 z-[9999] flex flex-col overflow-hidden"
+            className="fixed z-[9999] flex flex-col overflow-hidden"
             style={{
-              width: "min(360px, 90vw)",
-              height: "clamp(380px, 70vh, 480px)",
+              bottom: 96,
+              right: 24,
+              width: "min(360px, calc(100vw - 48px))",
+              height: "min(480px, calc(100vh - 140px))",
               background: "#0F1628",
               border: "1px solid #1E2A45",
               borderRadius: 20,
@@ -212,7 +214,7 @@ export function MentiWidget() {
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div
-                    className="max-w-[82%] px-4 py-2.5 text-sm text-white leading-relaxed whitespace-pre-wrap"
+                    className="max-w-[82%] px-4 py-2.5 text-sm text-white leading-relaxed"
                     style={{
                       background:
                         msg.role === "user"
