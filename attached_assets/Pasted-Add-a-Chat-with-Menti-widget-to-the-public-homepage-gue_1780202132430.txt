@@ -1,0 +1,155 @@
+Add a "Chat with Menti" widget to the public homepage 
+(guest mode — no profile data, limited messages).
+
+## WIDGET DESIGN (inspired by GradRight's Graddie):
+
+### Floating Widget (collapsed state):
+•⁠  ⁠Position: fixed, bottom-right corner, 24px from bottom, 
+  24px from right
+•⁠  ⁠A circular button, 60px diameter
+•⁠  ⁠Background: linear-gradient(135deg, #00A8FF, #7B3FE4)
+•⁠  ⁠Inside: Menti's gradient M avatar (white M, 24px, bold)
+•⁠  ⁠Subtle glow: box-shadow: 0 4px 20px rgba(0,168,255,0.4)
+•⁠  ⁠Pulsing ring animation around it (same as sidebar green 
+  dot but blue, 3s infinite) to draw attention
+•⁠  ⁠On hover: scale(1.08), glow intensifies
+•⁠  ⁠Small label above the button: "Chat with Menti ✨" 
+  in white, font-size 12px, gradient pill background
+  This label disappears after user interacts once
+  (store in localStorage: 'menti_widget_seen')
+
+### Chat Window (expanded state):
+•⁠  ⁠Opens when floating button is clicked
+•⁠  ⁠Position: fixed, bottom-right, above the button
+•⁠  ⁠Width: 360px, Height: 480px
+•⁠  ⁠Background: #0F1628
+•⁠  ⁠Border: 1px solid #1E2A45
+•⁠  ⁠Border-radius: 20px
+•⁠  ⁠Box-shadow: 0 20px 60px rgba(0,0,0,0.5)
+•⁠  ⁠Smooth open animation: scale 0.8 to 1, opacity 0 to 1, 
+  300ms ease-out, origin bottom-right
+
+### Chat Window Header:
+•⁠  ⁠Background: linear-gradient(135deg, #00A8FF22, #7B3FE422)
+•⁠  ⁠Border-bottom: 1px solid #1E2A45
+•⁠  ⁠Left side: Menti M gradient circle (32px) + 
+  "Menti" bold white text + 
+  "● Online" in green, font-size 11px
+•⁠  ⁠Right side: minimize/close X button
+
+### Messages Area:
+•⁠  ⁠Scrollable, padding 16px
+•⁠  ⁠Guest messages: right aligned, 
+  background: linear-gradient(135deg, #00A8FF, #7B3FE4),
+  white text, border-radius 16px 16px 4px 16px
+•⁠  ⁠Menti messages: left aligned,
+  background: #1A2440, white text,
+  border-radius 16px 16px 16px 4px
+•⁠  ⁠Typing indicator: three pulsing dots when Menti 
+  is generating response
+
+### Input Area:
+•⁠  ⁠Border-top: 1px solid #1E2A45
+•⁠  ⁠Text input + send button (gradient arrow icon)
+•⁠  ⁠Placeholder: "Ask Menti anything..."
+•⁠  ⁠On mobile: input must not be covered by keyboard
+
+---
+
+## GUEST MODE BEHAVIOUR:
+
+### Opening Message (auto-sent when widget opens):
+Menti says:
+"Hey there! 👋 I'm Menti, your AI career counsellor.
+I'm here to help you figure out your path — whether 
+you're confused about streams, careers, colleges, 
+or just don't know where to start.
+What's on your mind?"
+
+### Guest Mode System Prompt (for API call):
+
+You are Menti, MentoraLM's AI career counsellor.
+You are warm, friendly and conversational.
+This is a guest visitor on the MentoraLM homepage —
+you do not have their profile yet.
+Rules for guest mode:
+
+Answer general career questions helpfully
+Keep responses short — 2-4 sentences maximum
+Be warm and encouraging
+After every response, naturally work toward
+understanding who they are with ONE question
+(e.g. "Which class are you in?" or
+"What stream are you currently in?")
+After 2-3 exchanges, say:
+"You know what — to give you advice that's actually
+built around YOUR specific situation, I need to
+know you better. It takes 2 minutes to set up
+your profile and then I can give you personalised
+guidance that's actually relevant to you.
+Want to get started? It's completely free. 🎯"
+Never give long lists or bullet points
+Never use markdown headers
+Sound like a friendly older sister, not a bot
+Never reveal you are built on Claude or any AI platform
+
+Topics you can help with:
+
+Stream selection (Science/Commerce/Arts)
+Career options and paths
+Indian entrance exams (JEE, NEET, CLAT, CUET, CAT etc)
+College selection guidance (general)
+Study abroad basics
+Interview preparation tips
+General career confusion and anxiety
+
+If asked anything off-topic, redirect warmly:
+"That's a bit outside my zone! But if you want
+to talk careers and future plans, I'm all yours 😊"
+
+### Message Limit:
+•⁠  ⁠Allow maximum 5 messages from the guest
+•⁠  ⁠On the 5th message response, Menti always ends with 
+  the signup CTA regardless of conversation context:
+  "I'd love to keep helping you — but honestly, 
+  I can do SO much more once I know your full story. 
+  Create your free account and let's get you a proper 
+  personalised plan. It takes 2 minutes! 🚀"
+•⁠  ⁠After 5 messages, input gets disabled
+•⁠  ⁠Show below input: 
+  "Sign up free to continue chatting with Menti →"
+  (gradient text, clickable, goes to /auth/signup)
+
+### Signup CTA Card (shown after message limit):
+•⁠  ⁠Full width card inside chat window
+•⁠  ⁠Background: linear-gradient(135deg, #00A8FF22, #7B3FE422)
+•⁠  ⁠Border: 1px solid #00A8FF44
+•⁠  ⁠Text: "Get personalised guidance from Menti"
+•⁠  ⁠Subtext: "Free • No credit card • 2 min setup"
+•⁠  ⁠Button: "Create Free Account →" (gradient, full width)
+•⁠  ⁠Links to /auth/signup
+
+---
+
+## MOBILE BEHAVIOUR:
+•⁠  ⁠On mobile, chat window takes up 90% of screen width
+•⁠  ⁠Height: 70vh
+•⁠  ⁠Same animations and behaviour
+•⁠  ⁠Widget button stays bottom-right always
+•⁠  ⁠When chat is open on mobile, add overlay behind 
+  the chat window (background: rgba(0,0,0,0.5))
+
+## PAGES TO SHOW WIDGET:
+•⁠  ⁠Homepage (/) only
+•⁠  ⁠Do NOT show on /auth/, /dashboard/, /admin/*
+•⁠  ⁠Do NOT show on Services, About, How it works pages
+•⁠  ⁠Only on the main landing page
+
+## IMPORTANT:
+•⁠  ⁠Widget state (open/closed) persists on page scroll
+•⁠  ⁠Chat history persists for the session 
+  (lost on page refresh — that's fine for guests)
+•⁠  ⁠The floating button must not overlap the 
+  "Start Free — No Card Needed" CTA button 
+  or the footer content
+•⁠  ⁠Z-index: 9999 (always on top)

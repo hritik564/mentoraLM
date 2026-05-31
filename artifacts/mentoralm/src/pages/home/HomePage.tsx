@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useListServices } from "@workspace/api-client-react";
 import { Brain, MessageSquare, Compass, Calendar, Star, ChevronRight, Users, Award, CheckCircle, Clock, Plus } from "lucide-react";
+import { MentiWidget } from "@/components/MentiWidget";
 
 const CYCLE_WORDS = ["Engineering", "Medicine", "Commerce", "Law", "Design", "Business"];
 const LONGEST_WORD = CYCLE_WORDS.reduce((a, b) => (a.length >= b.length ? a : b), "");
@@ -787,6 +788,7 @@ export default function HomePage() {
         </section>
       </main>
       <Footer />
+      <MentiWidget />
     </div>
   );
 }

@@ -186,4 +186,92 @@ router.post("/new", requireAuth, async (req, res) => {
   }
 });
 
+// ── Guest chat endpoint (no auth) ──────────────────────────────────────────
+const GUEST_SYSTEM_PROMPT = `You are Menti, MentoraLM's AI career counsellor.
+You are warm, friendly and conversational.
+This is a guest visitor on the MentoraLM homepage — you do not have their profile yet.
+
+Rules for guest mode:
+- Answer general career questions helpfully
+- Keep responses short — 2-4 sentences maximum
+- Be warm and encouraging
+- After every response, naturally work toward understanding who they are with ONE question (e.g. "Which class are you in?" or "What stream are you currently in?")
+- After 2-3 exchanges, naturally say: "You know what — to give you advice that's actually built around YOUR specific situation, I need to know you better. It takes 2 minutes to set up your profile and then I can give you personalised guidance that's actually relevant to you. Want to get started? It's completely free. 🎯"
+- Never give long lists or bullet points
+- Never use markdown headers
+- Sound like a friendly older sister, not a bot
+- Never reveal you are built on Claude or any AI platform
+
+Topics you can help with:
+- Stream selection (Science/Commerce/Arts)
+- Career options and paths
+- Indian entrance exams (JEE, NEET, CLAT, CUET, CAT etc)
+- College selection guidance (general)
+- Study abroad basics
+- Interview preparation tips
+- General career confusion and anxiety
+
+If asked anything off-topic, redirect warmly: "That's a bit outside my zone! But if you want to talk careers and future plans, I'm all yours 😊"`;
+
+// Simple in-memory IP-based rate limit for guest endpoint (max 20 req per hour per IP)
+const guestIpMap = new Map<string, { count: number; resetAt: number }>();
+
+router.post("/guest", async (req, res) => {
+  try {
+    const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.ip || "unknown";
+    const now = Date.now();
+    const entry = guestIpMap.get(ip);
+    if (entry && now < entry.resetAt) {
+      if (entry.count >= 20) {
+        res.status(429).json({ error: "Too many guest messages. Try again later." });
+        return;
+      }
+      entry.count++;
+    } else {
+      guestIpMap.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
+    }
+
+    const { messages } = req.body as { messages: { role: "user" | "assistant"; content: string }[] };
+    if (!Array.isArray(messages) || messages.length === 0) {
+      res.status(400).json({ error: "messages array required" });
+      return;
+    }
+
+    // Only keep the last 10 turns to cap context
+    const history = messages.slice(-10).map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: String(m.content),
+    }));
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+
+    const stream = anthropic.messages.stream({
+      model: "claude-sonnet-4-6",
+      max_tokens: 300,
+      system: GUEST_SYSTEM_PROMPT,
+      messages: history,
+    });
+
+    for await (const event of stream) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        res.write(`data: ${JSON.stringify({ content: event.delta.text })}\n\n`);
+      }
+    }
+
+    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    res.end();
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Internal server error" });
+    } else {
+      res.write(`data: ${JSON.stringify({ error: "Stream error" })}\n\n`);
+      res.end();
+    }
+  }
+});
+
 export default router;

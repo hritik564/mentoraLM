@@ -1,0 +1,69 @@
+Add a "Chat with Menti" widget to the public homepage 
+(guest mode — no profile data, limited messages).
+
+## WIDGET DESIGN (inspired by GradRight's Graddie):
+
+### Floating Widget (collapsed state):
+- Position: fixed, bottom-right corner, 24px from bottom, 
+  24px from right
+- A circular button, 60px diameter
+- Background: linear-gradient(135deg, #00A8FF, #7B3FE4)
+- Inside: Menti's gradient M avatar (white M, 24px, bold)
+- Subtle glow: box-shadow: 0 4px 20px rgba(0,168,255,0.4)
+- Pulsing ring animation around it (same as sidebar green 
+  dot but blue, 3s infinite) to draw attention
+- On hover: scale(1.08), glow intensifies
+- Small label above the button: "Chat with Menti ✨" 
+  in white, font-size 12px, gradient pill background
+  This label disappears after user interacts once
+  (store in localStorage: 'menti_widget_seen')
+
+### Chat Window (expanded state):
+- Opens when floating button is clicked
+- Position: fixed, bottom-right, above the button
+- Width: 360px, Height: 480px
+- Background: #0F1628
+- Border: 1px solid #1E2A45
+- Border-radius: 20px
+- Box-shadow: 0 20px 60px rgba(0,0,0,0.5)
+- Smooth open animation: scale 0.8 to 1, opacity 0 to 1, 
+  300ms ease-out, origin bottom-right
+
+### Chat Window Header:
+- Background: linear-gradient(135deg, #00A8FF22, #7B3FE422)
+- Border-bottom: 1px solid #1E2A45
+- Left side: Menti M gradient circle (32px) + 
+  "Menti" bold white text + 
+  "● Online" in green, font-size 11px
+- Right side: minimize/close X button
+
+### Messages Area:
+- Scrollable, padding 16px
+- Guest messages: right aligned, 
+  background: linear-gradient(135deg, #00A8FF, #7B3FE4),
+  white text, border-radius 16px 16px 4px 16px
+- Menti messages: left aligned,
+  background: #1A2440, white text,
+  border-radius 16px 16px 16px 4px
+- Typing indicator: three pulsing dots when Menti 
+  is generating response
+
+### Input Area:
+- Border-top: 1px solid #1E2A45
+- Text input + send button (gradient arrow icon)
+- Placeholder: "Ask Menti anything..."
+- On mobile: input must not be covered by keyboard
+
+---
+
+## GUEST MODE BEHAVIOUR:
+
+### Opening Message (auto-sent when widget opens):
+Menti says:
+"Hey there! 👋 I'm Menti, your AI career counsellor.
+I'm here to help you figure out your path — whether 
+you're confused about streams, careers, colleges, 
+or just don't know where to start.
+What's on your mind?"
+
+### Guest Mode System Prompt (for API call):
