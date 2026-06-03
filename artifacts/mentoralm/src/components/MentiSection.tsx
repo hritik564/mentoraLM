@@ -86,8 +86,9 @@ export function MentiSection() {
     return () => clearTimeout(timer);
   }, [inView]);
 
-  // Auto-scroll
+  // Auto-scroll — only when there is content to scroll to
   useEffect(() => {
+    if (messages.length === 0 && !isTyping) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages, isTyping]);
 
