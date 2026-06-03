@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useListServices } from "@workspace/api-client-react";
 import { Brain, MessageSquare, Compass, Calendar, Star, ChevronRight, Users, Award, CheckCircle, Clock, Plus } from "lucide-react";
-import { MentiWidget } from "@/components/MentiWidget";
+import { MentiSection } from "@/components/MentiSection";
 
 const CYCLE_WORDS = ["Engineering", "Medicine", "Commerce", "Law", "Design", "Business"];
 const LONGEST_WORD = CYCLE_WORDS.reduce((a, b) => (a.length >= b.length ? a : b), "");
@@ -453,16 +453,15 @@ export default function HomePage() {
                 </motion.p>
 
                 <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/auth/signup">
-                    <Button
-                      size="lg"
-                      className="bg-gradient-primary border-0 hover:opacity-90 text-white font-semibold text-base px-8 h-14 rounded-xl"
-                      data-testid="hero-cta-primary"
-                    >
-                      Try Menti Free
-                      <ChevronRight className="w-5 h-5 ml-1" />
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    className="bg-gradient-primary border-0 hover:opacity-90 text-white font-semibold text-base px-8 h-14 rounded-xl"
+                    data-testid="hero-cta-primary"
+                    onClick={() => document.getElementById("try-menti")?.scrollIntoView({ behavior: "smooth" })}
+                  >
+                    Try Menti Free
+                    <ChevronRight className="w-5 h-5 ml-1" />
+                  </Button>
                   <Link href="/services">
                     <Button
                       size="lg"
@@ -595,6 +594,9 @@ export default function HomePage() {
 
         {/* How It Works */}
         <HowItWorksSection />
+
+        {/* Try Menti — embedded chat section */}
+        <MentiSection />
 
         {/* Services Preview — always shown, with "Coming Soon" 3rd card */}
         <section className="pt-24 pb-8 md:py-24 px-6">
@@ -788,7 +790,6 @@ export default function HomePage() {
         </section>
       </main>
       <Footer />
-      <MentiWidget />
     </div>
   );
 }

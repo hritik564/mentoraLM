@@ -1,0 +1,150 @@
+Remove the floating Menti chat widget from the homepage 
+completely. Replace it with a full homepage section.
+
+## SECTION PLACEMENT:
+Add this section between "How MentoraLM works" and 
+"Our Services" sections on the homepage.
+
+## SECTION DESIGN:
+
+### Section Header:
+- Section label pill: "Try Menti Free ✨" 
+  (same style as "AI-Powered Career Guidance for India" pill)
+- Headline: "Talk to Menti right now"
+- Subheadline: "No signup needed. Ask anything about 
+  careers, streams, colleges, or exams — and see how 
+  Menti responds to you personally."
+- All centered, same typography as other sections
+
+### Chat UI Container:
+- Max-width: 760px, centered on page
+- Background: #0F1628
+- Border: 1px solid #1E2A45
+- Border-radius: 24px
+- Box-shadow: 0 20px 80px rgba(0,168,255,0.1)
+- Subtle blue glow behind container:
+  background radial gradient behind it
+
+### Chat Container Header:
+- Background: linear-gradient(135deg, #00A8FF15, #7B3FE415)
+- Border-bottom: 1px solid #1E2A45
+- Padding: 16px 24px
+- Left: Menti M gradient circle (36px) + 
+  "Menti" white bold text (16px) + 
+  "● Online now" green text (12px)
+- Right: small text "5 free messages · No signup needed"
+  in muted color (#6B7280), font-size 12px
+
+### Messages Area:
+- Height: 340px, overflow-y: auto, padding: 24px
+- Smooth scroll behavior
+- Guest messages: right aligned
+  background: linear-gradient(135deg, #00A8FF, #7B3FE4)
+  white text, border-radius: 18px 18px 4px 18px
+  max-width: 70%
+- Menti messages: left aligned
+  background: #1A2440
+  white text, border-radius: 18px 18px 18px 4px
+  max-width: 75%
+- Message animation: each new message slides up 
+  and fades in (translateY 10px to 0, opacity 0 to 1,
+  300ms ease-out)
+- Typing indicator: three pulsing dots in a 
+  #1A2440 bubble when Menti is responding
+
+### Opening State (before first message):
+Show Menti's auto greeting message with typewriter 
+effect when the section scrolls into view:
+"Hey there! 👋 I'm Menti, your AI career counsellor. 
+I'm here to help you figure out your path — whether 
+you're confused about streams, careers, colleges, or 
+just don't know where to start. What's on your mind?"
+Typewriter speed: 25ms per character
+
+Below the greeting, show 4 suggested prompt chips:
+- "Which stream should I choose?"
+- "What career fits my interests?"
+- "How do I prepare for JEE/NEET?"
+- "Help me pick the right college"
+
+Chips style: dark background #1A2440, border #2A3A5C,
+white text, border-radius 20px, padding 8px 16px
+On hover: border color #00A8FF, text gradient
+On click: chip text auto-fills the input and sends
+
+### Input Area:
+- Border-top: 1px solid #1E2A45
+- Padding: 16px 24px
+- Full width text input + gradient send button
+- Input background: #080C1A
+- Input border: 1px solid #1E2A45
+- Input placeholder: "Ask Menti anything..."
+- Input border-radius: 50px
+- On focus: border color #00A8FF, subtle glow
+- Send button: gradient circle, arrow icon
+- Press Enter to send
+
+### Message Counter:
+- Show below input, centered:
+  "X of 5 free messages used"
+  Progress dots: 5 small circles, filled ones 
+  show gradient, empty ones show #1E2A45
+  Update after each exchange
+
+### After 5 messages — Signup CTA State:
+- Input gets disabled, placeholder changes to:
+  "Sign up free to keep chatting with Menti..."
+- A card appears inside the chat above input:
+  Background: linear-gradient(135deg, #00A8FF15, #7B3FE415)
+  Border: 1px solid #00A8FF44
+  Border-radius: 16px, padding: 20px
+  
+  Menti avatar (M circle) centered at top
+  Heading: "Want personalised advice just for you?"
+  Subtext: "Create your free account and Menti will 
+  remember your profile, your goals, and give you 
+  guidance that's actually built around YOUR life."
+  
+  Three feature pills in a row:
+  "✓ Free forever" | "✓ 2 min setup" | "✓ No card needed"
+  
+  Button: "Start Your Free Journey →" 
+  (gradient, full width, pill-shaped)
+  Links to /auth/signup
+
+## ANIMATIONS ON SCROLL INTO VIEW:
+Use Intersection Observer. When section enters viewport:
+1. Section header fades up (0ms delay)
+2. Chat container scales from 0.95 to 1 + fades in 
+   (200ms delay, 500ms duration)
+3. Menti greeting typewriter starts 
+   (500ms delay after container appears)
+4. Suggested chips fade in one by one 
+   (100ms stagger after typewriter completes)
+
+## GUEST MODE SYSTEM PROMPT:
+Use the exact same guest mode system prompt and 
+5 message limit as previously specified.
+All API logic stays identical — just the UI changes
+from widget to section.
+
+## REMOVE:
+- Delete the floating widget button entirely
+- Delete the "Chat with Menti ✨" floating label
+- Remove all widget-related CSS and JS
+
+## MOBILE (max-width: 768px):
+- Section padding: 24px horizontal
+- Chat container: full width, border-radius 16px
+- Messages area height: 280px
+- Suggested chips: wrap naturally, 2 per row max
+- Input area: full width
+- Message counter text: font-size 12px
+
+## IMPORTANT:
+- Section must have id="try-menti" for anchor linking
+- Update the hero "Try Menti Free" button to 
+  smooth scroll to #try-menti instead of 
+  going to /auth/signup
+- Keep "Get Started" navbar button going to 
+  /auth/signup as before
